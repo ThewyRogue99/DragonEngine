@@ -2,6 +2,8 @@
 
 #include "Window.h"
 
+#include "Events/ApplicationEvent.h"
+
 namespace Engine
 {
 	class ENGINE_API Application
@@ -13,7 +15,11 @@ namespace Engine
 
 		void Run();
 
+		void OnEvent(Event& event);
+
 	private:
+		bool OnWindowClose(WindowCloseEvent& event);
+
 		std::unique_ptr<Window> AppWindow;
 
 		bool bIsRunning = false;
