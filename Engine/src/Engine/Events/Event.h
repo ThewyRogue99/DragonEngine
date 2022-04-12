@@ -44,6 +44,11 @@ namespace Engine
 			return GetCategoryFlags() & Category;
 		}
 
+		inline bool IsHandled()
+		{
+			return bIsHandled;
+		}
+
 	protected:
 		bool bIsHandled = false;
 	};

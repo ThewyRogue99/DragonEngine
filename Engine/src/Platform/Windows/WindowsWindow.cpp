@@ -6,6 +6,9 @@
 #include "Engine/Events/MouseEvent.h"
 #include "Engine/Events/KeyEvent.h"
 
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
 namespace Engine
 {
 	static bool bGLFWInitialized = false;
@@ -47,7 +50,9 @@ namespace Engine
 		{
 			// TODO: glfwTerminate on system shutdown
 			int success = glfwInit();
-			DE_CORE_ASSERT(success, "Could not initialize GLFW");
+			DE_CORE_ASSERT(success, "Could not initialize GLFW!");
+			if (!success) return;
+
 			glfwSetErrorCallback(GLFWErrorCallback);
 
 			bGLFWInitialized = true;
@@ -62,6 +67,10 @@ namespace Engine
 		);
 
 		glfwMakeContextCurrent(Window);
+
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		DE_CORE_ASSERT(status, "Could not initialize GLAD!");
+
 		glfwSetWindowUserPointer(Window, &Data);
 		SetVSync(true);
 

@@ -57,7 +57,7 @@ namespace Engine
 	class ENGINE_API MouseButtonEvent : public Event
 	{
 	public:
-		inline float GetMouseButton() const { return Button; }
+		inline int GetMouseButton() const { return Button; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouseButton | EventCategoryInput)
 

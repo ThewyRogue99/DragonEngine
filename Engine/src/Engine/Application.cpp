@@ -2,7 +2,7 @@
 
 #include "Application.h"
 
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace Engine
 {
@@ -18,6 +18,30 @@ namespace Engine
 	{
 	}
 
+	void Application::PushLayer(Layer* layer)
+	{
+		layerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* layer)
+	{
+		layerStack.PushOverlay(layer);
+	}
+
+	void Application::OnEvent(Event& event)
+	{
+		EventDispatcher d(event);
+		d.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+
+		for (auto it = layerStack.end(); it != layerStack.begin();)
+		{
+			(*--it)->OnEvent(event);
+
+			if (event.IsHandled())
+				break;
+		}
+	}
+
 	void Application::Run()
 	{
 		bIsRunning = true;
@@ -26,15 +50,12 @@ namespace Engine
 		{
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			for (Layer* layer : layerStack)
+				layer->OnUpdate();
+
 			AppWindow->OnUpdate();
 		}
-	}
-
-	void Application::OnEvent(Event& event)
-	{
-		EventDispatcher d(event);
-		d.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
-		DE_CORE_INFO(event.ToString());
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& event)
