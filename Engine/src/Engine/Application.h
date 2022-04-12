@@ -20,6 +20,9 @@ namespace Engine
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
+		inline static Application& Get() { return *Instance; }
+		inline Window& GetWindow() { return *AppWindow; }
+
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 
@@ -28,6 +31,8 @@ namespace Engine
 		bool bIsRunning = false;
 
 		LayerStack layerStack;
+
+		static Application* Instance;
 	};
 
 	Application* CreateApplication();

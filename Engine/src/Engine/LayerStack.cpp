@@ -18,11 +18,13 @@ namespace Engine
 	void LayerStack::PushLayer(Layer* layer)
 	{
 		LayerInsert = Layers.emplace(LayerInsert, layer);
+		layer->OnAttach();
 	}
 
 	void LayerStack::PushOverlay(Layer* overlay)
 	{
 		Layers.emplace_back(overlay);
+		overlay->OnAttach();
 	}
 
 	void LayerStack::PopLayer(Layer* layer)
@@ -33,6 +35,7 @@ namespace Engine
 		{
 			Layers.erase(it);
 			LayerInsert--;
+			layer->OnDetach();
 		}
 	}
 
@@ -41,6 +44,9 @@ namespace Engine
 		auto it = std::find(Layers.begin(), Layers.end(), overlay);
 
 		if (it != Layers.end())
+		{
 			Layers.erase(it);
+			overlay->OnDetach();
+		}
 	}
 }
