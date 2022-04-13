@@ -6,8 +6,6 @@
 
 namespace Engine
 {
-#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
-
 	Application* Application::Instance = nullptr;
 
 	Application::Application()
@@ -16,7 +14,7 @@ namespace Engine
 		Instance = this;
 
 		AppWindow = std::unique_ptr<Window>(Window::Create());
-		AppWindow->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 	}
 
 	Application::~Application()
@@ -36,7 +34,7 @@ namespace Engine
 	void Application::OnEvent(Event& event)
 	{
 		EventDispatcher d(event);
-		d.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		d.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 
 		for (auto it = layerStack.end(); it != layerStack.begin();)
 		{

@@ -55,4 +55,26 @@ namespace Engine
 
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
+
+	class ENGINE_API KeyTypedEvent : public Event
+	{
+	public:
+		KeyTypedEvent(char16_t Character) : Character(Character) { }
+
+		inline char16_t GetCharacter() { return Character; }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyTypedEvent: [ Character: " << Character << " ]";
+
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(KeyTyped)
+		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryKeyboard);
+
+	private:
+		char16_t Character;
+	};
 }

@@ -92,6 +92,14 @@ namespace Engine
 			data.EventCallback(e);
 		});
 
+		glfwSetCharCallback(Window, [](GLFWwindow* window, unsigned int Character)
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			KeyTypedEvent e(Character);
+			data.EventCallback(e);
+		});
+
 		glfwSetKeyCallback(Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
