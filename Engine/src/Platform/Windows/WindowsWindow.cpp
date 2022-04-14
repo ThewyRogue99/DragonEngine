@@ -108,17 +108,17 @@ namespace Engine
 			{
 				case GLFW_PRESS:
 				{
-					KeyPressedEvent e(key, 0);
+					KeyPressedEvent e(static_cast<KeyInput>(key), 0);
 					data.EventCallback(e);
 				} break;
 				case GLFW_RELEASE:
 				{
-					KeyReleasedEvent e(key);
+					KeyReleasedEvent e(static_cast<KeyInput>(key));
 					data.EventCallback(e);
 				} break;
 				case GLFW_REPEAT:
 				{
-					KeyPressedEvent e(key, 1);
+					KeyPressedEvent e(static_cast<KeyInput>(key), 1);
 					data.EventCallback(e);
 				} break;
 			}
@@ -132,12 +132,12 @@ namespace Engine
 			{
 			case GLFW_PRESS:
 			{
-				MouseButtonPressedEvent e(button);
+				MouseButtonPressedEvent e(static_cast<MouseButtonInput>(button));
 				data.EventCallback(e);
 			} break;
 			case GLFW_RELEASE:
 			{
-				MouseButtonReleasedEvent e(button);
+				MouseButtonReleasedEvent e(static_cast<MouseButtonInput>(button));
 				data.EventCallback(e);
 			} break;
 			}

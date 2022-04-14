@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "Engine/Input.h"
 
 namespace Engine
 {
@@ -57,26 +58,26 @@ namespace Engine
 	class ENGINE_API MouseButtonEvent : public Event
 	{
 	public:
-		inline int GetMouseButton() const { return Button; }
+		inline MouseButtonInput GetMouseButton() const { return Button; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouseButton | EventCategoryInput)
 
 	protected:
-		MouseButtonEvent(int Button) : Button(Button) { }
+		MouseButtonEvent(MouseButtonInput Button) : Button(Button) { }
 
-		int Button;
+		MouseButtonInput Button;
 	};
 
 	class ENGINE_API MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int Button) : MouseButtonEvent(Button) { }
+		MouseButtonPressedEvent(MouseButtonInput Button) : MouseButtonEvent(Button) { }
 
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonPressedEvent: [ Button: " << Button << " ]";
+			ss << "MouseButtonPressedEvent: [ Button: " << (int)Button << " ]";
 
 			return ss.str();
 		}
@@ -87,13 +88,13 @@ namespace Engine
 	class ENGINE_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int Button) : MouseButtonEvent(Button) { }
+		MouseButtonReleasedEvent(MouseButtonInput Button) : MouseButtonEvent(Button) { }
 
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonReleasedEvent: [ Button: " << Button << " ]";
+			ss << "MouseButtonReleasedEvent: [ Button: " << (int)Button << " ]";
 
 			return ss.str();
 		}

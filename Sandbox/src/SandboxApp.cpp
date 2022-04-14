@@ -1,4 +1,5 @@
 #include <Engine/ApplicationCore.h>
+#include <Engine/Input.h>
 
 class ExampleLayer : public Engine::Layer
 {
@@ -10,12 +11,13 @@ public:
 
 	void OnUpdate() override
 	{
-
+		if (Engine::Input::IsKeyPressed(Engine::KeyInput::Key_Tab))
+			DE_INFO("Tab pressed");
 	}
 
 	void OnEvent(Engine::Event& event) override
 	{
-		DE_TRACE(event.ToString());
+
 	}
 };
 

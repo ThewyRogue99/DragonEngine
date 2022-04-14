@@ -73,7 +73,9 @@ namespace Engine
 		ImGui::NewFrame();
 
 		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
+
+		if(show)
+			ImGui::ShowDemoWindow(&show);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -96,7 +98,7 @@ namespace Engine
 	bool ImGuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.MouseDown[e.GetMouseButton()] = true;
+		io.MouseDown[(int)(e.GetMouseButton())] = true;
 
 		return false;
 	}
@@ -104,7 +106,7 @@ namespace Engine
 	bool ImGuiLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.MouseDown[e.GetMouseButton()] = false;
+		io.MouseDown[(int)(e.GetMouseButton())] = false;
 
 		return false;
 	}
@@ -129,7 +131,7 @@ namespace Engine
 	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.KeysDown[e.GetKeyCode()] = true;
+		io.KeysDown[(int)(e.GetKey())] = true;
 
 		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
 		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
@@ -142,7 +144,7 @@ namespace Engine
 	bool ImGuiLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.KeysDown[e.GetKeyCode()] = false;
+		io.KeysDown[(int)(e.GetKey())] = false;
 
 		return false;
 	}
@@ -151,7 +153,7 @@ namespace Engine
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
-		io.AddInputCharacter((unsigned int)e.GetCharacter());
+		io.AddInputCharacter(e.GetCharacter());
 
 		return false;
 	}

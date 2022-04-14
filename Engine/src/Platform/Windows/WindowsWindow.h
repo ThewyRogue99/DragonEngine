@@ -27,6 +27,8 @@ namespace Engine
 
 		inline bool IsVsync() const override { return Data.VSync; }
 
+		inline void* GetNativeWindow() const override { return Window; }
+
 	private:
 		virtual void Init(const WindowProps& Props);
 		virtual void ShutDown();

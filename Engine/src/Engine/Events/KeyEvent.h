@@ -1,27 +1,28 @@
 #pragma once
 
 #include "Event.h"
+#include "Engine/Input.h"
 
 namespace Engine
 {
 	class ENGINE_API KeyEvent : public Event
 	{
 	public:
-		inline int GetKeyCode() const { return KeyCode; }
+		inline KeyInput GetKey() const { return Key; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 
 	protected:
-		KeyEvent(int KeyCode) : KeyCode(KeyCode) { }
+		KeyEvent(KeyInput Key) : Key(Key) { }
 
-		int KeyCode;
+		KeyInput Key;
 	};
 
 	class ENGINE_API KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(int KeyCode, int RepeatCount)
-			: KeyEvent(KeyCode), RepeatCount(RepeatCount) { }
+		KeyPressedEvent(KeyInput Key, int RepeatCount)
+			: KeyEvent(Key), RepeatCount(RepeatCount) { }
 
 		inline int GetRepeatCount() const { return RepeatCount; }
 
@@ -29,7 +30,7 @@ namespace Engine
 		{
 			std::stringstream ss;
 			ss << "KeyPressedEvent: [ Key Code: "
-				<< KeyCode << ", Repeats: " << RepeatCount << " ]";
+				<< (int)Key << ", Repeats: " << RepeatCount << " ]";
 
 			return ss.str();
 		}
@@ -43,12 +44,12 @@ namespace Engine
 	class ENGINE_API KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(int KeyCode) : KeyEvent(KeyCode) { }
+		KeyReleasedEvent(KeyInput Key) : KeyEvent(Key) { }
 
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyReleasedEvent: [ Key Code: " << KeyCode << " ]";
+			ss << "KeyReleasedEvent: [ Key Code: " << (int)Key << " ]";
 
 			return ss.str();
 		}
@@ -59,9 +60,9 @@ namespace Engine
 	class ENGINE_API KeyTypedEvent : public Event
 	{
 	public:
-		KeyTypedEvent(char16_t Character) : Character(Character) { }
+		KeyTypedEvent(unsigned int Character) : Character(Character) { }
 
-		inline char16_t GetCharacter() { return Character; }
+		inline unsigned int GetCharacter() { return Character; }
 
 		std::string ToString() const override
 		{
@@ -75,6 +76,6 @@ namespace Engine
 		EVENT_CLASS_CATEGORY(EventCategoryInput | EventCategoryKeyboard);
 
 	private:
-		char16_t Character;
+		unsigned int Character;
 	};
 }
