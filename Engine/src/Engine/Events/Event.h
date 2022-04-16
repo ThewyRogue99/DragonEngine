@@ -5,7 +5,7 @@
 
 namespace Engine
 {
-	enum class EventType
+	enum class EventType : unsigned int
 	{
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,

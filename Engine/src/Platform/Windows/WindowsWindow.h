@@ -25,13 +25,14 @@ namespace Engine
 
 		void SetVSync(bool Enabled) override;
 
+		virtual void ShutDown() override;
+
 		inline bool IsVsync() const override { return Data.VSync; }
 
 		inline void* GetNativeWindow() const override { return Window; }
 
 	private:
 		virtual void Init(const WindowProps& Props);
-		virtual void ShutDown();
 
 		GLFWwindow* Window;
 
@@ -42,8 +43,6 @@ namespace Engine
 			bool VSync;
 
 			EventCallbackFn EventCallback;
-		};
-
-		WindowData Data;
+		} Data;
 	};
 }

@@ -162,13 +162,20 @@ namespace Engine
 
 	void WindowsWindow::ShutDown()
 	{
-		glfwDestroyWindow(Window);
+		if (Window)
+		{
+			glfwDestroyWindow(Window);
+			Window = nullptr;
+		}
 	}
 
 	void WindowsWindow::OnUpdate()
 	{
-		glfwPollEvents();
-		glfwSwapBuffers(Window);
+		if (Window)
+		{
+			glfwPollEvents();
+			glfwSwapBuffers(Window);
+		}
 	}
 
 	void WindowsWindow::SetVSync(bool Enabled)

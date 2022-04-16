@@ -11,8 +11,7 @@ namespace Engine
 
 	LayerStack::~LayerStack()
 	{
-		for (Layer* layer : Layers)
-			delete layer;
+		Clear();
 	}
 
 	void LayerStack::PushLayer(Layer* layer)
@@ -47,6 +46,20 @@ namespace Engine
 		{
 			Layers.erase(it);
 			overlay->OnDetach();
+		}
+	}
+
+	void LayerStack::Clear()
+	{
+		if (Layers.size() > 0)
+		{
+			for (auto it = end(); it != begin();)
+			{
+				(*--it)->OnDetach();
+				delete (*it);
+			}
+
+			Layers.clear();
 		}
 	}
 }

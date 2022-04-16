@@ -29,11 +29,6 @@ public:
 		PushLayer(new ExampleLayer());
 		PushOverlay(new Engine::ImGuiLayer());
 	}
-
-	~Sandbox()
-	{
-
-	}
 };
 
 Engine::Application* Engine::CreateApplication()

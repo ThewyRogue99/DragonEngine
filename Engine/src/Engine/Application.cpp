@@ -19,6 +19,7 @@ namespace Engine
 
 	Application::~Application()
 	{
+		
 	}
 
 	void Application::PushLayer(Layer* layer)
