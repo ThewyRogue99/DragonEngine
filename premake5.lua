@@ -9,6 +9,13 @@ workspace "DragonEngine"
 		"Dist"
 	}
 
+	-- Uncomment when using dll
+	--[[
+	defines
+	{
+		"ENGINE_DYNAMIC_LINK"
+	}]]
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
@@ -25,9 +32,10 @@ group ""
 
 project "Engine"
 	location "Engine"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -63,44 +71,39 @@ project "Engine"
 
 	defines
 	{
+		"__ENGINE__",
 		"GLFW_INCLUDE_NONE"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
 		{
-			"ENGINE_PLATFORM_WINDOWS",
-			"ENGINE_BUILD_DLL"
-		}
-
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
+			"ENGINE_PLATFORM_WINDOWS"
 		}
 
 	filter "configurations:Debug"
 		defines "ENGINE_BUILD_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "ENGINE_BUILD_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "ENGINE_BUILD_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -125,8 +128,12 @@ project "Sandbox"
 		"Engine"
 	}
 
+	defines
+	{
+		"__SANDBOX__"
+	}
+
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
@@ -137,14 +144,14 @@ project "Sandbox"
 	filter "configurations:Debug"
 		defines "ENGINE_BUILD_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "ENGINE_BUILD_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "ENGINE_BUILD_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"

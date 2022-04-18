@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Window.h"
+#include "Engine/Renderer/GraphicsContext.h"
 
 struct GLFWwindow;
 
@@ -29,12 +30,14 @@ namespace Engine
 
 		inline bool IsVsync() const override { return Data.VSync; }
 
-		inline void* GetNativeWindow() const override { return Window; }
+		inline void* GetNativeWindow() const override { return NativeWindow; }
 
 	private:
 		virtual void Init(const WindowProps& Props);
 
-		GLFWwindow* Window;
+		GLFWwindow* NativeWindow;
+
+		GraphicsContext* Context;
 
 		struct WindowData
 		{
