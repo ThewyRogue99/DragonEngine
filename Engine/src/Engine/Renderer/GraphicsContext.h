@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-	class GraphicsContext
+	class ENGINE_API GraphicsContext
 	{
 	public:
 		virtual void Init() = 0;

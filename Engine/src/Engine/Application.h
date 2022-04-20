@@ -6,6 +6,8 @@
 
 #include "ImGui/ImGuiLayer.h"
 
+#include "Renderer/Shader.h"
+
 namespace Engine
 {
 	class ENGINE_API Application
@@ -34,6 +36,10 @@ namespace Engine
 		bool bIsRunning = false;
 
 		LayerStack layerStack;
+
+		unsigned int VAO = 0, VBO = 0, EBO = 0;
+		
+		std::unique_ptr<Shader> AppShader;
 
 		static Application* Instance;
 	};

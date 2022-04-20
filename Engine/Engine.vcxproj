@@ -140,8 +140,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Engine\Renderer\GraphicsContext.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Engine\Application.h" />
     <ClInclude Include="src\Engine\ApplicationCore.h" />
     <ClInclude Include="src\Engine\Core.h" />
@@ -156,7 +154,10 @@
     <ClInclude Include="src\Engine\Layer.h" />
     <ClInclude Include="src\Engine\LayerStack.h" />
     <ClInclude Include="src\Engine\Log.h" />
+    <ClInclude Include="src\Engine\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Engine\Renderer\Shader.h" />
     <ClInclude Include="src\Engine\Window.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\depch.h" />
@@ -577,13 +578,14 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Engine\Application.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Engine\Layer.cpp" />
     <ClCompile Include="src\Engine\LayerStack.cpp" />
     <ClCompile Include="src\Engine\Log.cpp" />
+    <ClCompile Include="src\Engine\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\depch.cpp">
@@ -600,6 +602,10 @@
     <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Engine\Renderer\fragment.glsl" />
+    <None Include="src\Engine\Renderer\vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
