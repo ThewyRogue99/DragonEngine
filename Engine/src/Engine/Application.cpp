@@ -2,7 +2,7 @@
 
 #include "Application.h"
 
-#include <glad/glad.h>
+#include "Renderer/Renderer.h"
 
 namespace Engine
 {
@@ -19,36 +19,69 @@ namespace Engine
 		AppImGuiLayer = new ImGuiLayer();
 		PushOverlay(AppImGuiLayer);
 
-		glGenVertexArrays(1, &VAO);
-		glBindVertexArray(VAO);
-
-		glGenBuffers(1, &VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		AppVertexArray.reset(VertexArray::Create());
 
 		float vertices[] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f
+			-0.5f, -0.5f, 0.0f,  1.f, 0.f, 0.f,
+			 0.5f, -0.5f, 0.0f,  0.f, 0.f, 1.f,
+			 0.0f,  0.5f, 0.0f,  0.f, 1.f, 0.f
 		};
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		AppVertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+		AppVertexBuffer->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float3, "a_Color" }
+		});
 
-		glGenBuffers(1, &EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		AppVertexArray->AddVertexBuffer(AppVertexBuffer);
 
-		unsigned int indices[] = { 0, 1, 2 };
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		uint32_t indices[] = { 0, 1, 2 };
+		AppIndexBuffer.reset(IndexBuffer::Create(indices, 3));
+
+		AppVertexArray->SetIndexBuffer(AppIndexBuffer);
 
 		AppShader.reset(new Shader(
-			"C:/C++/DragonEngine/Engine/src/Engine/Renderer/vertex.glsl",
-			"C:/C++/DragonEngine/Engine/src/Engine/Renderer/fragment.glsl",
+			"../Engine/src/Engine/Renderer/Shaders/vertex.glsl",
+			"../Engine/src/Engine/Renderer/Shaders/fragment.glsl",
 			true
 		));
 
 		AppShader->Load();
+
+		vArray.reset(VertexArray::Create());
+
+		float tVertices[] = {
+			-0.7f, -0.7f,  0.0f,  0.f, 0.f, 1.f,
+			 0.7f, -0.7f,  0.0f,  0.f, 0.f, 1.f,
+			 0.7f,  0.7f,  0.0f,  0.f, 0.f, 0.2f,
+			-0.7f,  0.7f,  0.0f,  0.f, 0.f, 0.2f
+		};
+
+		std::shared_ptr<VertexBuffer> vBuff;
+		vBuff.reset(VertexBuffer::Create(tVertices, sizeof(tVertices)));
+
+		vBuff->SetLayout({
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float3, "a_Color" }
+		});
+
+		vArray->AddVertexBuffer(vBuff);
+
+		std::shared_ptr<IndexBuffer> iBuffer;
+
+		uint32_t cIndices[] = { 0, 1, 2, 2, 3, 0 };
+		iBuffer.reset(IndexBuffer::Create(cIndices, 6));
+
+		vArray->SetIndexBuffer(iBuffer);
+
+		CubeShader.reset(new Shader(
+			"../Engine/src/Engine/Renderer/Shaders/vertex.glsl",
+			"../Engine/src/Engine/Renderer/Shaders/fragment.glsl",
+			true
+		));
+
+		CubeShader->Load();
 	}
 
 	Application::~Application()
@@ -86,12 +119,18 @@ namespace Engine
 
 		while (bIsRunning)
 		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
+			RenderCommand::Clear();
+
+			Renderer::BeginScene();
+
+			CubeShader->Bind();
+			Renderer::Submit(vArray);
 
 			AppShader->Bind();
-			glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(AppVertexArray);
+
+			Renderer::EndScene();
 
 			for (Layer* layer : layerStack)
 				layer->OnUpdate();

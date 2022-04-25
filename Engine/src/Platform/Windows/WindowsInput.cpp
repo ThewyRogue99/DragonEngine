@@ -6,7 +6,9 @@
 
 namespace Engine
 {
+#ifdef ENGINE_PLATFORM_WINDOWS
 	Input* Input::Instance = new WindowsInput();
+#endif
 
 	bool WindowsInput::IsKeyPressedImpl(KeyInput KeyCode)
 	{

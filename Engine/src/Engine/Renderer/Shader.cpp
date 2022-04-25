@@ -19,7 +19,11 @@ namespace Engine
 
 	Shader::~Shader()
 	{
+		VertexSource.clear();
+		FragmentSource.clear();
 
+		glUseProgram(0);
+		glDeleteProgram(RendererID);
 	}
 
 	bool Shader::Load(std::string& VertexSource, std::string& FragmentSource, bool isFilePath)
@@ -55,7 +59,7 @@ namespace Engine
 			// We don't need the shader anymore.
 			glDeleteShader(vertexShader);
 
-			DE_CORE_ASSERT(false, logStr);
+			DE_CORE_ASSERT(false, "Failed to compile vertex shader.\n Log: {0}", logStr);
 
 			delete[] logStr;
 
@@ -83,7 +87,7 @@ namespace Engine
 			// Either of them. Don't leak shaders.
 			glDeleteShader(vertexShader);
 
-			DE_CORE_ASSERT(false, logStr);
+			DE_CORE_ASSERT(false, "Failed to compile fragment shader.\n Log: {0}", logStr);
 
 			delete[] logStr;
 			
@@ -121,7 +125,7 @@ namespace Engine
 			glDeleteShader(vertexShader);
 			glDeleteShader(fragmentShader);
 
-			DE_CORE_ASSERT(false, logStr);
+			DE_CORE_ASSERT(false, "Failed to link shaders.\n Log: {0}", logStr);
 
 			delete[] logStr;
 
