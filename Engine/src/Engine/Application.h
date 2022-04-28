@@ -6,9 +6,7 @@
 
 #include "ImGui/ImGuiLayer.h"
 
-#include "Renderer/Shader.h"
-#include "Renderer/Buffer.h"
-#include "Renderer/VertexArray.h"
+#include "Core/Timestep.h"
 
 namespace Engine
 {
@@ -37,16 +35,10 @@ namespace Engine
 
 		bool bIsRunning = false;
 
+		Timestep DeltaTime;
 		LayerStack layerStack;
-		
-		std::unique_ptr<Shader> AppShader;
-		std::unique_ptr<Shader> CubeShader;
 
-		std::shared_ptr<VertexArray> vArray;
-
-		std::shared_ptr<VertexBuffer> AppVertexBuffer;
-		std::shared_ptr<IndexBuffer> AppIndexBuffer;
-		std::shared_ptr<VertexArray> AppVertexArray;
+		float LastFrameTime = 0.f;
 
 		static Application* Instance;
 	};

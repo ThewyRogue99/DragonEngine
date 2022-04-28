@@ -62,7 +62,7 @@ namespace Engine
 		d.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(ImGuiLayer::OnKeyPressedEvent));
 	}
 
-	void ImGuiLayer::OnImGuiRender()
+	void ImGuiLayer::OnImGuiRender(Timestep DeltaTime)
 	{
 		if(bShowDemoWindow)
 			ImGui::ShowDemoWindow(&bShowDemoWindow);

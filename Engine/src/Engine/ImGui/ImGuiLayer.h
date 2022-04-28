@@ -17,7 +17,7 @@ namespace Engine
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 		virtual void OnEvent(Event& event) override;
-		virtual void OnImGuiRender() override;
+		virtual void OnImGuiRender(Timestep DeltaTime) override;
 
 		void Begin();
 

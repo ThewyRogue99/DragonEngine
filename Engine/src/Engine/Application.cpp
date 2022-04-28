@@ -4,6 +4,8 @@
 
 #include "Renderer/Renderer.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Engine
 {
 	Application* Application::Instance = nullptr;
@@ -18,70 +20,6 @@ namespace Engine
 
 		AppImGuiLayer = new ImGuiLayer();
 		PushOverlay(AppImGuiLayer);
-
-		AppVertexArray.reset(VertexArray::Create());
-
-		float vertices[] = {
-			-0.5f, -0.5f, 0.0f,  1.f, 0.f, 0.f,
-			 0.5f, -0.5f, 0.0f,  0.f, 0.f, 1.f,
-			 0.0f,  0.5f, 0.0f,  0.f, 1.f, 0.f
-		};
-
-		AppVertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		AppVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float3, "a_Color" }
-		});
-
-		AppVertexArray->AddVertexBuffer(AppVertexBuffer);
-
-		uint32_t indices[] = { 0, 1, 2 };
-		AppIndexBuffer.reset(IndexBuffer::Create(indices, 3));
-
-		AppVertexArray->SetIndexBuffer(AppIndexBuffer);
-
-		AppShader.reset(new Shader(
-			"../Engine/src/Engine/Renderer/Shaders/vertex.glsl",
-			"../Engine/src/Engine/Renderer/Shaders/fragment.glsl",
-			true
-		));
-
-		AppShader->Load();
-
-		vArray.reset(VertexArray::Create());
-
-		float tVertices[] = {
-			-0.7f, -0.7f,  0.0f,  0.f, 0.f, 1.f,
-			 0.7f, -0.7f,  0.0f,  0.f, 0.f, 1.f,
-			 0.7f,  0.7f,  0.0f,  0.f, 0.f, 0.2f,
-			-0.7f,  0.7f,  0.0f,  0.f, 0.f, 0.2f
-		};
-
-		std::shared_ptr<VertexBuffer> vBuff;
-		vBuff.reset(VertexBuffer::Create(tVertices, sizeof(tVertices)));
-
-		vBuff->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float3, "a_Color" }
-		});
-
-		vArray->AddVertexBuffer(vBuff);
-
-		std::shared_ptr<IndexBuffer> iBuffer;
-
-		uint32_t cIndices[] = { 0, 1, 2, 2, 3, 0 };
-		iBuffer.reset(IndexBuffer::Create(cIndices, 6));
-
-		vArray->SetIndexBuffer(iBuffer);
-
-		CubeShader.reset(new Shader(
-			"../Engine/src/Engine/Renderer/Shaders/vertex.glsl",
-			"../Engine/src/Engine/Renderer/Shaders/fragment.glsl",
-			true
-		));
-
-		CubeShader->Load();
 	}
 
 	Application::~Application()
@@ -119,26 +57,19 @@ namespace Engine
 
 		while (bIsRunning)
 		{
-			RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
-			RenderCommand::Clear();
+			// TODO: Platform independent GetTime function
+			float time = (float)glfwGetTime();
 
-			Renderer::BeginScene();
-
-			CubeShader->Bind();
-			Renderer::Submit(vArray);
-
-			AppShader->Bind();
-			Renderer::Submit(AppVertexArray);
-
-			Renderer::EndScene();
+			DeltaTime = time - LastFrameTime;
+			LastFrameTime = time;
 
 			for (Layer* layer : layerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(DeltaTime);
 
 			AppImGuiLayer->Begin();
 
 			for (Layer* layer : layerStack)
-				layer->OnImGuiRender();
+				layer->OnImGuiRender(DeltaTime);
 
 			AppImGuiLayer->End();
 

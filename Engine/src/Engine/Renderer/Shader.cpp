@@ -1,8 +1,10 @@
 #include "depch.h"
+
 #include "Shader.h"
 
 #include <glad/glad.h>
 #include <fstream>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Engine
 {
@@ -185,5 +187,20 @@ namespace Engine
 		}
 
 		return true;
+	}
+
+	void Shader::SetUniformFloat3(const char* name, const glm::vec3& value)
+	{
+		glUniform3fv(glGetUniformLocation(RendererID, name), 1, glm::value_ptr(value));
+	}
+
+	void Shader::SetUniformFloat4(const char* name, const glm::vec4& value)
+	{
+		glUniform4fv(glGetUniformLocation(RendererID, name), 1, glm::value_ptr(value));
+	}
+
+	void Shader::SetUniformMat4(const char* name, const glm::mat4& value)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(RendererID, name), 1, GL_FALSE, glm::value_ptr(value));
 	}
 }

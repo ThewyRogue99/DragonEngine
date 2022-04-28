@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Timestep.h"
+
 namespace Engine
 {
 	class ENGINE_API Layer
@@ -10,8 +12,8 @@ namespace Engine
 
 		virtual void OnAttach() { }
 		virtual void OnDetach() { }
-		virtual void OnUpdate() { }
-		virtual void OnImGuiRender() { }
+		virtual void OnUpdate(Timestep DeltaTime) { }
+		virtual void OnImGuiRender(Timestep DeltaTime) { }
 		virtual void OnEvent(Event& event) { }
 
 		inline const std::string& GetName() const { return DebugName; }

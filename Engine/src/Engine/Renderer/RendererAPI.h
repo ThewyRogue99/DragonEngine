@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "VertexArray.h"
+
 namespace Engine
 {
 	class RendererAPI
