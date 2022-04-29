@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <glm/glm.hpp>
+
 #include "Engine/Log.h"
 
 #ifdef ENGINE_PLATFORM_WINDOWS

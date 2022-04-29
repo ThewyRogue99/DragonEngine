@@ -1,154 +1,51 @@
 #include "depch.h"
-
 #include "Shader.h"
 
-#include <glad/glad.h>
 #include <fstream>
-#include <glm/gtc/type_ptr.hpp>
+
+#include "Platform/OpenGL/OpenGLShader.h"
+#include "Renderer.h"
 
 namespace Engine
 {
-	Shader::Shader(std::string& VertexSource, std::string& FragmentSource, bool isFilePath)
-		: VertexSource(VertexSource), FragmentSource(FragmentSource), isFilePath(isFilePath) { }
-
-	Shader::Shader(const char* VertexSource, const char* FragmentSource, bool isFilePath)
-		: VertexSource(VertexSource), FragmentSource(FragmentSource), isFilePath(isFilePath) { }
-
-	Shader::Shader()
+	Shader* Shader::Create(std::string& VertexSource, std::string& FragmentSource, bool isFilePath)
 	{
-
-	}
-
-	Shader::~Shader()
-	{
-		VertexSource.clear();
-		FragmentSource.clear();
-
-		glUseProgram(0);
-		glDeleteProgram(RendererID);
-	}
-
-	bool Shader::Load(std::string& VertexSource, std::string& FragmentSource, bool isFilePath)
-	{
-		this->VertexSource = VertexSource;
-		this->FragmentSource = FragmentSource;
-		this->isFilePath = isFilePath;
-
-		return Load();
-	}
-
-	bool Shader::Load()
-	{
-		if(!LoadSource()) return false;
-
-		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-		const GLchar* source = (const GLchar*)(VertexSource.c_str());
-		glShaderSource(vertexShader, 1, &source, 0);
-
-		glCompileShader(vertexShader);
-
-		GLint isCompiled = 0;
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &isCompiled);
-		if (isCompiled == GL_FALSE)
+		switch (Renderer::GetAPI())
 		{
-			GLint maxLength = 0;
-			glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
+			case RendererAPI::API::OpenGL:
+			{
+				OpenGLShader* shader =  new OpenGLShader(VertexSource, FragmentSource, isFilePath);
+				shader->Load();
+				shader->Bind();
 
-			char* logStr = new char[maxLength];
-			glGetShaderInfoLog(vertexShader, maxLength, &maxLength, logStr);
-
-			// We don't need the shader anymore.
-			glDeleteShader(vertexShader);
-
-			DE_CORE_ASSERT(false, "Failed to compile vertex shader.\n Log: {0}", logStr);
-
-			delete[] logStr;
-
-			return false;
+				return shader;
+			}
+			default:
+			{
+				DE_CORE_ASSERT(false, "Unknown Renderer API");
+				return nullptr;
+			}
 		}
-
-		GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-		source = (const GLchar*)(FragmentSource.c_str());
-		glShaderSource(fragmentShader, 1, &source, 0);
-
-		glCompileShader(fragmentShader);
-
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &isCompiled);
-		if (isCompiled == GL_FALSE)
-		{
-			GLint maxLength = 0;
-			glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
-
-			char* logStr = new char[maxLength];
-			glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, logStr);
-
-			// We don't need the shader anymore.
-			glDeleteShader(fragmentShader);
-			// Either of them. Don't leak shaders.
-			glDeleteShader(vertexShader);
-
-			DE_CORE_ASSERT(false, "Failed to compile fragment shader.\n Log: {0}", logStr);
-
-			delete[] logStr;
-			
-			return false;
-		}
-
-		// Vertex and fragment shaders are successfully compiled.
-		// Now time to link them together into a program.
-		// 
-		// Get a program object.
-		RendererID = glCreateProgram();
-
-		// Attach our shaders to our program
-		glAttachShader(RendererID, vertexShader);
-		glAttachShader(RendererID, fragmentShader);
-
-		// Link our program
-		glLinkProgram(RendererID);
-
-		GLint isLinked = 0;
-		glGetProgramiv(RendererID, GL_LINK_STATUS, (int*)&isLinked);
-		if (isLinked == GL_FALSE)
-		{
-			GLint maxLength = 0;
-			glGetProgramiv(RendererID, GL_INFO_LOG_LENGTH, &maxLength);
-
-			char* logStr = new char[maxLength];
-			glGetProgramInfoLog(RendererID, maxLength, &maxLength, logStr);
-
-			// We don't need the program anymore.
-			glDeleteProgram(RendererID);
-			RendererID = 0;
-
-			// Don't leak shaders either.
-			glDeleteShader(vertexShader);
-			glDeleteShader(fragmentShader);
-
-			DE_CORE_ASSERT(false, "Failed to link shaders.\n Log: {0}", logStr);
-
-			delete[] logStr;
-
-			return false;
-		}
-
-		// Always detach shaders after a successful link.
-		glDetachShader(RendererID, vertexShader);
-		glDetachShader(RendererID, fragmentShader);
-
-		return true;
 	}
 
-	void Shader::Bind() const
+	Shader* Shader::Create(const char* VertexSource, const char* FragmentSource, bool isFilePath)
 	{
-		glUseProgram(RendererID);
-	}
+		switch (Renderer::GetAPI())
+		{
+			case RendererAPI::API::OpenGL:
+			{
+				OpenGLShader* shader = new OpenGLShader(VertexSource, FragmentSource, isFilePath);
+				shader->Load();
+				shader->Bind();
 
-	void Shader::Unbind() const
-	{
-		glUseProgram(0);
+				return shader;
+			}
+			default:
+			{
+				DE_CORE_ASSERT(false, "Unknown Renderer API");
+				return nullptr;
+			}
+		}
 	}
 
 	std::string Shader::LoadFromFile(std::string& FilePath)
@@ -187,20 +84,5 @@ namespace Engine
 		}
 
 		return true;
-	}
-
-	void Shader::SetUniformFloat3(const char* name, const glm::vec3& value)
-	{
-		glUniform3fv(glGetUniformLocation(RendererID, name), 1, glm::value_ptr(value));
-	}
-
-	void Shader::SetUniformFloat4(const char* name, const glm::vec4& value)
-	{
-		glUniform4fv(glGetUniformLocation(RendererID, name), 1, glm::value_ptr(value));
-	}
-
-	void Shader::SetUniformMat4(const char* name, const glm::mat4& value)
-	{
-		glUniformMatrix4fv(glGetUniformLocation(RendererID, name), 1, GL_FALSE, glm::value_ptr(value));
 	}
 }

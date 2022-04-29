@@ -4,6 +4,11 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include <Platform/OpenGL/OpenGLShader.h>
+
+#include <imgui.h>
+#include <glm/gtc/type_ptr.hpp>
+
 class SandboxLayer : public Engine::Layer
 {
 public:
@@ -35,13 +40,13 @@ public:
 
 		VertexArray->SetIndexBuffer(IndexBuffer);
 
-		Shader.reset(new Engine::Shader(
+		Shader.reset(Engine::Shader::Create(
 			"../Engine/src/Engine/Renderer/Shaders/vertex.glsl",
 			"../Engine/src/Engine/Renderer/Shaders/fragment.glsl",
 			true
 		));
 
-		Shader->Load();
+		std::dynamic_pointer_cast<Engine::OpenGLShader>(Shader)->SetUniformFloat3("Color", glm::vec3(0.f, 1.f, 0.f));
 
 		vArray.reset(Engine::VertexArray::Create());
 
@@ -68,13 +73,11 @@ public:
 
 		vArray->SetIndexBuffer(iBuffer);
 
-		SquareShader.reset(new Engine::Shader(
+		SquareShader.reset(Engine::Shader::Create(
 			"../Engine/src/Engine/Renderer/Shaders/vertex.glsl",
 			"../Engine/src/Engine/Renderer/Shaders/fragment.glsl",
 			true
 		));
-
-		SquareShader->Load();
 	}
 
 	void OnUpdate(Engine::Timestep DeltaTime) override
@@ -100,15 +103,14 @@ public:
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
 
+		SquareShader->Bind();
+		std::dynamic_pointer_cast<Engine::OpenGLShader>(SquareShader)->SetUniformFloat3("Color", SquareColor);
+
 		for (int y = 0; y < 20; y++)
 		{
 			for (int x = 0; x < 20; x++)
 			{
 				glm::vec3 pos(x * 0.15f, y * 0.15f, 0.f);
-				if (x % 2 == 0)
-					SquareShader->SetUniformFloat3("Color", glm::vec3(0.f, 0.f, 1.f));
-				else
-					SquareShader->SetUniformFloat3("Color", glm::vec3(1.f, 0.f, 0.f));
 
 				glm::mat4 transform = glm::translate(glm::mat4(1.f), pos) * scale;
 
@@ -119,6 +121,13 @@ public:
 		Engine::Renderer::Submit(VertexArray, Shader);
 
 		Engine::Renderer::EndScene();
+	}
+
+	virtual void OnImGuiRender(Engine::Timestep DeltaTime) override
+	{
+		ImGui::Begin("Settings");
+		ImGui::ColorEdit3("Square Color", glm::value_ptr(SquareColor));
+		ImGui::End();
 	}
 
 	void OnEvent(Engine::Event& event) override
@@ -140,6 +149,8 @@ private:
 
 	float CameraSpeed = 5.f;
 	float CameraRotationSpeed = 20.f;
+
+	glm::vec3 SquareColor = glm::vec3(0.f, 0.f, 1.f);
 };
 
 class Sandbox : public Engine::Application

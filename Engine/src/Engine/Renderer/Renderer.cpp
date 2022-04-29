@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Renderer.h"
 
+#include "Platform/OpenGL/OpenGLShader.h"
+
 namespace Engine
 {
 	Renderer::SceneData Renderer::sceneData = Renderer::SceneData();
@@ -20,8 +22,8 @@ namespace Engine
 		shader->Bind();
 		vertexArray->Bind();
 
-		shader->SetUniformMat4("ViewProjection", sceneData.ViewProjectionMatrix);
-		shader->SetUniformMat4("Transform", transform);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("ViewProjection", sceneData.ViewProjectionMatrix);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("Transform", transform);
 
 		RenderCommand::DrawIndexed(vertexArray);
 	}
