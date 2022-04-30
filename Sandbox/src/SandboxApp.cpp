@@ -1,5 +1,6 @@
 #include <Engine/ApplicationCore.h>
 #include <Engine/Input.h>
+#include <Engine/Renderer/Texture.h>
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -74,6 +75,8 @@ public:
 			"../Engine/src/Engine/Renderer/Shaders/MaterialFragment.glsl",
 			true
 		));
+
+		SquareTexture = Engine::Texture2D::Create("assets/textures/cat.jpg");
 	}
 
 	void OnUpdate(Engine::Timestep DeltaTime) override
@@ -114,6 +117,7 @@ public:
 			}
 		}
 
+		SquareTexture->Bind();
 		Engine::Renderer::Submit(SquareVertexArray, SquareShader);
 
 		Engine::Renderer::EndScene();
@@ -153,6 +157,8 @@ private:
 	Engine::Ref<Engine::VertexBuffer> GridVertexBuffer, SquareVertexBuffer;
 	Engine::Ref<Engine::IndexBuffer> GridIndexBuffer, SquareIndexBuffer;
 	Engine::Ref<Engine::VertexArray> GridVertexArray, SquareVertexArray;
+
+	Engine::Ref<Engine::Texture2D> SquareTexture;
 
 	Engine::OrthographicCamera Camera;
 
