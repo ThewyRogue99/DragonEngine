@@ -4,7 +4,7 @@
 
 #include "Renderer/Renderer.h"
 
-#include <GLFW/glfw3.h>
+#include <Platform/Platform.h>
 
 namespace Engine
 {
@@ -15,7 +15,7 @@ namespace Engine
 		DE_CORE_ASSERT(!Instance, "Application already exists");
 		Instance = this;
 
-		AppWindow = std::unique_ptr<Window>(Window::Create());
+		AppWindow = Scope<Window>(Window::Create());
 		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
 		AppImGuiLayer = new ImGuiLayer();
@@ -57,8 +57,7 @@ namespace Engine
 
 		while (bIsRunning)
 		{
-			// TODO: Platform independent GetTime function
-			float time = (float)glfwGetTime();
+			float time = Platform::GetTime();
 
 			DeltaTime = time - LastFrameTime;
 			LastFrameTime = time;

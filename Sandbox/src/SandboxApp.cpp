@@ -19,63 +19,59 @@ public:
 
 	void OnAttach() override
 	{
-		VertexArray.reset(Engine::VertexArray::Create());
+		SquareVertexArray.reset(Engine::VertexArray::Create());
 
-		float vertices[] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.0f,  0.5f, 0.0f
+		float SquareVertices[] = {
+			-0.5f, -0.5f,  0.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  0.0f,  0.0f, 1.0f
 		};
 
-		VertexBuffer.reset(Engine::VertexBuffer::Create(vertices, sizeof(vertices)));
+		SquareVertexBuffer.reset(Engine::VertexBuffer::Create(SquareVertices, sizeof(SquareVertices)));
 
-		VertexBuffer->SetLayout({
-			{ Engine::ShaderDataType::Float3, "a_Position" }
+		SquareVertexBuffer->SetLayout({
+			{ Engine::ShaderDataType::Float3, "a_Position" },
+			{ Engine::ShaderDataType::Float2, "a_TexCoord"}
 		});
 
-		VertexArray->AddVertexBuffer(VertexBuffer);
+		SquareVertexArray->AddVertexBuffer(SquareVertexBuffer);
 
-		uint32_t indices[] = { 0, 1, 2 };
-		IndexBuffer.reset(Engine::IndexBuffer::Create(indices, 3));
+		uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
+		SquareIndexBuffer.reset(Engine::IndexBuffer::Create(indices, 6));
 
-		VertexArray->SetIndexBuffer(IndexBuffer);
+		SquareVertexArray->SetIndexBuffer(SquareIndexBuffer);
 
-		Shader.reset(Engine::Shader::Create(
-			"../Engine/src/Engine/Renderer/Shaders/vertex.glsl",
-			"../Engine/src/Engine/Renderer/Shaders/fragment.glsl",
+		SquareShader.reset(Engine::Shader::Create(
+			"../Engine/src/Engine/Renderer/Shaders/TextureVertex.glsl",
+			"../Engine/src/Engine/Renderer/Shaders/TextureFragment.glsl",
 			true
 		));
 
-		std::dynamic_pointer_cast<Engine::OpenGLShader>(Shader)->SetUniformFloat3("Color", glm::vec3(0.f, 1.f, 0.f));
+		GridVertexArray.reset(Engine::VertexArray::Create());
 
-		vArray.reset(Engine::VertexArray::Create());
-
-		float tVertices[] = {
+		float GridVertices[] = {
 			-0.7f, -0.7f,  0.0f,
 			 0.7f, -0.7f,  0.0f,
 			 0.7f,  0.7f,  0.0f,
 			-0.7f,  0.7f,  0.0f
 		};
 
-		std::shared_ptr<Engine::VertexBuffer> vBuff;
-		vBuff.reset(Engine::VertexBuffer::Create(tVertices, sizeof(tVertices)));
+		GridVertexBuffer.reset(Engine::VertexBuffer::Create(GridVertices, sizeof(GridVertices)));
 
-		vBuff->SetLayout({
+		GridVertexBuffer->SetLayout({
 			{ Engine::ShaderDataType::Float3, "a_Position" }
 		});
 
-		vArray->AddVertexBuffer(vBuff);
+		GridVertexArray->AddVertexBuffer(GridVertexBuffer);
 
-		std::shared_ptr<Engine::IndexBuffer> iBuffer;
+		GridIndexBuffer.reset(Engine::IndexBuffer::Create(indices, 6));
 
-		uint32_t cIndices[] = { 0, 1, 2, 2, 3, 0 };
-		iBuffer.reset(Engine::IndexBuffer::Create(cIndices, 6));
+		GridVertexArray->SetIndexBuffer(GridIndexBuffer);
 
-		vArray->SetIndexBuffer(iBuffer);
-
-		SquareShader.reset(Engine::Shader::Create(
-			"../Engine/src/Engine/Renderer/Shaders/vertex.glsl",
-			"../Engine/src/Engine/Renderer/Shaders/fragment.glsl",
+		GridShader.reset(Engine::Shader::Create(
+			"../Engine/src/Engine/Renderer/Shaders/MaterialVertex.glsl",
+			"../Engine/src/Engine/Renderer/Shaders/MaterialFragment.glsl",
 			true
 		));
 	}
@@ -103,22 +99,22 @@ public:
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
 
-		SquareShader->Bind();
-		std::dynamic_pointer_cast<Engine::OpenGLShader>(SquareShader)->SetUniformFloat3("Color", SquareColor);
+		GridShader->Bind();
+		std::dynamic_pointer_cast<Engine::OpenGLShader>(GridShader)->SetUniformFloat3("Color", GridColor);
 
-		for (int y = 0; y < 20; y++)
+		for (int y = -(GridSize / 2); y < (GridSize / 2); y++)
 		{
-			for (int x = 0; x < 20; x++)
+			for (int x = -(GridSize / 2); x < (GridSize / 2); x++)
 			{
-				glm::vec3 pos(x * 0.15f, y * 0.15f, 0.f);
+				glm::vec3 pos(x * 0.15f + 0.075f, y * 0.15f + 0.075, 0.f);
 
 				glm::mat4 transform = glm::translate(glm::mat4(1.f), pos) * scale;
 
-				Engine::Renderer::Submit(vArray, SquareShader, transform);
+				Engine::Renderer::Submit(GridVertexArray, GridShader, transform);
 			}
 		}
 
-		Engine::Renderer::Submit(VertexArray, Shader);
+		Engine::Renderer::Submit(SquareVertexArray, SquareShader);
 
 		Engine::Renderer::EndScene();
 	}
@@ -126,7 +122,23 @@ public:
 	virtual void OnImGuiRender(Engine::Timestep DeltaTime) override
 	{
 		ImGui::Begin("Settings");
-		ImGui::ColorEdit3("Square Color", glm::value_ptr(SquareColor));
+
+		static float t = 0;
+		static unsigned int fps = (unsigned int)(1 / DeltaTime);
+		t += DeltaTime;
+
+		if (t > 0.5f)
+		{
+			fps = (unsigned int)(1 / DeltaTime);
+			t = 0.f;
+		}
+
+		ImGui::ColorEdit3("Grid Color", glm::value_ptr(GridColor));
+
+		ImGui::SliderInt("Grid Size", &GridSize, 0, 50);
+
+		ImGui::Text("FPS: %i", fps);
+
 		ImGui::End();
 	}
 
@@ -136,21 +148,20 @@ public:
 	}
 
 private:
-	std::shared_ptr<Engine::Shader> Shader;
-	std::shared_ptr<Engine::Shader> SquareShader;
+	Engine::Ref<Engine::Shader> GridShader, SquareShader;
 
-	std::shared_ptr<Engine::VertexArray> vArray;
-
-	std::shared_ptr<Engine::VertexBuffer> VertexBuffer;
-	std::shared_ptr<Engine::IndexBuffer> IndexBuffer;
-	std::shared_ptr<Engine::VertexArray> VertexArray;
+	Engine::Ref<Engine::VertexBuffer> GridVertexBuffer, SquareVertexBuffer;
+	Engine::Ref<Engine::IndexBuffer> GridIndexBuffer, SquareIndexBuffer;
+	Engine::Ref<Engine::VertexArray> GridVertexArray, SquareVertexArray;
 
 	Engine::OrthographicCamera Camera;
 
 	float CameraSpeed = 5.f;
 	float CameraRotationSpeed = 20.f;
 
-	glm::vec3 SquareColor = glm::vec3(0.f, 0.f, 1.f);
+	glm::vec3 GridColor = glm::vec3(0.f, 0.f, 1.f);
+
+	int GridSize = 9;
 };
 
 class Sandbox : public Engine::Application

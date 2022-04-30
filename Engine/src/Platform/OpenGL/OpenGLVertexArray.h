@@ -13,16 +13,16 @@ namespace Engine
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer) override;
-		virtual void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
+		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
 
-		inline virtual std::vector<std::shared_ptr<VertexBuffer>> GetVertexBuffers() const override { return VertexBuffers; }
-		inline virtual std::shared_ptr<IndexBuffer> GetIndexBuffer() const override { return indexBuffer; }
+		inline virtual std::vector<Ref<VertexBuffer>> GetVertexBuffers() const override { return VertexBuffers; }
+		inline virtual Ref<IndexBuffer> GetIndexBuffer() const override { return indexBuffer; }
 
 	private:
 		uint32_t ArrayID;
 
-		std::vector<std::shared_ptr<VertexBuffer>> VertexBuffers;
-		std::shared_ptr<IndexBuffer> indexBuffer;
+		std::vector<Ref<VertexBuffer>> VertexBuffers;
+		Ref<IndexBuffer> indexBuffer;
 	};
 }

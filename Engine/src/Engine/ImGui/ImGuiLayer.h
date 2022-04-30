@@ -6,6 +6,8 @@
 #include "Engine/Events/MouseEvent.h"
 #include "Engine/Events/KeyEvent.h"
 
+struct ImGuiStyle;
+
 namespace Engine
 {
 	class ENGINE_API ImGuiLayer : public Layer
@@ -25,6 +27,8 @@ namespace Engine
 
 	private:
 		bool OnKeyPressedEvent(KeyPressedEvent& event);
+
+		void SetUIStyle(ImGuiStyle& style);
 
 		float Time = 0.f;
 

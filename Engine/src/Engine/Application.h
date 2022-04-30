@@ -30,7 +30,7 @@ namespace Engine
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 
-		std::unique_ptr<Window> AppWindow;
+		Scope<Window> AppWindow;
 		ImGuiLayer* AppImGuiLayer;
 
 		bool bIsRunning = false;

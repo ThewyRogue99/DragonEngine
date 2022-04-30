@@ -17,7 +17,7 @@ namespace Engine
 		API_Instance->Clear();
 	}
 
-	void RenderCommand::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
+	void RenderCommand::DrawIndexed(const Ref<VertexArray>& vertexArray)
 	{
 		API_Instance->DrawIndexed(vertexArray);
 	}
