@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Engine/Core.h"
+
 namespace Engine
 {
-	class Timestep
+	class ENGINE_API Timestep
 	{
 	public:
 		Timestep(float Time = 0.f) : Time(Time) { }

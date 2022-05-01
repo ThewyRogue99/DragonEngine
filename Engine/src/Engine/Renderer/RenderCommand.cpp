@@ -7,6 +7,11 @@ namespace Engine
 {
 	RendererAPI* RenderCommand::API_Instance = new OpenGLRendererAPI();
 
+	void RenderCommand::Init()
+	{
+		API_Instance->Init();
+	}
+
 	void RenderCommand::SetClearColor(const glm::vec4& color)
 	{
 		API_Instance->SetClearColor(color);

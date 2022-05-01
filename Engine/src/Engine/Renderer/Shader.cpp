@@ -8,34 +8,21 @@
 
 namespace Engine
 {
-	Shader* Shader::Create(std::string& VertexSource, std::string& FragmentSource, bool isFilePath)
+	Ref<Shader> Shader::Create(const std::string& ShaderName, const std::string& VertexSource, const std::string& FragmentSource, bool isFilePath)
 	{
 		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::OpenGL:
 			{
-				OpenGLShader* shader =  new OpenGLShader(VertexSource, FragmentSource, isFilePath);
-				shader->Load();
-				shader->Bind();
+				Ref<OpenGLShader> shader = std::make_shared<OpenGLShader>(VertexSource, FragmentSource, isFilePath);
+				if (!shader->Load())
+				{
+					DE_CORE_ASSERT(false, "Failed to load shader");
 
-				return shader;
-			}
-			default:
-			{
-				DE_CORE_ASSERT(false, "Unknown Renderer API");
-				return nullptr;
-			}
-		}
-	}
+					return nullptr;
+				}
 
-	Shader* Shader::Create(const char* VertexSource, const char* FragmentSource, bool isFilePath)
-	{
-		switch (Renderer::GetAPI())
-		{
-			case RendererAPI::API::OpenGL:
-			{
-				OpenGLShader* shader = new OpenGLShader(VertexSource, FragmentSource, isFilePath);
-				shader->Load();
+				shader->ShaderName = ShaderName;
 				shader->Bind();
 
 				return shader;
@@ -55,7 +42,7 @@ namespace Engine
 			return std::string();
 		}
 
-		return std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
+		return std::string(std::istreambuf_iterator<char>(input_file), std::istreambuf_iterator<char>());
 	}
 
 	bool Shader::LoadSource()
@@ -75,7 +62,7 @@ namespace Engine
 			std::string fString = LoadFromFile(FragmentSource);
 			if (fString.empty())
 			{
-				DE_CORE_ASSERT("Failed to load fragment shader file from path: {0}", FragmentSource.c_str());
+				DE_CORE_ASSERT(false, "Failed to load fragment shader file from path: {0}", FragmentSource.c_str());
 
 				return false;
 			}
@@ -84,5 +71,37 @@ namespace Engine
 		}
 
 		return true;
+	}
+
+	void ShaderLibrary::Add(const Ref<Shader>& ShaderRef)
+	{
+		auto& name = ShaderRef->GetName();
+		DE_CORE_ASSERT(!name.empty(), "Shader name is required to add to shader library");
+
+		bool exists = Exists(name);
+		DE_CORE_ASSERT(!exists, "Shader with provided name already exists");
+
+		if(!exists) Shaders[name] = ShaderRef;
+	}
+
+	Ref<Shader> ShaderLibrary::Load(const std::string& ShaderName, const std::string& VertexFilePath, const std::string& FragmentFilePath)
+	{
+		auto shader = Shader::Create(ShaderName, VertexFilePath, FragmentFilePath, true);
+		Add(shader);
+
+		return shader;
+	}
+
+	Ref<Shader> ShaderLibrary::Get(const std::string& ShaderName)
+	{
+		bool exists = Exists(ShaderName);
+		DE_CORE_ASSERT(exists, "Shader not found!");
+
+		return (exists ? Shaders[ShaderName] : nullptr);
+	}
+
+	bool ShaderLibrary::Exists(const std::string& ShaderName)
+	{
+		return Shaders.find(ShaderName) != Shaders.end();
 	}
 }

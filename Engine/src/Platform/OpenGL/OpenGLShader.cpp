@@ -6,14 +6,7 @@
 
 namespace Engine
 {
-	OpenGLShader::OpenGLShader(std::string& VertexSource, std::string& FragmentSource, bool isFilePath)
-	{
-		this->VertexSource = VertexSource;
-		this->FragmentSource = FragmentSource;
-		this->isFilePath = isFilePath;
-	}
-
-	OpenGLShader::OpenGLShader(const char* VertexSource, const char* FragmentSource, bool isFilePath)
+	OpenGLShader::OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource, bool isFilePath)
 	{
 		this->VertexSource = VertexSource;
 		this->FragmentSource = FragmentSource;
@@ -26,7 +19,7 @@ namespace Engine
 		FragmentSource.clear();
 
 		glDeleteProgram(ShaderID);
-		glUseProgram(0);
+		Unbind();
 	}
 
 	bool OpenGLShader::Load()
@@ -141,6 +134,11 @@ namespace Engine
 	void OpenGLShader::Unbind() const
 	{
 		glUseProgram(0);
+	}
+
+	void OpenGLShader::SetUniformInt(const char* name, int value) const
+	{
+		glUniform1i(glGetUniformLocation(ShaderID, name), value);
 	}
 
 	void OpenGLShader::SetUniformFloat3(const char* name, float v1, float v2, float v3) const

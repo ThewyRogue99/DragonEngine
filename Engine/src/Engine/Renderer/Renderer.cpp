@@ -7,6 +7,11 @@ namespace Engine
 {
 	Renderer::SceneData Renderer::sceneData = Renderer::SceneData();
 
+	void Renderer::Init()
+	{
+		RenderCommand::Init();
+	}
+
 	void Renderer::BeginScene(OrthographicCamera& camera)
 	{
 		sceneData.ViewProjectionMatrix = camera.GetViewProjectionMatrix();

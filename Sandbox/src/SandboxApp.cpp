@@ -43,11 +43,11 @@ public:
 
 		SquareVertexArray->SetIndexBuffer(SquareIndexBuffer);
 
-		SquareShader.reset(Engine::Shader::Create(
+		ShaderLib.Load(
+			"SquareShader",
 			"../Engine/src/Engine/Renderer/Shaders/TextureVertex.glsl",
-			"../Engine/src/Engine/Renderer/Shaders/TextureFragment.glsl",
-			true
-		));
+			"../Engine/src/Engine/Renderer/Shaders/TextureFragment.glsl"
+		);
 
 		GridVertexArray.reset(Engine::VertexArray::Create());
 
@@ -70,11 +70,11 @@ public:
 
 		GridVertexArray->SetIndexBuffer(GridIndexBuffer);
 
-		GridShader.reset(Engine::Shader::Create(
+		ShaderLib.Load(
+			"GridShader",
 			"../Engine/src/Engine/Renderer/Shaders/MaterialVertex.glsl",
-			"../Engine/src/Engine/Renderer/Shaders/MaterialFragment.glsl",
-			true
-		));
+			"../Engine/src/Engine/Renderer/Shaders/MaterialFragment.glsl"
+		);
 
 		SquareTexture = Engine::Texture2D::Create("assets/textures/cat.jpg");
 	}
@@ -102,6 +102,9 @@ public:
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
 
+		auto GridShader = ShaderLib.Get("GridShader");
+		auto SquareShader = ShaderLib.Get("SquareShader");
+
 		GridShader->Bind();
 		std::dynamic_pointer_cast<Engine::OpenGLShader>(GridShader)->SetUniformFloat3("Color", GridColor);
 
@@ -128,8 +131,9 @@ public:
 		ImGui::Begin("Settings");
 
 		static float t = 0;
-		static unsigned int fps = (unsigned int)(1 / DeltaTime);
 		t += DeltaTime;
+
+		static unsigned int fps = 0;
 
 		if (t > 0.5f)
 		{
@@ -152,7 +156,7 @@ public:
 	}
 
 private:
-	Engine::Ref<Engine::Shader> GridShader, SquareShader;
+	Engine::ShaderLibrary ShaderLib;
 
 	Engine::Ref<Engine::VertexBuffer> GridVertexBuffer, SquareVertexBuffer;
 	Engine::Ref<Engine::IndexBuffer> GridIndexBuffer, SquareIndexBuffer;

@@ -18,6 +18,8 @@ namespace Engine
 		AppWindow = Scope<Window>(Window::Create());
 		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
+		Renderer::Init();
+
 		AppImGuiLayer = new ImGuiLayer();
 		PushOverlay(AppImGuiLayer);
 	}

@@ -3,5 +3,5 @@
 
 namespace Engine
 {
-	RendererAPI::API RendererAPI::API_Instance = RendererAPI::API::OpenGL;
+	RendererAPI::API RendererAPI::m_API = RendererAPI::API::None;
 }
