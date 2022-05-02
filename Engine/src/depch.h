@@ -14,7 +14,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Engine/Log.h"
+#include "Engine/Core/Log.h"
 
 #ifdef ENGINE_PLATFORM_WINDOWS
 	#include <Windows.h>

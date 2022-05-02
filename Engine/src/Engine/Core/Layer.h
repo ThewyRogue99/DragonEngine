@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Timestep.h"
+#include "Timestep.h"
 
 namespace Engine
 {

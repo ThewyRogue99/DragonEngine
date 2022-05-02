@@ -1,5 +1,5 @@
-#include <Engine/ApplicationCore.h>
-#include <Engine/Input.h>
+#include <Engine/Core/ApplicationCore.h>
+#include <Engine/Core/Input.h>
 #include <Engine/Renderer/Texture.h>
 
 #include <glm/glm.hpp>

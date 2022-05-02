@@ -2,9 +2,9 @@
 
 #include "Application.h"
 
-#include "Renderer/Renderer.h"
+#include "Engine/Renderer/Renderer.h"
 
-#include <Platform/Platform.h>
+#include "Platform/Platform.h"
 
 namespace Engine
 {
