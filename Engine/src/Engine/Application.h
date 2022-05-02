@@ -29,6 +29,7 @@ namespace Engine
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
+		bool OnWindowResize(WindowResizeEvent& event);
 
 		Scope<Window> AppWindow;
 		ImGuiLayer* AppImGuiLayer;
@@ -39,6 +40,8 @@ namespace Engine
 		LayerStack layerStack;
 
 		float LastFrameTime = 0.f;
+
+		bool bIsMinimized = false;
 
 		static Application* Instance;
 	};

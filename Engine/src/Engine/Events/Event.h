@@ -70,6 +70,7 @@ namespace Engine
 			}
 			return false;
 		}
+
 	private:
 		Event& DispatchEvent;
 	};

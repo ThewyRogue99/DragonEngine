@@ -10,10 +10,12 @@
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Engine/Renderer/OrthographicCameraController.h"
+
 class SandboxLayer : public Engine::Layer
 {
 public:
-	SandboxLayer() : Camera(-1.6f, 1.6f, -0.9f, 0.9f), Layer("SandboxLayer")
+	SandboxLayer() : CameraController(1280.f / 720.f), Layer("SandboxLayer")
 	{
 		
 	}
@@ -84,21 +86,9 @@ public:
 		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
 		Engine::RenderCommand::Clear();
 
-		if (Engine::Input::IsKeyPressed(Engine::KeyInput::Key_W))
-			Camera.AddPosition(glm::vec3(0.f, 1.f, 0.f) * (CameraSpeed * DeltaTime));
-		if (Engine::Input::IsKeyPressed(Engine::KeyInput::Key_A))
-			Camera.AddPosition(glm::vec3(-1.f, 0.f, 0.f ) * (CameraSpeed * DeltaTime));
-		if (Engine::Input::IsKeyPressed(Engine::KeyInput::Key_S))
-			Camera.AddPosition(glm::vec3(0.f, -1.f, 0.f ) * (CameraSpeed * DeltaTime));
-		if (Engine::Input::IsKeyPressed(Engine::KeyInput::Key_D))
-			Camera.AddPosition(glm::vec3(1.f, 0.f, 0.f ) * (CameraSpeed * DeltaTime));
+		CameraController.OnUpdate(DeltaTime);
 
-		if (Engine::Input::IsKeyPressed(Engine::KeyInput::Key_E))
-			Camera.AddRotation(-(CameraRotationSpeed * DeltaTime));
-		if (Engine::Input::IsKeyPressed(Engine::KeyInput::Key_Q))
-			Camera.AddRotation(CameraRotationSpeed * DeltaTime);
-
-		Engine::Renderer::BeginScene(Camera);
+		Engine::Renderer::BeginScene(CameraController.GetCamera());
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
 
@@ -152,7 +142,7 @@ public:
 
 	void OnEvent(Engine::Event& event) override
 	{
-
+		CameraController.OnEvent(event);
 	}
 
 private:
@@ -164,10 +154,7 @@ private:
 
 	Engine::Ref<Engine::Texture2D> SquareTexture;
 
-	Engine::OrthographicCamera Camera;
-
-	float CameraSpeed = 5.f;
-	float CameraRotationSpeed = 20.f;
+	Engine::OrthographicCameraController CameraController;
 
 	glm::vec3 GridColor = glm::vec3(0.f, 0.f, 1.f);
 

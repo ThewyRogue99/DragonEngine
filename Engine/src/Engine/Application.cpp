@@ -43,6 +43,7 @@ namespace Engine
 	{
 		EventDispatcher d(event);
 		d.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+		d.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 
 		for (auto it = layerStack.end(); it != layerStack.begin();)
 		{
@@ -64,8 +65,11 @@ namespace Engine
 			DeltaTime = time - LastFrameTime;
 			LastFrameTime = time;
 
-			for (Layer* layer : layerStack)
-				layer->OnUpdate(DeltaTime);
+			if (!bIsMinimized)
+			{
+				for (Layer* layer : layerStack)
+					layer->OnUpdate(DeltaTime);
+			}
 
 			AppImGuiLayer->Begin();
 
@@ -81,6 +85,20 @@ namespace Engine
 	bool Application::OnWindowClose(WindowCloseEvent& event)
 	{
 		bIsRunning = false;
+
+		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& event)
+	{
+		unsigned int width = event.GetWidth(), height = event.GetHeight();
+
+		if (width == 0 || height == 0)
+			bIsMinimized = true;
+		else
+			bIsMinimized = false;
+
+		Renderer::OnWindowResize(width, height);
 
 		return true;
 	}

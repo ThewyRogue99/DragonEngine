@@ -108,6 +108,9 @@
     <ClInclude Include="src\Engine\Renderer\OrthographicCamera.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\OrthographicCameraController.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Renderer\RenderCommand.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
@@ -1431,6 +1434,9 @@
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\OrthographicCamera.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\OrthographicCameraController.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Renderer\RenderCommand.cpp">

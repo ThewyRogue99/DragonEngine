@@ -26,4 +26,9 @@ namespace Engine
 	{
 		API_Instance->DrawIndexed(vertexArray);
 	}
+
+	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	{
+		API_Instance->SetViewport(x, y, width, height);
+	}
 }
