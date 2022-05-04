@@ -15,7 +15,7 @@ namespace Engine
 
 		static void EndScene();
 
-		static void Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::mat4& transform = glm::mat4(1.f));
+		static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.f));
 
 		static void OnWindowResize(uint32_t width, uint32_t height);
 

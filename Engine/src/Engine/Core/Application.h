@@ -6,8 +6,6 @@
 
 #include "Engine/ImGui/ImGuiLayer.h"
 
-#include "Timestep.h"
-
 namespace Engine
 {
 	class ENGINE_API Application

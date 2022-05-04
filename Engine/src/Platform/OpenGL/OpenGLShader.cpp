@@ -136,33 +136,39 @@ namespace Engine
 		glUseProgram(0);
 	}
 
-	void OpenGLShader::SetUniformInt(const char* name, int value) const
+	void OpenGLShader::SetInt(const char* name, int value)
 	{
+		Bind();
 		glUniform1i(glGetUniformLocation(ShaderID, name), value);
 	}
 
-	void OpenGLShader::SetUniformFloat3(const char* name, float v1, float v2, float v3) const
+	void OpenGLShader::SetFloat3(const char* name, float v1, float v2, float v3)
 	{
+		Bind();
 		glUniform3f(glGetUniformLocation(ShaderID, name), v1, v2, v3);
 	}
 
-	void OpenGLShader::SetUniformFloat3(const char* name, const glm::vec3& v) const
+	void OpenGLShader::SetFloat3(const char* name, const glm::vec3& v)
 	{
+		Bind();
 		glUniform3f(glGetUniformLocation(ShaderID, name), v.x, v.y, v.z);
 	}
 
-	void OpenGLShader::SetUniformFloat4(const char* name, float v1, float v2, float v3, float v4) const
+	void OpenGLShader::SetFloat4(const char* name, float v1, float v2, float v3, float v4)
 	{
+		Bind();
 		glUniform4f(glGetUniformLocation(ShaderID, name), v1, v2, v3, v4);
 	}
 
-	void OpenGLShader::SetUniformFloat4(const char* name, const glm::vec4& v) const
+	void OpenGLShader::SetFloat4(const char* name, const glm::vec4& v)
 	{
+		Bind();
 		glUniform4f(glGetUniformLocation(ShaderID, name), v.x, v.y, v.z, v.w);
 	}
 
-	void OpenGLShader::SetUniformMat4(const char* name, const glm::mat4& val) const
+	void OpenGLShader::SetMat4(const char* name, const glm::mat4& val)
 	{
+		Bind();
 		glUniformMatrix4fv(glGetUniformLocation(ShaderID, name), 1, GL_FALSE, glm::value_ptr(val));
 	}
 }

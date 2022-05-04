@@ -15,15 +15,15 @@ namespace Engine
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		void SetUniformInt(const char* name, int value) const;
+		virtual void SetInt(const char* name, int value) override;
 
-		void SetUniformFloat3(const char* name, const glm::vec3& value) const;
-		void SetUniformFloat3(const char* name, float v1, float v2, float v3) const;
+		virtual void SetFloat3(const char* name, const glm::vec3& value) override;
+		virtual void SetFloat3(const char* name, float v1, float v2, float v3) override;
 
-		void SetUniformFloat4(const char* name, const glm::vec4& value) const;
-		void SetUniformFloat4(const char* name, float v1, float v2, float v3, float v4) const;
+		virtual void SetFloat4(const char* name, const glm::vec4& value) override;
+		virtual void SetFloat4(const char* name, float v1, float v2, float v3, float v4) override;
 
-		void SetUniformMat4(const char* name, const glm::mat4& value) const;
+		virtual void SetMat4(const char* name, const glm::mat4& value) override;
 
 	private:
 		uint32_t ShaderID = 0;

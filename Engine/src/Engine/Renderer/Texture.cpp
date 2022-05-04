@@ -2,6 +2,7 @@
 #include "Texture.h"
 
 #include "Renderer.h"
+#include "Engine/Core/Log.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
 
 #include <stb_image.h>

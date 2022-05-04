@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "Renderer.h"
 
-#include "Platform/OpenGL/OpenGLShader.h"
+#include "Renderer2D.h"
 
 namespace Engine
 {
@@ -10,6 +10,8 @@ namespace Engine
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
+
+		Renderer2D::Init();
 	}
 
 	void Renderer::BeginScene(OrthographicCamera& camera)
@@ -22,13 +24,13 @@ namespace Engine
 
 	}
 
-	void Renderer::Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::mat4& transform)
+	void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 	{
 		shader->Bind();
 		vertexArray->Bind();
 
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("ViewProjection", sceneData.ViewProjectionMatrix);
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->SetUniformMat4("Transform", transform);
+		shader->SetMat4("ViewProjection", sceneData.ViewProjectionMatrix);
+		shader->SetMat4("Transform", transform);
 
 		RenderCommand::DrawIndexed(vertexArray);
 	}

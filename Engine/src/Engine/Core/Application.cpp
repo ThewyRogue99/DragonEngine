@@ -1,9 +1,6 @@
 #include "depch.h"
 
-#include "Application.h"
-
-#include "Engine/Renderer/Renderer.h"
-
+#include "ApplicationCore.h"
 #include "Platform/Platform.h"
 
 namespace Engine

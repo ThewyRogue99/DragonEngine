@@ -1,10 +1,11 @@
 #include "depch.h"
 #include "Shader.h"
 
+#include "Engine/Core/Log.h"
+
 #include <fstream>
 
 #include "Platform/OpenGL/OpenGLShader.h"
-#include "Renderer.h"
 
 namespace Engine
 {

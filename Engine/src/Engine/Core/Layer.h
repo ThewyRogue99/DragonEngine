@@ -1,6 +1,8 @@
 #pragma once
 
+#include <string>
 #include "Timestep.h"
+#include "Engine/Events/Event.h"
 
 namespace Engine
 {

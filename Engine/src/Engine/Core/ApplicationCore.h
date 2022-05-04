@@ -1,13 +1,18 @@
 #pragma once
 
-#include "Application.h"
-#include "Log.h"
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-#include "Engine/ImGui/ImGuiLayer.h"
+#include <imgui.h>
 
-#include "Timestep.h"
+#include "Engine/Core/Application.h"
 
+#include "Engine/Core/Timestep.h"
+
+#include "Engine/Core/Log.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Renderer2D.h"
 #include "Engine/Renderer/Shader.h"
-
-#include "EntryPoint.h"
+#include "Engine/Core/Input.h"
+#include "Engine/Renderer/Texture.h"

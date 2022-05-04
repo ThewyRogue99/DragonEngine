@@ -64,6 +64,9 @@ namespace Engine
 		glTextureParameteri(TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+		glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 		glTextureSubImage2D(TextureID, 0, 0, 0, Width, Height, dataFormat, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
