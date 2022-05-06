@@ -82,11 +82,6 @@ project "Engine"
 	filter "system:windows"
 		systemversion "latest"
 
-		defines
-		{
-			"ENGINE_PLATFORM_WINDOWS"
-		}
-
 	filter "configurations:Debug"
 		defines "ENGINE_BUILD_DEBUG"
 		runtime "Debug"
@@ -140,11 +135,6 @@ project "Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
-
-		defines
-		{
-			"ENGINE_PLATFORM_WINDOWS"
-		}
 
 	filter "configurations:Debug"
 		defines "ENGINE_BUILD_DEBUG"

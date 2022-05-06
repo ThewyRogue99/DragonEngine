@@ -8,8 +8,9 @@ namespace Engine
 	struct Renderer2DStorage
 	{
 		Ref<VertexArray> QuadVertexArray;
-		Ref<Shader> FlatColorShader;
 		Ref<Shader> TextureShader;
+
+		Ref<Texture2D> WhiteTexture;
 	};
 
 	static Renderer2DStorage* Data;
@@ -41,12 +42,9 @@ namespace Engine
 
 		Data->QuadVertexArray->SetIndexBuffer(IndexBuffer);
 
-		Data->FlatColorShader = Engine::Shader::Create(
-			"FlatColorShader",
-			"../Engine/src/Engine/Renderer/Shaders/MaterialVertex.glsl",
-			"../Engine/src/Engine/Renderer/Shaders/MaterialFragment.glsl",
-			true
-		);
+		Data->WhiteTexture = Texture2D::Create(1, 1);
+		uint32_t whiteTextureData = 0xffffffff;
+		Data->WhiteTexture->SetData(&whiteTextureData, sizeof(whiteTextureData));
 
 		Data->TextureShader = Engine::Shader::Create(
 			"TextureShader",
@@ -68,8 +66,6 @@ namespace Engine
 	{
 		glm::mat4 ViewProjection = camera.GetViewProjectionMatrix();
 
-		Data->FlatColorShader->SetMat4("ViewProjection", ViewProjection);
-
 		Data->TextureShader->SetMat4("ViewProjection", ViewProjection);
 	}
 
@@ -84,8 +80,10 @@ namespace Engine
 			glm::translate(glm::mat4(1.f), { position.x, position.y, 0.f }) *
 			glm::scale(glm::mat4(1.f), { size.x, size.y, 0.f });
 
-		Data->FlatColorShader->SetFloat4("Color", color);
-		Data->FlatColorShader->SetMat4("Transform", transform);
+		Data->TextureShader->SetFloat4("Color", color);
+		Data->TextureShader->SetMat4("Transform", transform);
+
+		Data->WhiteTexture->Bind();
 
 		RenderCommand::DrawIndexed(Data->QuadVertexArray);
 	}
@@ -96,6 +94,7 @@ namespace Engine
 			glm::translate(glm::mat4(1.f), { position.x, position.y, 0.f }) *
 			glm::scale(glm::mat4(1.f), { size.x, size.y, 0.f });
 
+		Data->TextureShader->SetFloat4("Color", glm::vec4(1.f));
 		Data->TextureShader->SetMat4("Transform", transform);
 
 		texture->Bind();

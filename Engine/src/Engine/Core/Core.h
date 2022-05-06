@@ -2,6 +2,38 @@
 
 #include <memory>
 
+#ifdef _WIN32
+	#ifdef _WIN64
+		#define ENGINE_PLATFORM_WINDOWS
+	#else
+		#error x86 Builds are not supported!
+	#endif
+
+#elif defined(__APPLE__) || defined(__MACH__)
+	#include <TargetConditionals.h>
+
+	#if TARGET_IPHONE_SIMULATOR == 1
+		#error IOS simulator is not supported!
+	#elif TARGET_OS_IPHONE == 1
+		#define ENGINE_PLATFORM_IOS
+		#error IOS is not supported!
+	#elif TARGET_OS_MAC == 1
+		#define ENGINE_PLATFORM_MACOS
+		#error MacOS is not supported!
+	#else
+		#error Unknown Apple platform!
+	#endif
+
+#elif defined(__ANDROID__)
+	#define ENGINE_PLATFORM_ANDROID
+	#error Android is not supported!
+#elif defined(__linux__)
+	#define ENGINE_PLATFORM_LINUX
+	#error Linux is not supported!
+#else
+	#error Unknown platform!
+#endif
+
 #ifdef ENGINE_PLATFORM_WINDOWS
 	#ifdef ENGINE_DYNAMIC_LINK
 		#ifdef __ENGINE__
@@ -15,7 +47,7 @@
 		#define ENGINE_API
 	#endif
 #else
-	#error Dragon Engine only supports Windows
+	#error Dragon Engine only supports Windows!
 #endif
 
 #ifdef ENGINE_BUILD_DEBUG
@@ -37,4 +69,16 @@ namespace Engine
 
 	template<typename T>
 	using Ref = std::shared_ptr<T>;
+
+	template<typename T, typename ... Args>
+	constexpr Scope<T> CreateScope(Args&& ... args)
+	{
+		return std::make_unique<T>(std::forward<Args>(args)...);
+	}
+
+	template<typename T, typename ... Args>
+	constexpr Ref<T> CreateRef(Args&& ... args)
+	{
+		return std::make_shared<T>(std::forward<Args>(args)...);
+	}
 }

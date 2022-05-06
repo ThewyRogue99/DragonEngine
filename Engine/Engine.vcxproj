@@ -76,7 +76,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>depch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>__ENGINE__;GLFW_INCLUDE_NONE;ENGINE_PLATFORM_WINDOWS;ENGINE_BUILD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__ENGINE__;GLFW_INCLUDE_NONE;ENGINE_BUILD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -96,7 +96,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>depch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>__ENGINE__;GLFW_INCLUDE_NONE;ENGINE_PLATFORM_WINDOWS;ENGINE_BUILD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__ENGINE__;GLFW_INCLUDE_NONE;ENGINE_BUILD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -120,7 +120,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>depch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>__ENGINE__;GLFW_INCLUDE_NONE;ENGINE_PLATFORM_WINDOWS;ENGINE_BUILD_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__ENGINE__;GLFW_INCLUDE_NONE;ENGINE_BUILD_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -140,7 +140,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Engine\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Engine\Core\Application.h" />
     <ClInclude Include="src\Engine\Core\ApplicationCore.h" />
     <ClInclude Include="src\Engine\Core\Core.h" />
@@ -163,6 +162,7 @@
     <ClInclude Include="src\Engine\Renderer\OrthographicCameraController.h" />
     <ClInclude Include="src\Engine\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Engine\Renderer\Renderer.h" />
+    <ClInclude Include="src\Engine\Renderer\Renderer2D.h" />
     <ClInclude Include="src\Engine\Renderer\RendererAPI.h" />
     <ClInclude Include="src\Engine\Renderer\Shader.h" />
     <ClInclude Include="src\Engine\Renderer\Texture.h" />
@@ -595,7 +595,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Engine\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Engine\Core\Application.cpp" />
     <ClCompile Include="src\Engine\Core\Layer.cpp" />
     <ClCompile Include="src\Engine\Core\LayerStack.cpp" />
@@ -607,6 +606,7 @@
     <ClCompile Include="src\Engine\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Engine\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Engine\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Engine\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Engine\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\Engine\Renderer\Shader.cpp" />
     <ClCompile Include="src\Engine\Renderer\Texture.cpp" />

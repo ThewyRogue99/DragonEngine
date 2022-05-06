@@ -8,17 +8,17 @@ namespace Engine
 	class OpenGLTexture2D : public Texture2D
 	{
 	public:
-		OpenGLTexture2D(std::string& path);
-		OpenGLTexture2D(const char* path);
+		OpenGLTexture2D(uint32_t width, uint32_t height);
+		OpenGLTexture2D(const std::string& path);
 
 		virtual ~OpenGLTexture2D();
 
 		inline virtual uint32_t GetWidth() const override { return Width; }
 		inline virtual uint32_t GetHeight() const override { return Height; }
 
-		virtual void Bind(uint32_t slot = 0) const override;
+		virtual void SetData(void* data, uint32_t size) override;
 
-		void Load();
+		virtual void Bind(uint32_t slot = 0) const override;
 
 	private:
 		std::string Path;
@@ -26,5 +26,7 @@ namespace Engine
 		uint32_t Width = 0, Height = 0;
 
 		uint32_t TextureID = 0;
+
+		unsigned int InternalFormat = 0, DataFormat = 0;
 	};
 }
