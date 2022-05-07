@@ -21,12 +21,12 @@ namespace Engine
 		glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path) : Path(path)
+	OpenGLTexture2D::OpenGLTexture2D(const char* path) : Path(path)
 	{
 		stbi_set_flip_vertically_on_load(true);
 
 		int width, height, channels;
-		unsigned char* data = stbi_load(Path.c_str(), &width, &height, &channels, 0);
+		unsigned char* data = stbi_load(Path, &width, &height, &channels, 0);
 		DE_CORE_ASSERT(data, "Failed to load texture image");
 
 		Width = width;

@@ -63,7 +63,7 @@ namespace Engine
 		NativeWindow = glfwCreateWindow(
 			(int)Props.Width,
 			(int)Props.Height,
-			Data.Title.c_str(),
+			Data.Title,
 			nullptr,
 			nullptr
 		);

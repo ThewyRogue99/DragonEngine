@@ -41,7 +41,7 @@ namespace Engine
 
 		struct WindowData
 		{
-			std::string Title;
+			const char* Title;
 			unsigned int Width, Height;
 			bool VSync;
 

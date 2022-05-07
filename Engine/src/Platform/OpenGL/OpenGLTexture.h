@@ -9,7 +9,7 @@ namespace Engine
 	{
 	public:
 		OpenGLTexture2D(uint32_t width, uint32_t height);
-		OpenGLTexture2D(const std::string& path);
+		OpenGLTexture2D(const char* path);
 
 		virtual ~OpenGLTexture2D();
 
@@ -21,7 +21,7 @@ namespace Engine
 		virtual void Bind(uint32_t slot = 0) const override;
 
 	private:
-		std::string Path;
+		const char* Path;
 
 		uint32_t Width = 0, Height = 0;
 

@@ -8,12 +8,12 @@ namespace Engine
 {
 	struct WindowProps
 	{
-		std::string Title;
+		const char* Title;
 		unsigned int Width;
 		unsigned int Height;
 
 		WindowProps(
-			const std::string& Title = "Dragon Engine",
+			const char* Title = "Dragon Engine",
 			unsigned int Width = 1280,
 			unsigned int Height = 720
 		) : Title(Title), Width(Width), Height(Height) { }
