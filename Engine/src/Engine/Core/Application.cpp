@@ -9,21 +9,30 @@ namespace Engine
 
 	Application::Application()
 	{
+		DE_PROFILE_FUNCTION();
+
 		DE_CORE_ASSERT(!Instance, "Application already exists");
 		Instance = this;
 
 		AppWindow = Scope<Window>(Window::Create());
 		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
-		Renderer::Init();
+		{
+			DE_PROFILE_SCOPE("Renderer Init");
 
-		AppImGuiLayer = new ImGuiLayer();
-		PushOverlay(AppImGuiLayer);
+			Renderer::Init();
+		}
+
+		{
+			DE_PROFILE_SCOPE("UI Layer Attach");
+			AppImGuiLayer = new ImGuiLayer();
+			PushOverlay(AppImGuiLayer);
+		}
 	}
 
 	Application::~Application()
 	{
-		
+
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -53,6 +62,8 @@ namespace Engine
 
 	void Application::Run()
 	{
+		DE_PROFILE_FUNCTION();
+
 		bIsRunning = true;
 
 		while (bIsRunning)
@@ -64,16 +75,24 @@ namespace Engine
 
 			if (!bIsMinimized)
 			{
-				for (Layer* layer : layerStack)
-					layer->OnUpdate(DeltaTime);
+				{
+					DE_PROFILE_SCOPE("Layers Update");
+
+					for (Layer* layer : layerStack)
+						layer->OnUpdate(DeltaTime);
+				}
 			}
 
-			AppImGuiLayer->Begin();
+			{
+				DE_PROFILE_SCOPE("UI Render");
 
-			for (Layer* layer : layerStack)
-				layer->OnImGuiRender(DeltaTime);
+				AppImGuiLayer->Begin();
 
-			AppImGuiLayer->End();
+				for (Layer* layer : layerStack)
+					layer->OnImGuiRender(DeltaTime);
+
+				AppImGuiLayer->End();
+			}
 
 			AppWindow->OnUpdate();
 		}

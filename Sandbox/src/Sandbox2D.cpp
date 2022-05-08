@@ -46,21 +46,38 @@ void Sandbox2D::OnDetach()
 
 void Sandbox2D::OnUpdate(Engine::Timestep DeltaTime)
 {
-	CameraController.OnUpdate(DeltaTime);
+	DE_PROFILE_FUNCTION();
 
-	Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
-	Engine::RenderCommand::Clear();
+	{
+		DE_PROFILE_SCOPE("CameraController::OnUpdate");
 
-	Engine::Renderer2D::BeginScene(CameraController.GetCamera());
+		CameraController.OnUpdate(DeltaTime);
+	}
 
-	Engine::Renderer2D::DrawQuad(SquarePosition, SquareSize, SquareColor);
-	Engine::Renderer2D::DrawQuad({ 0.f, 0.f }, { 2.f, 2.f }, SquareTexture);
+	{
+		DE_PROFILE_SCOPE("Renderer Prep");
 
-	Engine::Renderer2D::EndScene();
+		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
+		Engine::RenderCommand::Clear();
+	}
+
+	{
+		DE_PROFILE_SCOPE("Renderer Draw");
+
+		Engine::Renderer2D::BeginScene(CameraController.GetCamera());
+
+		Engine::Renderer2D::DrawQuad(SquarePosition, SquareSize, SquareColor);
+		Engine::Renderer2D::DrawQuad({ 0.f, 0.f }, { 2.f, 2.f }, SquareTexture);
+
+		Engine::Renderer2D::EndScene();
+	}
+
 }
 
 void Sandbox2D::OnImGuiRender(Engine::Timestep DeltaTime)
 {
+	DE_PROFILE_FUNCTION();
+
 	ImGui::Begin("Settings");
 
 	static float t = 0;

@@ -37,6 +37,8 @@ namespace Engine
 
 	void WindowsWindow::Init(const WindowProps& Props)
 	{
+		DE_PROFILE_FUNCTION();
+
 		Data.Title = Props.Title;
 		Data.Width = Props.Width;
 		Data.Height = Props.Height;
@@ -50,6 +52,8 @@ namespace Engine
 
 		if (!bGLFWInitialized)
 		{
+			DE_PROFILE_SCOPE("GLFW Init");
+
 			// TODO: glfwTerminate on system shutdown
 			int success = glfwInit();
 			DE_CORE_ASSERT(success, "Could not initialize GLFW!");
@@ -60,13 +64,17 @@ namespace Engine
 			bGLFWInitialized = true;
 		}
 
-		NativeWindow = glfwCreateWindow(
-			(int)Props.Width,
-			(int)Props.Height,
-			Data.Title,
-			nullptr,
-			nullptr
-		);
+		{
+			DE_PROFILE_SCOPE("Create Window");
+
+			NativeWindow = glfwCreateWindow(
+				(int)Props.Width,
+				(int)Props.Height,
+				Data.Title,
+				nullptr,
+				nullptr
+			);
+		}
 
 		Context = new OpenGLContext(NativeWindow);
 		Context->Init();
@@ -171,6 +179,8 @@ namespace Engine
 
 	void WindowsWindow::OnUpdate()
 	{
+		DE_PROFILE_FUNCTION();
+
 		if (NativeWindow)
 		{
 			glfwPollEvents();

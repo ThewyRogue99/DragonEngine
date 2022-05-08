@@ -8,12 +8,17 @@ int main(int argc, char** argv)
 {
 	Engine::Log::Init();
 
-	DE_CORE_WARN("Initialized Log!");
-	DE_INFO("Hello!");
-
+	DE_PROFILE_BEGIN_SESSION("Startup", "EngineProfile-Startup.json");
 	auto App = Engine::CreateApplication();
+	DE_PROFILE_END_SESSION();
+
+	DE_PROFILE_BEGIN_SESSION("Runtime", "EngineProfile-Runtime.json");
 	App->Run();
+	DE_PROFILE_END_SESSION();
+
+	DE_PROFILE_BEGIN_SESSION("Shutdown", "EngineProfile-Shutdown.json");
 	delete App;
+	DE_PROFILE_END_SESSION();
 
 	return 1;
 }

@@ -28,6 +28,8 @@
 #include "Engine/Core/Input.h"
 #include "Engine/Renderer/Texture.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 #ifdef ENGINE_PLATFORM_WINDOWS
 	#include <Windows.h>
 #endif
