@@ -66,8 +66,7 @@ void Sandbox2D::OnUpdate(Engine::Timestep DeltaTime)
 
 		Engine::Renderer2D::BeginScene(CameraController.GetCamera());
 
-		Engine::Renderer2D::DrawQuad(SquarePosition, SquareSize, SquareColor);
-		Engine::Renderer2D::DrawQuad({ 0.f, 0.f }, { 2.f, 2.f }, SquareTexture);
+		Engine::Renderer2D::DrawQuad({ SquarePosition.x, SquarePosition.y, 0.f }, SquareSize, SquareColor);
 
 		Engine::Renderer2D::EndScene();
 	}

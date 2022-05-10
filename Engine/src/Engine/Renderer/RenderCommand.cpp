@@ -22,9 +22,9 @@ namespace Engine
 		API_Instance->Clear();
 	}
 
-	void RenderCommand::DrawIndexed(const Ref<VertexArray>& vertexArray)
+	void RenderCommand::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t IndexCount)
 	{
-		API_Instance->DrawIndexed(vertexArray);
+		API_Instance->DrawIndexed(vertexArray, IndexCount);
 	}
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
