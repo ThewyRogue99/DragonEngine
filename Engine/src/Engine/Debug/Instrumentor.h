@@ -63,17 +63,16 @@ namespace Engine
 #define DE_PROFILE
 
 #ifdef DE_PROFILE
+    #define PROFILE_CONCAT1(x, y) x##y
+    #define PROFILE_CONCAT2(x, y) PROFILE_CONCAT1(x, y)
 
-#define PROFILE_CONCAT1(x, y) x##y
-#define PROFILE_CONCAT2(x, y) PROFILE_CONCAT1(x, y)
-
-#define DE_PROFILE_BEGIN_SESSION(name, filepath) Engine::Instrumentor::Get().BeginSession(name, filepath)
-#define DE_PROFILE_END_SESSION() Engine::Instrumentor::Get().EndSession()
-#define DE_PROFILE_SCOPE(name) PROFILE_CONCAT2(Engine::InstrumentationTimer timer, __LINE__)(name);
-#define DE_PROFILE_FUNCTION() DE_PROFILE_SCOPE(__FUNCSIG__)
+    #define DE_PROFILE_BEGIN_SESSION(name, filepath) Engine::Instrumentor::Get().BeginSession(name, filepath)
+    #define DE_PROFILE_END_SESSION() Engine::Instrumentor::Get().EndSession()
+    #define DE_PROFILE_SCOPE(name) PROFILE_CONCAT2(Engine::InstrumentationTimer timer, __LINE__)(name);
+    #define DE_PROFILE_FUNCTION() DE_PROFILE_SCOPE(__FUNCSIG__)
 #else
-#define DE_PROFILE_BEGIN_SESSION(name, filepath)
-#define DE_PROFILE_END_SESSION()
-#define DE_PROFILE_FUNCTION()
-#define DE_PROFILE_SCOPE(name)
+    #define DE_PROFILE_BEGIN_SESSION(name, filepath)
+    #define DE_PROFILE_END_SESSION()
+    #define DE_PROFILE_FUNCTION()
+    #define DE_PROFILE_SCOPE(name)
 #endif

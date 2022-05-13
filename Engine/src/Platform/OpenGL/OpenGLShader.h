@@ -16,6 +16,7 @@ namespace Engine
 		virtual void Unbind() const override;
 
 		virtual void SetInt(const char* name, int value) override;
+		virtual void SetIntArray(const char* name, int* values, size_t count) override;
 
 		virtual void SetFloat3(const char* name, const glm::vec3& value) override;
 		virtual void SetFloat3(const char* name, float v1, float v2, float v3) override;

@@ -68,6 +68,8 @@ void Sandbox2D::OnUpdate(Engine::Timestep DeltaTime)
 
 		Engine::Renderer2D::DrawQuad({ SquarePosition.x, SquarePosition.y, 0.f }, SquareSize, SquareColor);
 
+		Engine::Renderer2D::DrawQuad(glm::vec3(0.f, 0.f, -0.1f), glm::vec3(2.f), SquareTexture, { 5.f });
+
 		Engine::Renderer2D::EndScene();
 	}
 
@@ -91,8 +93,8 @@ void Sandbox2D::OnImGuiRender(Engine::Timestep DeltaTime)
 	}
 
 	ImGui::ColorEdit4("Square Color", glm::value_ptr(SquareColor));
-	ImGui::DragFloat2("Square Position", glm::value_ptr(SquarePosition), 0.25f);
-	ImGui::DragFloat2("Square Size", glm::value_ptr(SquareSize), 0.25f);
+	ImGui::DragFloat2("Square Position", glm::value_ptr(SquarePosition), 0.1f);
+	ImGui::DragFloat2("Square Size", glm::value_ptr(SquareSize), 0.1f);
 
 	ImGui::Text("FPS: %i", fps);
 

@@ -142,6 +142,12 @@ namespace Engine
 		glUniform1i(glGetUniformLocation(ShaderID, name), value);
 	}
 
+	void OpenGLShader::SetIntArray(const char* name, int* values, size_t count)
+	{
+		Bind();
+		glUniform1iv(glGetUniformLocation(ShaderID, name), count, values);
+	}
+
 	void OpenGLShader::SetFloat3(const char* name, float v1, float v2, float v3)
 	{
 		Bind();

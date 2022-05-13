@@ -20,6 +20,7 @@ namespace Engine
 		inline const std::string& GetName() const { return ShaderName; }
 
 		virtual void SetInt(const char* name, int value) = 0;
+		virtual void SetIntArray(const char* name, int* values, size_t count) = 0;
 
 		virtual void SetFloat3(const char* name, const glm::vec3& value) = 0;
 		virtual void SetFloat3(const char* name, float v1, float v2, float v3) = 0;

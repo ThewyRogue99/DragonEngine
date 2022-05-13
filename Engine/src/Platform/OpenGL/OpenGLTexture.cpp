@@ -82,4 +82,9 @@ namespace Engine
 	{
 		glBindTextureUnit(slot, TextureID);
 	}
+
+	bool OpenGLTexture2D::operator==(Texture2D& texture)
+	{
+		return TextureID == ((OpenGLTexture2D&)texture).TextureID;
+	}
 }
