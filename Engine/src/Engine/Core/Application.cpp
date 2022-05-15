@@ -7,14 +7,14 @@ namespace Engine
 {
 	Application* Application::Instance = nullptr;
 
-	Application::Application()
+	Application::Application(const std::string& name)
 	{
 		DE_PROFILE_FUNCTION();
 
 		DE_CORE_ASSERT(!Instance, "Application already exists");
 		Instance = this;
 
-		AppWindow = Scope<Window>(Window::Create());
+		AppWindow = Scope<Window>(Window::Create(WindowProps(name.c_str())));
 		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
 		{

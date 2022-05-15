@@ -6,7 +6,7 @@
 class Sandbox : public Engine::Application
 {
 public:
-	Sandbox() : Engine::Application()
+	Sandbox() : Engine::Application("Sandbox")
 	{
 		PushLayer(new Sandbox2D());
 	}

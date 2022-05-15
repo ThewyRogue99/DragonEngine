@@ -14,5 +14,6 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Renderer2D.h"
 #include "Engine/Renderer/Shader.h"
+#include "Engine/Renderer/Framebuffer.h"
 #include "Engine/Core/Input.h"
 #include "Engine/Renderer/Texture.h"

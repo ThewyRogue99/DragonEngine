@@ -9,7 +9,7 @@ namespace Engine
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::API::OpenGL: return std::make_shared<OpenGLVertexArray>();
+			case RendererAPI::API::OpenGL: return CreateRef<OpenGLVertexArray>();
 			default:
 			{
 				DE_CORE_ASSERT(false, "Unknown Renderer API");
