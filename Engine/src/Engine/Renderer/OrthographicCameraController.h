@@ -7,6 +7,15 @@
 
 namespace Engine
 {
+	struct OrthographicCameraBounds
+	{
+		float Left, Right;
+		float Bottom, Top;
+
+		float GetWidth() { return Right - Left; }
+		float GetHeight() { return Top - Bottom; }
+	};
+
 	class OrthographicCameraController
 	{
 	public:
@@ -17,6 +26,8 @@ namespace Engine
 
 		inline OrthographicCamera& GetCamera() { return Camera; }
 		inline const OrthographicCamera& GetCamera() const { return Camera; }
+
+		const OrthographicCameraBounds& GetBounds() const { return Bounds; }
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent& event);
@@ -29,6 +40,7 @@ namespace Engine
 		float CameraSpeed = 5.f;
 		float CameraRotationSpeed = 20.f;
 
+		OrthographicCameraBounds Bounds;
 		OrthographicCamera Camera;
 	};
 }

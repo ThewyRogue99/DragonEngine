@@ -131,9 +131,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Sandbox\Random.h" />
+    <ClInclude Include="src\Sandbox\ParticleSystem.h" />
     <ClInclude Include="src\Sandbox\Sandbox2D.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Sandbox\Random.cpp" />
+    <ClCompile Include="src\Sandbox\ParticleSystem.cpp" />
     <ClCompile Include="src\Sandbox\Sandbox2D.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>

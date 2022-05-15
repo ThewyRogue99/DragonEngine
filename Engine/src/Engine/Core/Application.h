@@ -8,7 +8,7 @@
 
 namespace Engine
 {
-	class ENGINE_API Application
+	class Application
 	{
 	public:
 		Application();
@@ -45,4 +45,4 @@ namespace Engine
 	};
 
 	Application* CreateApplication();
-}
+};

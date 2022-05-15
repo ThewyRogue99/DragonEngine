@@ -17,9 +17,11 @@ namespace Engine
 
 	void OrthographicCamera::RecalculateViewMatrix()
 	{
-		glm::mat4 transform =
-			glm::translate(glm::mat4(1.f), Position) *
-			glm::rotate(glm::mat4(1.f), glm::radians(Rotation), glm::vec3(0.f, 0.f, 1.f));
+		glm::mat4 transform = glm::rotate(
+			glm::translate(glm::mat4(1.f), Position),
+			glm::radians(Rotation),
+			glm::vec3(0.f, 0.f, 1.f)
+		);
 
 		ViewMatrix = glm::inverse(transform);
 		ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;

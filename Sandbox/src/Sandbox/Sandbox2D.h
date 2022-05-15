@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Engine/Core/ApplicationCore.h>
-
 #include <Engine/Renderer/OrthographicCameraController.h>
+
+#include "ParticleSystem.h"
 
 class Sandbox2D : public Engine::Layer
 {
@@ -26,8 +27,13 @@ private:
 
 	Engine::OrthographicCameraController CameraController;
 
-	glm::vec4 SquareColor = { 0.0f, 1.f, 1.f, 1.f };
+	glm::vec4 SquareColor = { 0.0f, 1.f, 0.f, 1.f };
 	glm::vec2 SquarePosition = glm::vec3(0.f);
 	glm::vec2 SquareSize = glm::vec3(1.f);
+
+	float SquareRotationSpeed = 5.f;
+
+	ParticleSystem particleSystem;
+	ParticleProps particleProps;
 };
 

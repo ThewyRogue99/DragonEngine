@@ -60,7 +60,7 @@ namespace Engine
     };
 }
 
-#define DE_PROFILE
+//#define DE_PROFILE
 
 #ifdef DE_PROFILE
     #define PROFILE_CONCAT1(x, y) x##y

@@ -50,12 +50,12 @@
 	#error Dragon Engine only supports Windows!
 #endif
 
-#ifdef ENGINE_BUILD_DEBUG
+#if ENGINE_BUILD_DEBUG
 	#define DE_ASSERT(x, ...) { if(!(x)) { DE_ERROR(__VA_ARGS__); __debugbreak(); } }
 	#define DE_CORE_ASSERT(x, ...) { if(!(x)) { DE_CORE_ERROR(__VA_ARGS__); __debugbreak(); } }
 #else
-	#define DE_ASSERT(x, ...) { if(!(x)) { DE_ERROR(__VA_ARGS__); }
-	#define DE_CORE_ASSERT(x, ...) { if(!(x)) { DE_CORE_ERROR(__VA_ARGS__); }
+	#define DE_ASSERT(x, ...) { if(!(x)) { DE_ERROR(__VA_ARGS__); } }
+	#define DE_CORE_ASSERT(x, ...) { if(!(x)) { DE_CORE_ERROR(__VA_ARGS__); } }
 #endif
 
 #define BIT(x) (1 << x)

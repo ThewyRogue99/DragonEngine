@@ -6,7 +6,7 @@
 namespace Engine
 {
 	OrthographicCameraController::OrthographicCameraController(float AspectRatio)
-		: AspectRatio(AspectRatio), Camera(-AspectRatio * ZoomLevel, AspectRatio * ZoomLevel, -ZoomLevel, ZoomLevel)
+		: AspectRatio(AspectRatio), Bounds({ -AspectRatio * ZoomLevel, AspectRatio * ZoomLevel, -ZoomLevel, ZoomLevel }), Camera(Bounds.Left, Bounds.Right, Bounds.Bottom, Bounds.Top)
 	{
 
 	}
@@ -38,8 +38,9 @@ namespace Engine
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& event)
 	{
 		ZoomLevel -= event.GetYOffset();
-
-		Camera.SetProjection(-AspectRatio * ZoomLevel, AspectRatio * ZoomLevel, -ZoomLevel, ZoomLevel);
+		ZoomLevel = std::max(ZoomLevel, 0.25f);
+		Bounds = { -AspectRatio * ZoomLevel, AspectRatio * ZoomLevel, -ZoomLevel, ZoomLevel };
+		Camera.SetProjection(Bounds.Left, Bounds.Right, Bounds.Bottom, Bounds.Top);
 
 		return false;
 	}
@@ -48,7 +49,8 @@ namespace Engine
 	{
 		AspectRatio = (float)event.GetWidth() / (float)event.GetHeight();
 
-		Camera.SetProjection(-AspectRatio * ZoomLevel, AspectRatio * ZoomLevel, -ZoomLevel, ZoomLevel);
+		Bounds = { -AspectRatio * ZoomLevel, AspectRatio * ZoomLevel, -ZoomLevel, ZoomLevel };
+		Camera.SetProjection(Bounds.Left, Bounds.Right, Bounds.Bottom, Bounds.Top);
 
 		return false;
 	}
