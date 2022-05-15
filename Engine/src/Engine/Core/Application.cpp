@@ -60,6 +60,11 @@ namespace Engine
 		}
 	}
 
+	void Application::Close()
+	{
+		bIsRunning = false;
+	}
+
 	void Application::Run()
 	{
 		DE_PROFILE_FUNCTION();
@@ -100,7 +105,7 @@ namespace Engine
 
 	bool Application::OnWindowClose(WindowCloseEvent& event)
 	{
-		bIsRunning = false;
+		Close();
 
 		return true;
 	}

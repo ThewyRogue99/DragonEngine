@@ -19,6 +19,8 @@ namespace Engine
 
 		void OnEvent(Event& event);
 
+		void Close();
+
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
