@@ -24,6 +24,8 @@ namespace Engine
 		void OnUpdate(Timestep DeltaTime);
 		void OnEvent(Event& event);
 
+		void OnResize(float Width, float Height);
+
 		inline OrthographicCamera& GetCamera() { return Camera; }
 		inline const OrthographicCamera& GetCamera() const { return Camera; }
 

@@ -30,6 +30,18 @@ namespace Engine
 			RenderProperties& properties = RenderProperties()
 		);
 
+		static void DrawQuad(
+			const glm::mat4& transform,
+			const glm::vec4& color,
+			RenderProperties& properties = RenderProperties()
+		);
+
+		static void DrawQuad(
+			const glm::mat4& transform,
+			const Ref<Texture2D> texture,
+			RenderProperties& properties = RenderProperties()
+		);
+
 		static void DrawRotatedQuad(
 			const glm::vec3& position,
 			float Rotation,

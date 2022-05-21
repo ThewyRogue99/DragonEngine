@@ -35,6 +35,14 @@ namespace Engine
 		d.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
 	}
 
+	void OrthographicCameraController::OnResize(float Width, float Height)
+	{
+		AspectRatio = Width / Height;
+
+		Bounds = { -AspectRatio * ZoomLevel, AspectRatio * ZoomLevel, -ZoomLevel, ZoomLevel };
+		Camera.SetProjection(Bounds.Left, Bounds.Right, Bounds.Bottom, Bounds.Top);
+	}
+
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& event)
 	{
 		ZoomLevel -= event.GetYOffset();
@@ -47,10 +55,7 @@ namespace Engine
 
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& event)
 	{
-		AspectRatio = (float)event.GetWidth() / (float)event.GetHeight();
-
-		Bounds = { -AspectRatio * ZoomLevel, AspectRatio * ZoomLevel, -ZoomLevel, ZoomLevel };
-		Camera.SetProjection(Bounds.Left, Bounds.Right, Bounds.Bottom, Bounds.Top);
+		OnResize((float)event.GetWidth() , (float)event.GetHeight());
 
 		return false;
 	}

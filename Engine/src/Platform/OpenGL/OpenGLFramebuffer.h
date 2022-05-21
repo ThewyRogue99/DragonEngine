@@ -15,13 +15,15 @@ namespace Engine
 		virtual void Bind() override;
 		virtual void Unbind() override;
 
+		virtual void Resize(uint32_t Width, uint32_t Height) override;
+
 		inline virtual const FramebufferProps& GetSpecification() const override { return Props; }
 
 		inline virtual uint32_t GetColorAttachmentRendererID() const override { return ColorAttachment; }
 
 	private:
-		uint32_t RendererID;
-		uint32_t ColorAttachment, DepthAttachment;
+		uint32_t RendererID = 0;
+		uint32_t ColorAttachment = 0, DepthAttachment = 0;
 
 		FramebufferProps Props;
 	};

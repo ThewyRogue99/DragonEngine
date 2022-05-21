@@ -50,6 +50,11 @@ namespace Engine
 			return bIsHandled;
 		}
 
+		inline void Handle()
+		{
+			bIsHandled = true;
+		}
+
 	protected:
 		bool bIsHandled = false;
 	};

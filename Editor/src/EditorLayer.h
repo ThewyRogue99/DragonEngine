@@ -20,19 +20,18 @@ namespace Engine
 		virtual void OnEvent(Event& event) override;
 
 	private:
-		Ref<Shader> m_Shader;
-		Ref<VertexArray> m_VertexArray;
-
 		Ref<Texture2D> m_SquareTexture;
 
 		Ref<Framebuffer> m_FrameBuffer;
 
+		Ref<Scene> ActiveScene;
+
 		OrthographicCameraController m_CameraController;
 
-		glm::vec4 SquareColor = { 0.0f, 1.f, 0.f, 1.f };
-		glm::vec2 SquarePosition = glm::vec3(0.f);
-		glm::vec2 SquareSize = glm::vec3(1.f);
+		Entity Square;
 
-		float SquareRotationSpeed = 5.f;
+		glm::vec2 ViewportSize = { 0.f, 0.f };
+
+		bool bUIShouldBlockEvents = false;
 	};
 }

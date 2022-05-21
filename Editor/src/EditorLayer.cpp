@@ -4,7 +4,7 @@ namespace Engine
 {
 	EditorLayer::EditorLayer() : m_CameraController(1280.f / 720.f), Layer("Sandbox2D")
 	{
-
+		
 	}
 
 	void EditorLayer::OnAttach()
@@ -14,36 +14,12 @@ namespace Engine
 		Props.Height = 720;
 		m_FrameBuffer = Engine::Framebuffer::Create(Props);
 
-		m_VertexArray = Engine::VertexArray::Create();
-
-		float SquareVertices[] = {
-			-0.5f, -0.5f,  0.0f,
-			 0.5f, -0.5f,  0.0f,
-			 0.5f,  0.5f,  0.0f,
-			-0.5f,  0.5f,  0.0f
-		};
-
-		auto VertexBuffer = Engine::VertexBuffer::Create(SquareVertices, sizeof(SquareVertices));
-
-		VertexBuffer->SetLayout({
-			{ Engine::ShaderDataType::Float3, "a_Position" }
-			});
-
-		m_VertexArray->AddVertexBuffer(VertexBuffer);
-
-		uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
-		auto IndexBuffer = Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
-
-		m_VertexArray->SetIndexBuffer(IndexBuffer);
-
-		m_Shader = Engine::Shader::Create(
-			"Shader",
-			"../Engine/src/Engine/Renderer/Shaders/MaterialVertex.glsl",
-			"../Engine/src/Engine/Renderer/Shaders/MaterialFragment.glsl",
-			true
-		);
-
 		m_SquareTexture = Engine::Texture2D::Create("assets/textures/cat.jpg");
+
+		ActiveScene = CreateRef<Scene>();
+		
+		Square = ActiveScene->CreateEntity("Square Entity");
+		Square.AddComponent<SpriteRendererComponent>(glm::vec4(0.f, 1.f, 0.f, 1.f));
 	}
 
 	void EditorLayer::OnDetach()
@@ -54,57 +30,24 @@ namespace Engine
 	void EditorLayer::OnUpdate(Engine::Timestep DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
-
-		{
-			DE_PROFILE_SCOPE("CameraController::OnUpdate");
-
+		
+		if(bUIShouldBlockEvents)
 			m_CameraController.OnUpdate(DeltaTime);
-		}
+
 
 		Engine::Renderer2D::ResetStats();
-		{
-			DE_PROFILE_SCOPE("Renderer Prep");
 
-			m_FrameBuffer->Bind();
+		m_FrameBuffer->Bind();
 
-			Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
-			Engine::RenderCommand::Clear();
-		}
+		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
+		Engine::RenderCommand::Clear();
 
-		{
-			DE_PROFILE_SCOPE("Renderer Draw");
 
-			Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
+		Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-			static float rotation = 0.f;
+		ActiveScene->OnUpdate(DeltaTime);
 
-			rotation += DeltaTime * SquareRotationSpeed * 10.f;
-
-			Engine::Renderer2D::RenderProperties props;
-			props.TilingFactor = 10.f;
-
-			Engine::Renderer2D::DrawQuad(glm::vec3(0.f, 0.f, -0.1f), glm::vec2(20.f), m_SquareTexture, props);
-
-			Engine::Renderer2D::DrawRotatedQuad({ SquarePosition.x, SquarePosition.y, 0.f }, rotation, SquareSize, SquareColor);
-			Engine::Renderer2D::DrawQuad(glm::vec3(2.f, 0.f, 0.f), glm::vec2(1.f), glm::vec4(1.f, 0.f, 0.f, 1.f));
-			Engine::Renderer2D::DrawRotatedQuad(glm::vec3(2.f, -1.f, 0.f), 45.f, glm::vec2(1.f), glm::vec4(0.f, 0.f, 1.f, 1.f));
-			Engine::Renderer2D::DrawQuad(glm::vec3(-2.f, 0.f, 0.f), glm::vec2(1.f), glm::vec4(1.f, 0.f, 0.f, 1.f));
-
-			Engine::Renderer2D::EndScene();
-
-			Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-			for (float y = -5.f; y < 5.f; y += 0.5f)
-			{
-				for (float x = -5.f; x < 5.f; x += 0.5f)
-				{
-					glm::vec4 color = { (x + 5.f) / 10.f, 0.4f, (y + 5.f) / 10.f, 0.7f };
-					Engine::Renderer2D::DrawQuad({ x, y, 0.f }, { 0.45f, 0.45f }, color);
-				}
-			}
-
-			Engine::Renderer2D::EndScene();
-		}
+		Engine::Renderer2D::EndScene();
 
 		m_FrameBuffer->Unbind();
 	}
@@ -124,29 +67,21 @@ namespace Engine
 			t = 0.f;
 		}
 
-		static bool dosckspaceOpen = true;
-		static bool opt_fullscreen = true;
-		static bool opt_padding = false;
+		static bool bIsDockSpaceOpen = true;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
 		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 		// because it would be confusing to have two docking targets within each others.
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-		if (opt_fullscreen)
-		{
-			const ImGuiViewport* viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(viewport->WorkPos);
-			ImGui::SetNextWindowSize(viewport->WorkSize);
-			ImGui::SetNextWindowViewport(viewport->ID);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		}
-		else
-		{
-			dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
-		}
+
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->WorkPos);
+		ImGui::SetNextWindowSize(viewport->WorkSize);
+		ImGui::SetNextWindowViewport(viewport->ID);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 		// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
 		// and handle the pass-thru hole, so we ask Begin() to not render a background.
@@ -158,16 +93,13 @@ namespace Engine
 		// all active windows docked into it will lose their parent and become undocked.
 		// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
 		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
-		if (!opt_padding)
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-		ImGui::Begin("DockSpace Demo", &dosckspaceOpen, window_flags);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-		if (!opt_padding)
-			ImGui::PopStyleVar();
+		ImGui::Begin("DockSpace Demo", &bIsDockSpaceOpen, window_flags);
 
-		if (opt_fullscreen)
-			ImGui::PopStyleVar(2);
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar(2);
 
 		// Submit the DockSpace
 		ImGuiIO& io = ImGui::GetIO();
@@ -200,19 +132,43 @@ namespace Engine
 			ImGui::Text("Quad Count: %i", stats.QuadCount);
 			ImGui::Text("Vertex Count: %i", stats.GetTotalVertexCount());
 			ImGui::Text("Index Count: %i", stats.GetTotalIndexCount());
+			
+			if (Square.IsValid())
+			{
+				ImGui::Separator();
+				ImGui::Text("%s", Square.GetComponent<TagComponent>().Tag.c_str());
 
-			ImGui::ColorEdit4("Square Color", glm::value_ptr(SquareColor));
-			ImGui::DragFloat2("Square Position", glm::value_ptr(SquarePosition), 0.1f);
-			ImGui::DragFloat2("Square Size", glm::value_ptr(SquareSize), 0.1f);
-			ImGui::DragFloat("Square Rotation Speed", &SquareRotationSpeed, 0.05f, 0.f, 10.f);
+				auto& SquareColor = Square.GetComponent<SpriteRendererComponent>().Color;
+
+				ImGui::ColorEdit4("Square Color", glm::value_ptr(SquareColor));
+				ImGui::Separator();
+			}
 
 			ImGui::Text("FPS: %i", fps);
 
-			uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
+			ImGui::End();
+		}
 
-			ImGui::Image((void*)BufferID, ImVec2{ 1280.f, 720.f }, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f, 0.f });
+			ImGui::Begin("Viewport");
+			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+			
+			if (ViewportSize != *((glm::vec2*)&viewportPanelSize) && viewportPanelSize.x > 0 && viewportPanelSize.y > 0)
+			{
+				m_FrameBuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
+				ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+
+				m_CameraController.OnResize(ViewportSize.x, ViewportSize.y);
+			}
+
+			bUIShouldBlockEvents = ImGui::IsWindowFocused();
+
+			uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
+			ImGui::Image((void*)BufferID, viewportPanelSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
 
 			ImGui::End();
+			ImGui::PopStyleVar();
 		}
 
 		ImGui::End();

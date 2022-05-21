@@ -193,6 +193,20 @@ namespace Engine
 		DrawQuadWithTransform(transform, texture, glm::vec4(1.f), properties);
 	}
 
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, RenderProperties& properties)
+	{
+		DE_PROFILE_FUNCTION();
+
+		DrawQuadWithTransform(transform, nullptr, color, properties);
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, RenderProperties& properties)
+	{
+		DE_PROFILE_FUNCTION();
+
+		DrawQuadWithTransform(transform, texture, glm::vec4(1.f), properties);
+	}
+
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, float Rotation, const glm::vec2& size, const glm::vec4& color, RenderProperties& properties)
 	{
 		DE_PROFILE_FUNCTION();

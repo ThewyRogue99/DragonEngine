@@ -33,9 +33,9 @@ namespace Engine
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-		ImGui::StyleColorsDark();
-
 		ImGuiStyle& style = ImGui::GetStyle();
+
+		ImGui::StyleColorsDark();
 
 		SetUIStyle(style);
 
@@ -57,18 +57,6 @@ namespace Engine
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-	}
-
-	void ImGuiLayer::OnEvent(Event& event)
-	{
-		EventDispatcher d(event);
-		d.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(ImGuiLayer::OnKeyPressedEvent));
-	}
-
-	void ImGuiLayer::OnImGuiRender(Timestep DeltaTime)
-	{
-		if(bShowDemoWindow)
-			ImGui::ShowDemoWindow(&bShowDemoWindow);
 	}
 
 	void ImGuiLayer::Begin()
@@ -96,14 +84,6 @@ namespace Engine
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
-	}
-
-	bool ImGuiLayer::OnKeyPressedEvent(KeyPressedEvent& event)
-	{
-		if (event.GetKey() == KeyInput::Key_Insert)
-			bShowDemoWindow = !bShowDemoWindow;
-
-		return false;
 	}
 
 	void ImGuiLayer::SetUIStyle(ImGuiStyle& style)
@@ -147,7 +127,7 @@ namespace Engine
 		style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
 		style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 		style.Colors[ImGuiCol_DockingPreview] = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-		style.Colors[ImGuiCol_DockingEmptyBg] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+		style.Colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.f);
 		style.Colors[ImGuiCol_PlotLines] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_PlotHistogram] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
@@ -164,7 +144,6 @@ namespace Engine
 		style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);
 		style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
 
-		style.WindowPadding = ImVec2(8.00f, 8.00f);
 		style.FramePadding = ImVec2(5.00f, 2.00f);
 		style.CellPadding = ImVec2(6.00f, 6.00f);
 		style.ItemSpacing = ImVec2(6.00f, 6.00f);
