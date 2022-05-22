@@ -43,6 +43,21 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
+		// Update Scripts
+		{
+			SceneRegistry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
+			{
+				if (!nsc.Instance)
+				{
+					nsc.Instance = nsc.InstantiateScript();
+					nsc.Instance->entity = Entity(entity, this);
+					nsc.Instance->OnCreate();
+				}
+
+				nsc.Instance->OnUpdate(timestep);
+			});
+		}
+
 		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
 		Engine::RenderCommand::Clear();
 
@@ -52,7 +67,7 @@ namespace Engine
 			auto view = SceneRegistry.view<TransformComponent, CameraComponent>();
 			for (auto entity : view)
 			{
-				auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
 
 				if (camera.Primary)
 				{
@@ -67,10 +82,10 @@ namespace Engine
 		{
 			Renderer2D::BeginScene(*mainCamera, *cameraTransform);
 
-			auto group = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-			for (auto entity : group)
+			auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+			for (auto entity : view)
 			{
-				auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
 				Renderer2D::DrawQuad(transform, sprite.Color);
 			}
