@@ -115,17 +115,27 @@ namespace Engine
 		DE_PROFILE_FUNCTION();
 	}
 
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4 transform)
+	{
+		DE_PROFILE_FUNCTION();
+
+		glm::mat4 ViewProjection = camera.GetProjection() * glm::inverse(transform);
+
+		Data.TextureShader->SetMat4("ViewProjection", ViewProjection);
+
+		Data.QuadIndexCount = 0;
+		Data.QuadVertexBufferPtr = Data.QuadVertexBufferBase;
+
+		Data.TextureSlotIndex = 1;
+	}
+
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
 		DE_PROFILE_FUNCTION();
 
-		{
-			DE_PROFILE_SCOPE("Calculate ViewProjection Matrix");
+		glm::mat4 ViewProjection = camera.GetViewProjectionMatrix();
 
-			glm::mat4 ViewProjection = camera.GetViewProjectionMatrix();
-
-			Data.TextureShader->SetMat4("ViewProjection", ViewProjection);
-		}
+		Data.TextureShader->SetMat4("ViewProjection", ViewProjection);
 
 		Data.QuadIndexCount = 0;
 		Data.QuadVertexBufferPtr = Data.QuadVertexBufferBase;

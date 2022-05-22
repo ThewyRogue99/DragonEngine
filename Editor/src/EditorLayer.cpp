@@ -20,6 +20,9 @@ namespace Engine
 		
 		Square = ActiveScene->CreateEntity("Square Entity");
 		Square.AddComponent<SpriteRendererComponent>(glm::vec4(0.f, 1.f, 0.f, 1.f));
+
+		EditorCamera = ActiveScene->CreateEntity("Camera");
+		EditorCamera.AddComponent<CameraComponent>();
 	}
 
 	void EditorLayer::OnDetach()
@@ -34,20 +37,11 @@ namespace Engine
 		if(bUIShouldBlockEvents)
 			m_CameraController.OnUpdate(DeltaTime);
 
-
 		Engine::Renderer2D::ResetStats();
 
 		m_FrameBuffer->Bind();
 
-		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
-		Engine::RenderCommand::Clear();
-
-
-		Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
-
 		ActiveScene->OnUpdate(DeltaTime);
-
-		Engine::Renderer2D::EndScene();
 
 		m_FrameBuffer->Unbind();
 	}
@@ -160,6 +154,7 @@ namespace Engine
 				ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
 				m_CameraController.OnResize(ViewportSize.x, ViewportSize.y);
+				ActiveScene->OnViewportResize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
 			}
 
 			bUIShouldBlockEvents = ImGui::IsWindowFocused();

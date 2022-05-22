@@ -29,6 +29,7 @@ namespace Engine
 		OrthographicCameraController m_CameraController;
 
 		Entity Square;
+		Entity EditorCamera;
 
 		glm::vec2 ViewportSize = { 0.f, 0.f };
 

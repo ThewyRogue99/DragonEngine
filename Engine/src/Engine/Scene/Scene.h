@@ -16,9 +16,13 @@ namespace Engine
 
 		void OnUpdate(Timestep timestep);
 
+		void OnViewportResize(uint32_t width, uint32_t height);
+
 		friend class Entity;
 
 	private:
 		entt::registry SceneRegistry;
+
+		uint32_t ViewportWidth = 0, ViewportHeight = 0;
 	};
 }
