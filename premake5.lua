@@ -9,6 +9,11 @@ workspace "DragonEngine"
 		"Dist"
 	}
 
+	flags
+	{
+		"MultiProcessorCompile"
+	}
+
 	-- Uncomment when using dll
 	--[[
 	defines
@@ -25,11 +30,13 @@ IncludeDir["ImGui"] = "Engine/vendor/imgui"
 IncludeDir["glm"] = "Engine/vendor/glm"
 IncludeDir["stb_image"] = "Engine/vendor/stb_image"
 IncludeDir["entt"] = "Engine/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "Engine/vendor/yaml-cpp/include"
 
 group "Dependencies"
 	include "Engine/vendor/GLFW"
 	include "Engine/vendor/GLAD"
 	include "Engine/vendor/imgui"
+	include "Engine/vendor/yaml-cpp"
 group ""
 
 project "Engine"
@@ -64,7 +71,8 @@ project "Engine"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 
 	links
@@ -72,7 +80,8 @@ project "Engine"
 		"GLFW",
 		"GLAD",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"yaml-cpp"
 	}
 
 	defines
