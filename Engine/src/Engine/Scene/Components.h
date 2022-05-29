@@ -18,15 +18,35 @@ namespace Engine
 
 	struct TransformComponent
 	{
-		glm::mat4 Transform = glm::mat4(1.f);
+		glm::vec3 Position = glm::vec3(0.f);
+		glm::vec3 Rotation = glm::vec3(0.f);
+		glm::vec3 Scale = glm::vec3(1.f);
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
 
-		TransformComponent(const glm::mat4& transform)
-			: Transform(transform) { }
+		TransformComponent(const glm::vec3& Position)
+			: Position(Position) { }
 
-		operator const glm::mat4& () { return Transform; }
+		glm::mat4 GetTransformMat4() const
+		{
+			return glm::scale(
+				glm::rotate(
+					glm::rotate(
+						glm::rotate(
+							glm::translate(
+								glm::mat4(1.f),
+								Position
+							),
+							glm::radians(Rotation.x), { 1.f, 0.f, 0.f}
+						),
+						glm::radians(Rotation.y), { 0.f, 1.f, 0.f}
+					),
+					glm::radians(Rotation.z), { 0.f, 0.f, 1.f }
+				),
+				Scale
+			);
+		}
 	};
 
 	struct SpriteRendererComponent

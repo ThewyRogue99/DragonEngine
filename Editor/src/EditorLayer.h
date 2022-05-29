@@ -3,6 +3,8 @@
 #include <Engine/Core/ApplicationCore.h>
 #include <Engine/Renderer/OrthographicCameraController.h>
 
+#include "Panels/SceneHierarchyPanel.h"
+
 namespace Engine
 {
 	class EditorLayer : public Layer
@@ -28,11 +30,11 @@ namespace Engine
 
 		OrthographicCameraController m_CameraController;
 
-		Entity Square;
-		Entity EditorCamera;
-
 		glm::vec2 ViewportSize = { 0.f, 0.f };
 
 		bool bUIShouldBlockEvents = false;
+
+		// Panels
+		SceneHierarchyPanel HPanel;
 	};
 }

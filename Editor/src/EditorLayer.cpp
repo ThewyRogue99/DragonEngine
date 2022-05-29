@@ -18,10 +18,13 @@ namespace Engine
 
 		ActiveScene = CreateRef<Scene>();
 		
-		Square = ActiveScene->CreateEntity("Square Entity");
-		Square.AddComponent<SpriteRendererComponent>(glm::vec4(0.f, 1.f, 0.f, 1.f));
+		Entity RedSquare = ActiveScene->CreateEntity("Green Square");
+		RedSquare.AddComponent<SpriteRendererComponent>(glm::vec4(0.f, 1.f, 0.f, 1.f));
 
-		EditorCamera = ActiveScene->CreateEntity("Camera");
+		Entity BlueSquare = ActiveScene->CreateEntity("Blue Square");
+		BlueSquare.AddComponent<SpriteRendererComponent>(glm::vec4(0.f, 0.f, 1.f, 1.f));
+
+		Entity EditorCamera = ActiveScene->CreateEntity("Camera");
 		EditorCamera.AddComponent<CameraComponent>();
 
 		class CameraController : public ScriptableEntity
@@ -39,21 +42,23 @@ namespace Engine
 
 			void OnUpdate(Timestep DeltaTime)
 			{
-				auto& transform = GetComponent<TransformComponent>().Transform;
+				auto& tc = GetComponent<TransformComponent>();
 				float speed = 5.f;
 
 				if (Input::IsKeyPressed(KeyInput::Key_A))
-					transform[3][0] -= speed * DeltaTime;
+					tc.Position.x -= speed * DeltaTime;
 				if (Input::IsKeyPressed(KeyInput::Key_D))
-					transform[3][0] += speed * DeltaTime;
+					tc.Position.x += speed * DeltaTime;
 				if (Input::IsKeyPressed(KeyInput::Key_W))
-					transform[3][1] += speed * DeltaTime;
+					tc.Position.y += speed * DeltaTime;
 				if (Input::IsKeyPressed(KeyInput::Key_S))
-					transform[3][1] -= speed * DeltaTime;
+					tc.Position.y -= speed * DeltaTime;
 			}
 		};
 
 		EditorCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+		HPanel.SetContext(ActiveScene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -128,11 +133,17 @@ namespace Engine
 
 		// Submit the DockSpace
 		ImGuiIO& io = ImGui::GetIO();
+		ImGuiStyle& style = ImGui::GetStyle();
+		float minWinSizeX = style.WindowMinSize.x;
+		style.WindowMinSize.x = 320.f;
+
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
 			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
+
+		style.WindowMinSize.x = minWinSizeX;
 
 		if (ImGui::BeginMenuBar())
 		{
@@ -157,17 +168,6 @@ namespace Engine
 			ImGui::Text("Quad Count: %i", stats.QuadCount);
 			ImGui::Text("Vertex Count: %i", stats.GetTotalVertexCount());
 			ImGui::Text("Index Count: %i", stats.GetTotalIndexCount());
-			
-			if (Square.IsValid())
-			{
-				ImGui::Separator();
-				ImGui::Text("%s", Square.GetComponent<TagComponent>().Tag.c_str());
-
-				auto& SquareColor = Square.GetComponent<SpriteRendererComponent>().Color;
-
-				ImGui::ColorEdit4("Square Color", glm::value_ptr(SquareColor));
-				ImGui::Separator();
-			}
 
 			ImGui::Text("FPS: %i", fps);
 
@@ -196,6 +196,8 @@ namespace Engine
 			ImGui::End();
 			ImGui::PopStyleVar();
 		}
+
+		HPanel.OnImGuiRender();
 
 		ImGui::End();
 	}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entt.hpp"
+#include "Engine/Core/Timestep.h"
 
 namespace Engine
 {
@@ -14,11 +15,18 @@ namespace Engine
 
 		Entity CreateEntity(const std::string& name = std::string());
 
+		void DestroyEntity(Entity entity);
+
 		void OnUpdate(Timestep timestep);
 
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		friend class Entity;
+		friend class SceneHierarchyPanel;
+
+	private:
+		template<typename T>
+		void OnComponentAdded(Entity entity, T& component);
 
 	private:
 		entt::registry SceneRegistry;

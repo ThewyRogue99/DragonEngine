@@ -4,6 +4,8 @@
 
 #include "entt.hpp"
 
+#include "Engine/Core/Log.h"
+
 namespace Engine
 {
 	class Entity
@@ -17,7 +19,11 @@ namespace Engine
 		{
 			DE_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 
-			return CurrentScene->SceneRegistry.emplace<T>(EntityHandle, std::forward<Args>(args)...);
+			T& component = CurrentScene->SceneRegistry.emplace<T>(EntityHandle, std::forward<Args>(args)...);
+
+			CurrentScene->OnComponentAdded<T>(*this, component);
+
+			return component;
 		}
 
 		template<typename T>
@@ -44,6 +50,19 @@ namespace Engine
 
 		inline bool IsValid() { return EntityHandle != entt::null; }
 
+		operator uint32_t() const { return (uint32_t)EntityHandle; }
+
+		inline bool operator ==(const Entity& other) const
+		{
+			return EntityHandle == other.EntityHandle && CurrentScene == other.CurrentScene;
+		}
+
+		inline bool operator !=(const Entity& other) const
+		{
+			return !(*this == other);
+		}
+
+		friend class Scene;
 	private:
 		entt::entity EntityHandle = entt::null;
 		Scene* CurrentScene = nullptr;
