@@ -4,8 +4,6 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <imgui.h>
-
 #include "Engine/Core/Application.h"
 
 #include "Engine/Scene/Scene.h"

@@ -22,6 +22,7 @@ namespace Engine
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		friend class Entity;
+		friend class SceneSerializer;
 		friend class SceneHierarchyPanel;
 
 	private:
