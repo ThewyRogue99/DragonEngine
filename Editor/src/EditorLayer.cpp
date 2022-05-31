@@ -1,5 +1,7 @@
 #include "EditorLayer.h"
 
+#include "Engine/Scene/SceneSerializer.h"
+
 namespace Engine
 {
 	EditorLayer::EditorLayer() : m_CameraController(1280.f / 720.f), Layer("Sandbox2D")
