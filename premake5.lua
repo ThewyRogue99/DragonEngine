@@ -1,3 +1,5 @@
+include "./vendor/premake/config/solution_items.lua"
+
 workspace "DragonEngine"
 	architecture "x64"
 	startproject "Editor"
@@ -8,29 +10,28 @@ workspace "DragonEngine"
 		"Release",
 		"Dist"
 	}
+	
+	solution_items
+	{
+		".editorconfig"
+	}
 
 	flags
 	{
 		"MultiProcessorCompile"
 	}
 
-	-- Uncomment when using dll
-	--[[
-	defines
-	{
-		"ENGINE_DYNAMIC_LINK"
-	}]]
-
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Include directories relative to root folder (solution directory)
 IncludeDir = {}
-IncludeDir["GLFW"] = "Engine/vendor/GLFW/include"
-IncludeDir["GLAD"] = "Engine/vendor/GLAD/include"
-IncludeDir["ImGui"] = "Engine/vendor/imgui"
-IncludeDir["glm"] = "Engine/vendor/glm"
-IncludeDir["stb_image"] = "Engine/vendor/stb_image"
-IncludeDir["entt"] = "Engine/vendor/entt/include"
-IncludeDir["yaml_cpp"] = "Engine/vendor/yaml-cpp/include"
+IncludeDir["GLFW"] = "%{wks.location}/Engine/vendor/GLFW/include"
+IncludeDir["GLAD"] = "%{wks.location}/Engine/vendor/GLAD/include"
+IncludeDir["ImGui"] = "%{wks.location}/Engine/vendor/imgui"
+IncludeDir["glm"] = "%{wks.location}/Engine/vendor/glm"
+IncludeDir["stb_image"] = "%{wks.location}/Engine/vendor/stb_image"
+IncludeDir["entt"] = "%{wks.location}/Engine/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "%{wks.location}/Engine/vendor/yaml-cpp/include"
 
 group "Dependencies"
 	include "Engine/vendor/GLFW"
@@ -39,181 +40,6 @@ group "Dependencies"
 	include "Engine/vendor/yaml-cpp"
 group ""
 
-project "Engine"
-	location "Engine"
-	kind "StaticLib"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	pchheader "depch.h"
-	pchsource "Engine/src/depch.cpp"
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/stb_image/**.h",
-		"%{prj.name}/vendor/stb_image/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
-	}
-
-	includedirs
-	{
-		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.GLAD}",
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}"
-	}
-
-	links
-	{
-		"GLFW",
-		"GLAD",
-		"ImGui",
-		"opengl32.lib",
-		"yaml-cpp"
-	}
-
-	defines
-	{
-		"__ENGINE__",
-		"GLFW_INCLUDE_NONE"
-	}
-
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "ENGINE_BUILD_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "ENGINE_BUILD_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "ENGINE_BUILD_DIST"
-		runtime "Release"
-		optimize "on"
-
-project "Editor"
-	location "Editor"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
-	}
-
-	includedirs
-	{
-		"Engine/vendor/spdlog/include",
-		"Engine/src",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.entt}"
-	}
-
-	links
-	{
-		"Engine"
-	}
-
-	defines
-	{
-		"__EDITOR__"
-	}
-
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "ENGINE_BUILD_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "ENGINE_BUILD_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "ENGINE_BUILD_DIST"
-		runtime "Release"
-		optimize "on"
-
-project "Sandbox"
-	location "Sandbox"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
-	}
-
-	includedirs
-	{
-		"Engine/vendor/spdlog/include",
-		"Engine/src",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.entt}"
-	}
-
-	links
-	{
-		"Engine"
-	}
-
-	defines
-	{
-		"__SANDBOX__"
-	}
-
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "ENGINE_BUILD_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "ENGINE_BUILD_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "ENGINE_BUILD_DIST"
-		runtime "Release"
-		optimize "on"
+include "Engine"
+include "Editor"
+include "Sandbox"
