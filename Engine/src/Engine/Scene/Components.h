@@ -3,6 +3,11 @@
 #include "Engine/Scene/SceneCamera.h"
 #include "ScriptableEntity.h"
 
+#include "Engine/Math/Math.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 namespace Engine
 {
 	struct TagComponent
@@ -30,22 +35,11 @@ namespace Engine
 
 		glm::mat4 GetTransformMat4() const
 		{
-			return glm::scale(
-				glm::rotate(
-					glm::rotate(
-						glm::rotate(
-							glm::translate(
-								glm::mat4(1.f),
-								Position
-							),
-							glm::radians(Rotation.x), { 1.f, 0.f, 0.f}
-						),
-						glm::radians(Rotation.y), { 0.f, 1.f, 0.f}
-					),
-					glm::radians(Rotation.z), { 0.f, 0.f, 1.f }
-				),
-				Scale
-			);
+			glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(Rotation)));
+
+			return glm::translate(glm::mat4(1.0f), Position)
+				* rotation
+				* glm::scale(glm::mat4(1.0f), Scale);
 		}
 	};
 

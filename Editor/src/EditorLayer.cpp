@@ -1,6 +1,9 @@
 #include "EditorLayer.h"
 
 #include "Engine/Scene/SceneSerializer.h"
+#include "Engine/Utils/PlatformUtils.h"
+
+#include "ImGuizmo/ImGuizmo.h"
 
 namespace Engine
 {
@@ -16,49 +19,7 @@ namespace Engine
 		Props.Height = 720;
 		m_FrameBuffer = Engine::Framebuffer::Create(Props);
 
-		m_SquareTexture = Engine::Texture2D::Create("assets/textures/cat.jpg");
-
 		ActiveScene = CreateRef<Scene>();
-		
-		Entity RedSquare = ActiveScene->CreateEntity("Green Square");
-		RedSquare.AddComponent<SpriteRendererComponent>(glm::vec4(0.f, 1.f, 0.f, 1.f));
-
-		Entity BlueSquare = ActiveScene->CreateEntity("Blue Square");
-		BlueSquare.AddComponent<SpriteRendererComponent>(glm::vec4(0.f, 0.f, 1.f, 1.f));
-
-		Entity EditorCamera = ActiveScene->CreateEntity("Camera");
-		EditorCamera.AddComponent<CameraComponent>();
-
-		class CameraController : public ScriptableEntity
-		{
-		public:
-			void OnCreate()
-			{
-				
-			}
-
-			void OnDestroy()
-			{
-
-			}
-
-			void OnUpdate(Timestep DeltaTime)
-			{
-				auto& tc = GetComponent<TransformComponent>();
-				float speed = 5.f;
-
-				if (Input::IsKeyPressed(KeyInput::Key_A))
-					tc.Position.x -= speed * DeltaTime;
-				if (Input::IsKeyPressed(KeyInput::Key_D))
-					tc.Position.x += speed * DeltaTime;
-				if (Input::IsKeyPressed(KeyInput::Key_W))
-					tc.Position.y += speed * DeltaTime;
-				if (Input::IsKeyPressed(KeyInput::Key_S))
-					tc.Position.y -= speed * DeltaTime;
-			}
-		};
-
-		EditorCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
 		HPanel.SetContext(ActiveScene);
 	}
@@ -157,6 +118,44 @@ namespace Engine
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("New Scene", "Ctrl+N"))
+				{
+					ActiveScene = CreateRef<Scene>();
+					ActiveScene->OnViewportResize((uint32_t)ViewportSize.x, (uint32_t)ViewportSize.y);
+					HPanel.SetContext(ActiveScene);
+				}
+
+				if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
+				{
+					std::string filepath = FileDialogs::OpenFile("Dragon Engine Scene (*.descene)\0*.descene\0");
+
+					if (!filepath.empty())
+					{
+						ActiveScene = CreateRef<Scene>();
+						ActiveScene->OnViewportResize((uint32_t)ViewportSize.x, (uint32_t)ViewportSize.y);
+						HPanel.SetContext(ActiveScene);
+
+						SceneSerializer s(ActiveScene);
+						s.Deserialize(filepath);
+					}
+				}
+
+				if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
+				{
+					std::string filepath = FileDialogs::SaveFile("Dragon Engine Scene (*.descene)\0*.descene\0");
+
+					if (!filepath.empty())
+					{
+						SceneSerializer s(ActiveScene);
+						s.Serialize(filepath);
+					}
+				}
+
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenuBar();
 		}
 
@@ -195,6 +194,59 @@ namespace Engine
 			uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)BufferID, viewportPanelSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
 
+			//Gizmos
+			Entity selectedEntity = HPanel.GetSelectedEntity();
+
+			if (selectedEntity.IsValid())
+			{
+				auto CameraEntity = ActiveScene->GetPrimaryCameraEntity(); 
+				if (CameraEntity.IsValid())
+				{
+					const auto& camera = CameraEntity.GetComponent<CameraComponent>().Camera;
+
+					ImGuizmo::SetOrthographic(
+						camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic
+						? true
+						: false
+					);
+
+					ImGuizmo::SetDrawlist();
+
+					float windowWidth = ImGui::GetWindowWidth();
+					float windowHeight = ImGui::GetWindowHeight();
+
+					ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+					const glm::mat4& cameraProjection = camera.GetProjection();
+					glm::mat4 cameraView = glm::inverse(CameraEntity.GetComponent<TransformComponent>().GetTransformMat4());
+
+					auto& tc = selectedEntity.GetComponent<TransformComponent>();
+					glm::mat4 transform = tc.GetTransformMat4();
+
+					if (GizmoType < 0)
+						GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+
+					ImGuizmo::Manipulate(
+						glm::value_ptr(cameraView),
+						glm::value_ptr(cameraProjection),
+						(ImGuizmo::OPERATION)GizmoType,
+						ImGuizmo::LOCAL,
+						glm::value_ptr(transform)
+					);
+
+					if (ImGuizmo::IsUsing())
+					{
+						glm::vec3 position, rotation, scale;
+						Math::DecomposeTransform(transform, position, rotation, scale);
+
+						glm::vec3 deltaRotation = rotation - tc.Rotation;
+						tc.Position = position;
+						tc.Rotation += deltaRotation;
+						tc.Scale = scale;
+					}
+				}
+			}
+
 			ImGui::End();
 			ImGui::PopStyleVar();
 		}
@@ -207,5 +259,28 @@ namespace Engine
 	void EditorLayer::OnEvent(Engine::Event& event)
 	{
 		m_CameraController.OnEvent(event);
+		EventDispatcher d(event);
+		d.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressedEvent));
+	}
+
+	bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& event)
+	{
+		if (event.GetRepeatCount() > 0)
+			return false;
+
+		switch (event.GetKey())
+		{
+		case KeyInput::Key_Q:
+			GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			return true;
+		case KeyInput::Key_W:
+			GizmoType = ImGuizmo::OPERATION::ROTATE;
+			return true;
+		case KeyInput::Key_E:
+			GizmoType = ImGuizmo::OPERATION::SCALE;
+			return true;
+		default:
+			return false;
+		}
 	}
 }

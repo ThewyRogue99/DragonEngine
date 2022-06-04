@@ -23,8 +23,9 @@ namespace Engine
 		virtual void OnEvent(Event& event) override;
 
 	private:
-		Ref<Texture2D> m_SquareTexture;
+		bool OnKeyPressedEvent(KeyPressedEvent& event);
 
+	private:
 		Ref<Framebuffer> m_FrameBuffer;
 
 		Ref<Scene> ActiveScene;
@@ -34,6 +35,8 @@ namespace Engine
 		glm::vec2 ViewportSize = { 0.f, 0.f };
 
 		bool bUIShouldBlockEvents = false;
+
+		int GizmoType = -1;
 
 		// Panels
 		SceneHierarchyPanel HPanel;

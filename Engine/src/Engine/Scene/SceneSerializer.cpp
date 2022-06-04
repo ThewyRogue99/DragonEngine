@@ -92,6 +92,9 @@ namespace Engine {
 			out << YAML::BeginMap; // TagComponent
 
 			auto& tag = entity.GetComponent<TagComponent>().Tag;
+
+			DE_CORE_TRACE("Serializing entity with Tag: {0}", tag.c_str());
+
 			out << YAML::Key << "Tag" << YAML::Value << tag;
 
 			out << YAML::EndMap; // TagComponent
@@ -156,13 +159,14 @@ namespace Engine {
 		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 		m_Scene->SceneRegistry.each([&](auto entityID)
-			{
-				Entity entity = { entityID, m_Scene.get() };
-				if (!entity)
-					return;
+		{
+			DE_CORE_TRACE("Serializing entity");
+			Entity entity = { entityID, m_Scene.get() };
+			if (!entity.IsValid())
+				return;
 
-				SerializeEntity(out, entity);
-			});
+			SerializeEntity(out, entity);
+		});
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 

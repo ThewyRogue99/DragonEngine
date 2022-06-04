@@ -25,6 +25,8 @@ namespace Engine
 		friend class SceneSerializer;
 		friend class SceneHierarchyPanel;
 
+		Entity GetPrimaryCameraEntity();
+
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);

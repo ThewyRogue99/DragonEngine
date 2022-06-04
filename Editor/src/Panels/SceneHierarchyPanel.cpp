@@ -13,6 +13,7 @@ namespace Engine
 	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
 	{
 		Context = context;
+		SelectedEntity = {};
 	}
 
 	void SceneHierarchyPanel::OnImGuiRender()
@@ -315,8 +316,6 @@ namespace Engine
 
 				} break;
 			}
-
-			ImGui::TreePop();
 		});
 	}
 }

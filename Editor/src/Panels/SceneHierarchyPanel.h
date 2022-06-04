@@ -18,6 +18,8 @@ namespace Engine
 
 		void OnImGuiRender();
 
+		Entity GetSelectedEntity() const { return SelectedEntity; }
+
 	private:
 		void DrawEntityNode(Entity entity);
 
