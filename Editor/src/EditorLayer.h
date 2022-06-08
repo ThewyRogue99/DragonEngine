@@ -30,11 +30,11 @@ namespace Engine
 
 		Ref<Scene> ActiveScene;
 
-		OrthographicCameraController m_CameraController;
-
 		glm::vec2 ViewportSize = { 0.f, 0.f };
 
-		bool bUIShouldBlockEvents = false;
+		bool bIsViewportFocused = true;
+
+		EditorCamera editorCamera;
 
 		int GizmoType = -1;
 

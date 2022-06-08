@@ -7,7 +7,7 @@
 
 namespace Engine
 {
-	EditorLayer::EditorLayer() : m_CameraController(1280.f / 720.f), Layer("Sandbox2D")
+	EditorLayer::EditorLayer() : Layer("Editor Layer")
 	{
 		
 	}
@@ -22,6 +22,8 @@ namespace Engine
 		ActiveScene = CreateRef<Scene>();
 
 		HPanel.SetContext(ActiveScene);
+
+		editorCamera = EditorCamera(30.f, 16 / 9, 0.1f, 1000.f);
 	}
 
 	void EditorLayer::OnDetach()
@@ -32,15 +34,14 @@ namespace Engine
 	void EditorLayer::OnUpdate(Engine::Timestep DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
-		
-		if(bUIShouldBlockEvents)
-			m_CameraController.OnUpdate(DeltaTime);
 
 		Engine::Renderer2D::ResetStats();
 
 		m_FrameBuffer->Bind();
 
-		ActiveScene->OnUpdate(DeltaTime);
+		editorCamera.OnUpdate(DeltaTime);
+
+		ActiveScene->OnUpdateEditor(DeltaTime, editorCamera);
 
 		m_FrameBuffer->Unbind();
 	}
@@ -185,11 +186,9 @@ namespace Engine
 				m_FrameBuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
 				ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-				m_CameraController.OnResize(ViewportSize.x, ViewportSize.y);
 				ActiveScene->OnViewportResize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
+				editorCamera.SetViewportSize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
 			}
-
-			bUIShouldBlockEvents = ImGui::IsWindowFocused();
 
 			uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)BufferID, viewportPanelSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
@@ -199,53 +198,48 @@ namespace Engine
 
 			if (selectedEntity.IsValid())
 			{
-				auto CameraEntity = ActiveScene->GetPrimaryCameraEntity(); 
-				if (CameraEntity.IsValid())
+				ImGuizmo::SetOrthographic(false);
+
+				ImGuizmo::SetDrawlist();
+
+				float windowWidth = ImGui::GetWindowWidth();
+				float windowHeight = ImGui::GetWindowHeight();
+
+				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+				const glm::mat4& cameraProjection = editorCamera.GetProjection();
+				glm::mat4 cameraView = editorCamera.GetViewMatrix();
+
+				auto& tc = selectedEntity.GetComponent<TransformComponent>();
+				glm::mat4 transform = tc.GetTransformMat4();
+
+				if (GizmoType < 0)
+					GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+
+				ImGuizmo::Manipulate(
+					glm::value_ptr(cameraView),
+					glm::value_ptr(cameraProjection),
+					(ImGuizmo::OPERATION)GizmoType,
+					GizmoType == ImGuizmo::OPERATION::SCALE ? ImGuizmo::LOCAL : ImGuizmo::WORLD,
+					glm::value_ptr(transform)
+				);
+
+				if (ImGuizmo::IsUsing())
 				{
-					const auto& camera = CameraEntity.GetComponent<CameraComponent>().Camera;
+					glm::vec3 position, rotation, scale;
+					Math::DecomposeTransform(transform, position, rotation, scale);
 
-					ImGuizmo::SetOrthographic(
-						camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic
-						? true
-						: false
-					);
-
-					ImGuizmo::SetDrawlist();
-
-					float windowWidth = ImGui::GetWindowWidth();
-					float windowHeight = ImGui::GetWindowHeight();
-
-					ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
-
-					const glm::mat4& cameraProjection = camera.GetProjection();
-					glm::mat4 cameraView = glm::inverse(CameraEntity.GetComponent<TransformComponent>().GetTransformMat4());
-
-					auto& tc = selectedEntity.GetComponent<TransformComponent>();
-					glm::mat4 transform = tc.GetTransformMat4();
-
-					if (GizmoType < 0)
-						GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-
-					ImGuizmo::Manipulate(
-						glm::value_ptr(cameraView),
-						glm::value_ptr(cameraProjection),
-						(ImGuizmo::OPERATION)GizmoType,
-						ImGuizmo::LOCAL,
-						glm::value_ptr(transform)
-					);
-
-					if (ImGuizmo::IsUsing())
-					{
-						glm::vec3 position, rotation, scale;
-						Math::DecomposeTransform(transform, position, rotation, scale);
-
-						glm::vec3 deltaRotation = rotation - tc.Rotation;
-						tc.Position = position;
-						tc.Rotation += deltaRotation;
-						tc.Scale = scale;
-					}
+					glm::vec3 deltaRotation = rotation - tc.Rotation;
+					tc.Position = position;
+					tc.Rotation += deltaRotation;
+					tc.Scale = scale;
 				}
 			}
+
+			if (ImGui::IsWindowFocused() && ImGui::IsWindowHovered())
+				bIsViewportFocused = true;
+			else
+				bIsViewportFocused = false;
 
 			ImGui::End();
 			ImGui::PopStyleVar();
@@ -258,29 +252,35 @@ namespace Engine
 
 	void EditorLayer::OnEvent(Engine::Event& event)
 	{
-		m_CameraController.OnEvent(event);
 		EventDispatcher d(event);
 		d.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressedEvent));
+
+		editorCamera.OnEvent(event);
 	}
 
 	bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& event)
 	{
-		if (event.GetRepeatCount() > 0)
-			return false;
-
-		switch (event.GetKey())
+		if (bIsViewportFocused)
 		{
-		case KeyInput::Key_Q:
-			GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-			return true;
-		case KeyInput::Key_W:
-			GizmoType = ImGuizmo::OPERATION::ROTATE;
-			return true;
-		case KeyInput::Key_E:
-			GizmoType = ImGuizmo::OPERATION::SCALE;
-			return true;
-		default:
-			return false;
+			if (event.GetRepeatCount() > 0)
+				return false;
+
+			switch (event.GetKey())
+			{
+			case KeyInput::Key_Q:
+				GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				return true;
+			case KeyInput::Key_W:
+				GizmoType = ImGuizmo::OPERATION::ROTATE;
+				return true;
+			case KeyInput::Key_E:
+				GizmoType = ImGuizmo::OPERATION::SCALE;
+				return true;
+			default:
+				return false;
+			}
 		}
+
+		return false;
 	}
 }

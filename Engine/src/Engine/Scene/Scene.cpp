@@ -44,7 +44,27 @@ namespace Engine
 		SceneRegistry.destroy(entity.EntityHandle);
 	}
 
-	void Scene::OnUpdate(Timestep timestep)
+	void Scene::OnUpdateEditor(Timestep timestep, EditorCamera& camera)
+	{
+		DE_PROFILE_FUNCTION();
+
+		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
+		Engine::RenderCommand::Clear();
+
+		Renderer2D::BeginScene(camera);
+
+		auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+		for (auto entity : view)
+		{
+			auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+
+			Renderer2D::DrawQuad(transform.GetTransformMat4(), sprite.Color);
+		}
+
+		Renderer2D::EndScene();
+	}
+
+	void Scene::OnUpdateRuntime(Timestep timestep)
 	{
 		DE_PROFILE_FUNCTION();
 

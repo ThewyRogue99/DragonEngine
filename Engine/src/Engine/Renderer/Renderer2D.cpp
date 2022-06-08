@@ -3,6 +3,8 @@
 
 #include "Shader.h"
 
+#include <glm/gtx/string_cast.hpp>
+
 namespace Engine
 {
 	struct QuadVertex
@@ -120,6 +122,20 @@ namespace Engine
 		DE_PROFILE_FUNCTION();
 
 		glm::mat4 ViewProjection = camera.GetProjection() * glm::inverse(transform);
+
+		Data.TextureShader->SetMat4("ViewProjection", ViewProjection);
+
+		Data.QuadIndexCount = 0;
+		Data.QuadVertexBufferPtr = Data.QuadVertexBufferBase;
+
+		Data.TextureSlotIndex = 1;
+	}
+
+	void Renderer2D::BeginScene(const EditorCamera& camera)
+	{
+		DE_PROFILE_FUNCTION();
+
+		glm::mat4 ViewProjection = camera.GetViewProjection();
 
 		Data.TextureShader->SetMat4("ViewProjection", ViewProjection);
 
