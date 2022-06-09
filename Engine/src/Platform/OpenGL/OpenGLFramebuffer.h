@@ -7,7 +7,7 @@ namespace Engine
 	class OpenGLFramebuffer : public Framebuffer
 	{
 	public:
-		OpenGLFramebuffer(const FramebufferProps& props);
+		OpenGLFramebuffer(const FramebufferSpecification& Specification);
 		virtual ~OpenGLFramebuffer();
 
 		void Invalidate();
@@ -17,14 +17,19 @@ namespace Engine
 
 		virtual void Resize(uint32_t Width, uint32_t Height) override;
 
-		inline virtual const FramebufferProps& GetSpecification() const override { return Props; }
+		inline virtual const FramebufferSpecification& GetSpecification() const override { return BufferSpecification; }
 
-		inline virtual uint32_t GetColorAttachmentRendererID() const override { return ColorAttachment; }
+		inline virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override { return ColorAttachments[index]; }
 
 	private:
 		uint32_t RendererID = 0;
-		uint32_t ColorAttachment = 0, DepthAttachment = 0;
 
-		FramebufferProps Props;
+		FramebufferSpecification BufferSpecification;
+
+		std::vector<FramebufferTextureSpecification> ColorAttachmentSpecifications;
+		FramebufferTextureSpecification DepthAttachmentSpecification;
+
+		std::vector<uint32_t> ColorAttachments;
+		uint32_t DepthAttachment = 0;
 	};
 }

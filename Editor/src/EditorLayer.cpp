@@ -14,10 +14,12 @@ namespace Engine
 
 	void EditorLayer::OnAttach()
 	{
-		Engine::FramebufferProps Props;
-		Props.Width = 1280;
-		Props.Height = 720;
-		m_FrameBuffer = Engine::Framebuffer::Create(Props);
+		Engine::FramebufferSpecification Specs;
+
+		Specs.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+		Specs.Width = 1280;
+		Specs.Height = 720;
+		m_FrameBuffer = Engine::Framebuffer::Create(Specs);
 
 		ActiveScene = CreateRef<Scene>();
 

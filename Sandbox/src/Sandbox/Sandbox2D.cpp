@@ -9,7 +9,7 @@ Sandbox2D::Sandbox2D() : CameraController(1280.f / 720.f), Layer("Sandbox2D")
 
 void Sandbox2D::OnAttach()
 {
-	Engine::FramebufferProps Props;
+	Engine::FramebufferSpecification Props;
 	Props.Width = 1280;
 	Props.Height = 720;
 
