@@ -17,6 +17,10 @@ namespace Engine
 
 		virtual void Resize(uint32_t Width, uint32_t Height) override;
 
+		virtual int ReadPixel(uint32_t AttachmentIndex, int x, int y) override;
+
+		virtual void ClearAttachment(uint32_t AttachmentIndex, int value) override;
+
 		inline virtual const FramebufferSpecification& GetSpecification() const override { return BufferSpecification; }
 
 		inline virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override { return ColorAttachments[index]; }

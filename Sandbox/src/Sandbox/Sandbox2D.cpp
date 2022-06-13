@@ -85,11 +85,6 @@ void Sandbox2D::OnUpdate(Engine::Timestep DeltaTime)
 
 		rotation += DeltaTime * SquareRotationSpeed * 10.f;
 
-		Engine::Renderer2D::RenderProperties props;
-		props.TilingFactor = 10.f;
-
-		Engine::Renderer2D::DrawQuad(glm::vec3(0.f, 0.f, -0.1f), glm::vec2(20.f), SquareTexture, props);
-
 		Engine::Renderer2D::DrawRotatedQuad({ SquarePosition.x, SquarePosition.y, 0.f }, rotation, SquareSize, SquareColor);
 		Engine::Renderer2D::DrawQuad(glm::vec3(2.f, 0.f, 0.f), glm::vec2(1.f), glm::vec4(1.f, 0.f, 0.f, 1.f));
 		Engine::Renderer2D::DrawRotatedQuad(glm::vec3(2.f, -1.f, 0.f), 45.f, glm::vec2(1.f), glm::vec4(0.f, 0.f, 1.f, 1.f));

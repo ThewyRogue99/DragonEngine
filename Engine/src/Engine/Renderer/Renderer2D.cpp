@@ -14,6 +14,9 @@ namespace Engine
 		glm::vec2 TexCoord;
 		float TexIndex;
 		float TilingFactor;
+
+		// Editor-Only
+		int EntityID;
 	};
 
 	struct Renderer2DData
@@ -62,7 +65,8 @@ namespace Engine
 			{ Engine::ShaderDataType::Float4, "a_Color" },
 			{ Engine::ShaderDataType::Float2, "a_TexCoord" },
 			{ Engine::ShaderDataType::Float, "a_TexIndex" },
-			{ Engine::ShaderDataType::Float, "a_TilingFactor" }
+			{ Engine::ShaderDataType::Float, "a_TilingFactor" },
+			{ Engine::ShaderDataType::Int, "a_EntityID" }
 		});
 
 		Data.QuadVertexArray->AddVertexBuffer(Data.QuadVertexBuffer);
@@ -189,7 +193,7 @@ namespace Engine
 		Data.TextureSlotIndex = 1;
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, RenderProperties& properties)
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
 		DE_PROFILE_FUNCTION();
 
@@ -201,10 +205,10 @@ namespace Engine
 			{ size.x, size.y, 0.f }
 		);
 
-		DrawQuadWithTransform(transform, nullptr, color, properties);
+		DrawQuadWithTransform(transform, nullptr, color);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture, RenderProperties& properties)
+	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D> texture)
 	{
 		DE_PROFILE_FUNCTION();
 
@@ -216,24 +220,31 @@ namespace Engine
 			{ size.x, size.y, 0.f }
 		);
 
-		DrawQuadWithTransform(transform, texture, glm::vec4(1.f), properties);
+		DrawQuadWithTransform(transform, texture, glm::vec4(1.f));
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, RenderProperties& properties)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
 	{
 		DE_PROFILE_FUNCTION();
 
-		DrawQuadWithTransform(transform, nullptr, color, properties);
+		DrawQuadWithTransform(transform, nullptr, color);
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture, RenderProperties& properties)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D> texture)
 	{
 		DE_PROFILE_FUNCTION();
 
-		DrawQuadWithTransform(transform, texture, glm::vec4(1.f), properties);
+		DrawQuadWithTransform(transform, texture, glm::vec4(1.f));
 	}
 
-	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, float Rotation, const glm::vec2& size, const glm::vec4& color, RenderProperties& properties)
+	void Renderer2D::DrawQuadSprite(const glm::mat4& transform, SpriteRendererComponent& src, int EntityID)
+	{
+		DE_PROFILE_FUNCTION();
+
+		DrawQuadWithTransform(transform, nullptr, src.Color, EntityID);
+	}
+
+	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, float Rotation, const glm::vec2& size, const glm::vec4& color)
 	{
 		DE_PROFILE_FUNCTION();
 
@@ -248,10 +259,10 @@ namespace Engine
 			{ size.x, size.y, 0.f }
 		);
 
-		DrawQuadWithTransform(transform, nullptr, color, properties);
+		DrawQuadWithTransform(transform, nullptr, color);
 	}
 
-	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, float Rotation, const glm::vec2& size, const Ref<Texture2D> texture, RenderProperties& properties)
+	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, float Rotation, const glm::vec2& size, const Ref<Texture2D> texture)
 	{
 		DE_PROFILE_FUNCTION();
 
@@ -266,7 +277,7 @@ namespace Engine
 			{ size.x, size.y, 0.f }
 		);
 
-		DrawQuadWithTransform(transform, texture, glm::vec4(1.f), properties);
+		DrawQuadWithTransform(transform, texture, glm::vec4(1.f));
 	}
 
 	void Renderer2D::ResetStats()
@@ -279,7 +290,7 @@ namespace Engine
 		return Data.Stats;
 	}
 
-	void Renderer2D::DrawQuadWithTransform(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, RenderProperties& properties)
+	void Renderer2D::DrawQuadWithTransform(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int EntityID)
 	{
 		if (Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
@@ -288,7 +299,7 @@ namespace Engine
 		bool bIsUsingTexture = texture ? true : false;
 		
 		glm::vec4 VertexColor = bIsUsingTexture ? glm::vec4(1.f) : color;
-		float VertexTilingFactor = bIsUsingTexture ? properties.TilingFactor : 1.f;
+		float VertexTilingFactor = 1.f;
 
 		uint32_t textureIndex = 0;
 
@@ -317,6 +328,7 @@ namespace Engine
 		Data.QuadVertexBufferPtr->TexCoord = { 0.f, 0.f };
 		Data.QuadVertexBufferPtr->TexIndex = (float)textureIndex;
 		Data.QuadVertexBufferPtr->TilingFactor = VertexTilingFactor;
+		Data.QuadVertexBufferPtr->EntityID = EntityID;
 		Data.QuadVertexBufferPtr++;
 
 		Data.QuadVertexBufferPtr->Position = transform * glm::vec4(Data.QuadVertexPositions[1], 1.f);
@@ -324,6 +336,7 @@ namespace Engine
 		Data.QuadVertexBufferPtr->TexCoord = { 1.f, 0.f };
 		Data.QuadVertexBufferPtr->TexIndex = (float)textureIndex;
 		Data.QuadVertexBufferPtr->TilingFactor = VertexTilingFactor;
+		Data.QuadVertexBufferPtr->EntityID = EntityID;
 		Data.QuadVertexBufferPtr++;
 
 		Data.QuadVertexBufferPtr->Position = transform * glm::vec4(Data.QuadVertexPositions[2], 1.f);
@@ -331,6 +344,7 @@ namespace Engine
 		Data.QuadVertexBufferPtr->TexCoord = { 1.f, 1.f };
 		Data.QuadVertexBufferPtr->TexIndex = (float)textureIndex;
 		Data.QuadVertexBufferPtr->TilingFactor = VertexTilingFactor;
+		Data.QuadVertexBufferPtr->EntityID = EntityID;
 		Data.QuadVertexBufferPtr++;
 
 		Data.QuadVertexBufferPtr->Position = transform * glm::vec4(Data.QuadVertexPositions[3], 1.f);
@@ -338,6 +352,7 @@ namespace Engine
 		Data.QuadVertexBufferPtr->TexCoord = { 0.f, 1.f };
 		Data.QuadVertexBufferPtr->TexIndex = (float)textureIndex;
 		Data.QuadVertexBufferPtr->TilingFactor = VertexTilingFactor;
+		Data.QuadVertexBufferPtr->EntityID = EntityID;
 		Data.QuadVertexBufferPtr++;
 
 		Data.QuadIndexCount += 6;

@@ -24,6 +24,7 @@ namespace Engine
 
 	private:
 		bool OnKeyPressedEvent(KeyPressedEvent& event);
+		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
 
 	private:
 		Ref<Framebuffer> m_FrameBuffer;
@@ -32,9 +33,14 @@ namespace Engine
 
 		glm::vec2 ViewportSize = { 0.f, 0.f };
 
-		bool bIsViewportFocused = true;
+		bool bIsViewportFocused = false;
+		bool bIsViewportHovered = false;
+
+		glm::vec2 ViewportBounds[2];
 
 		EditorCamera editorCamera;
+
+		Entity HoveredEntity;
 
 		int GizmoType = -1;
 

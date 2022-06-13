@@ -22,17 +22,17 @@ namespace Engine
 			glBindTexture(TextureTarget(IsMultiSample), ID);
 		}
 
-		static void AttachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+		static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
 		{
 			bool multisampled = samples > 1;
 
 			if (multisampled)
 			{
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
 			}
 			else
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -76,6 +76,22 @@ namespace Engine
 					return true;
 				default:
 					return false;
+			}
+		}
+
+		static GLenum GetGLFormat(FramebufferTextureFormat format)
+		{
+			switch (format)
+			{
+				case Engine::FramebufferTextureFormat::RGBA8:
+					return GL_RGBA8;
+				case Engine::FramebufferTextureFormat::RED_INTEGER:
+					return GL_RED_INTEGER;
+				default:
+				{
+					DE_CORE_ASSERT(false, "Unsupported texture format");
+					return GL_NONE;
+				}
 			}
 		}
 	}
@@ -136,6 +152,19 @@ namespace Engine
 							ColorAttachments[i],
 							BufferSpecification.Samples,
 							GL_RGBA8,
+							GL_RGBA,
+							BufferSpecification.Width,
+							BufferSpecification.Height,
+							i
+						);
+					} break;
+					case FramebufferTextureFormat::RED_INTEGER:
+					{
+						Utils::AttachColorTexture(
+							ColorAttachments[i],
+							BufferSpecification.Samples,
+							GL_R32I,
+							GL_RED_INTEGER,
 							BufferSpecification.Width,
 							BufferSpecification.Height,
 							i
@@ -154,19 +183,19 @@ namespace Engine
 
 			switch (DepthAttachmentSpecification.TextureFormat)
 			{
-			case FramebufferTextureFormat::DEPTH24STENCIL8:
-			{
-				Utils::AttachDepthTexture(
-					DepthAttachment,
-					BufferSpecification.Samples,
-					GL_DEPTH24_STENCIL8,
-					GL_DEPTH_STENCIL_ATTACHMENT,
-					BufferSpecification.Width,
-					BufferSpecification.Height
-				);
-			} break;
-			default:
-				break;
+				case FramebufferTextureFormat::DEPTH24STENCIL8:
+				{
+					Utils::AttachDepthTexture(
+						DepthAttachment,
+						BufferSpecification.Samples,
+						GL_DEPTH24_STENCIL8,
+						GL_DEPTH_STENCIL_ATTACHMENT,
+						BufferSpecification.Width,
+						BufferSpecification.Height
+					);
+				} break;
+				default:
+					break;
 			}
 		}
 
@@ -210,5 +239,33 @@ namespace Engine
 		BufferSpecification.Height = Height;
 
 		Invalidate();
+	}
+
+	int OpenGLFramebuffer::ReadPixel(uint32_t AttachmentIndex, int x, int y)
+	{
+		DE_CORE_ASSERT(AttachmentIndex < ColorAttachments.size(), "Attachment Index is out of range");
+
+		Bind();
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + AttachmentIndex);
+
+		int pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+
+		return pixelData;
+	}
+
+	void OpenGLFramebuffer::ClearAttachment(uint32_t AttachmentIndex, int value)
+	{
+		DE_CORE_ASSERT(AttachmentIndex < ColorAttachments.size(), "Attachment Index is out of range");
+
+		auto& spec = ColorAttachmentSpecifications[AttachmentIndex];
+
+		glClearTexImage(
+			ColorAttachments[AttachmentIndex],
+			0,
+			Utils::GetGLFormat(spec.TextureFormat),
+			GL_INT,
+			&value
+		);
 	}
 }

@@ -16,7 +16,12 @@ namespace Engine
 	{
 		Engine::FramebufferSpecification Specs;
 
-		Specs.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+		Specs.Attachments = {
+			FramebufferTextureFormat::RGBA8,
+			FramebufferTextureFormat::RED_INTEGER,
+			FramebufferTextureFormat::Depth
+		};
+
 		Specs.Width = 1280;
 		Specs.Height = 720;
 		m_FrameBuffer = Engine::Framebuffer::Create(Specs);
@@ -41,9 +46,34 @@ namespace Engine
 
 		m_FrameBuffer->Bind();
 
+		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
+		Engine::RenderCommand::Clear();
+
+		m_FrameBuffer->ClearAttachment(1, -1);
+
 		editorCamera.OnUpdate(DeltaTime);
 
 		ActiveScene->OnUpdateEditor(DeltaTime, editorCamera);
+
+		auto [mx, my] = ImGui::GetMousePos();
+
+		mx -= ViewportBounds[0].x;
+		my -= ViewportBounds[0].y;
+		glm::vec2 ViewportSize = ViewportBounds[1] - ViewportBounds[0];
+		my = ViewportSize.y - my;
+
+		int MouseX = (int)mx;
+		int MouseY = (int)my;
+
+		if (MouseX >= 0 && MouseY >= 0 && MouseX < (int)ViewportSize.x && MouseY < (int)ViewportSize.y)
+		{
+			int pixelData = m_FrameBuffer->ReadPixel(1, MouseX, MouseY);
+
+			if (pixelData == -1)
+				HoveredEntity = { };
+			else
+				HoveredEntity = { (entt::entity)pixelData, ActiveScene.get() };
+		}
 
 		m_FrameBuffer->Unbind();
 	}
@@ -167,6 +197,9 @@ namespace Engine
 		{
 			ImGui::Begin("Settings");
 
+			const char* tag = HoveredEntity.IsValid() ? HoveredEntity.GetComponent<TagComponent>().Tag.c_str() : "None";
+
+			ImGui::Text("Hovered Entity: %s", tag);
 			ImGui::Text("Renderer2D Stats:");
 			ImGui::Text("Draw Calls: %i", stats.DrawCalls);
 			ImGui::Text("Quad Count: %i", stats.QuadCount);
@@ -181,6 +214,7 @@ namespace Engine
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f, 0.f });
 			ImGui::Begin("Viewport");
+
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 			
 			if (ViewportSize != *((glm::vec2*)&viewportPanelSize) && viewportPanelSize.x > 0 && viewportPanelSize.y > 0)
@@ -195,6 +229,14 @@ namespace Engine
 			uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)BufferID, viewportPanelSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
 
+			ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
+			ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+
+			ImVec2 viewportOffset = ImGui::GetWindowPos();
+
+			ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+			ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
 			//Gizmos
 			Entity selectedEntity = HPanel.GetSelectedEntity();
 
@@ -204,10 +246,12 @@ namespace Engine
 
 				ImGuizmo::SetDrawlist();
 
-				float windowWidth = ImGui::GetWindowWidth();
-				float windowHeight = ImGui::GetWindowHeight();
-
-				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+				ImGuizmo::SetRect(
+					ViewportBounds[0].x,
+					ViewportBounds[0].y,
+					ViewportBounds[1].x - ViewportBounds[0].x,
+					ViewportBounds[1].y - ViewportBounds[0].y
+				);
 
 				const glm::mat4& cameraProjection = editorCamera.GetProjection();
 				glm::mat4 cameraView = editorCamera.GetViewMatrix();
@@ -238,10 +282,15 @@ namespace Engine
 				}
 			}
 
-			if (ImGui::IsWindowFocused() && ImGui::IsWindowHovered())
+			if (ImGui::IsWindowFocused())
 				bIsViewportFocused = true;
 			else
 				bIsViewportFocused = false;
+
+			if (ImGui::IsWindowHovered())
+				bIsViewportHovered = true;
+			else
+				bIsViewportHovered = false;
 
 			ImGui::End();
 			ImGui::PopStyleVar();
@@ -256,6 +305,7 @@ namespace Engine
 	{
 		EventDispatcher d(event);
 		d.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressedEvent));
+		d.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(OnMouseButtonPressedEvent));
 
 		editorCamera.OnEvent(event);
 	}
@@ -281,6 +331,19 @@ namespace Engine
 			default:
 				return false;
 			}
+		}
+
+		return false;
+	}
+
+	bool EditorLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& event)
+	{
+		if (event.GetMouseButton() == MouseButtonInput::MouseButton_Left)
+		{
+			if(bIsViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(KeyInput::Key_LeftAlt))
+				HPanel.SetSelectedEntity(HoveredEntity);
+
+			return true;
 		}
 
 		return false;

@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "EditorCamera.h"
+#include "Engine/Scene/Components.h"
 
 namespace Engine
 {
@@ -10,8 +11,6 @@ namespace Engine
 	class Renderer2D
 	{
 	public:
-		struct RenderProperties;
-
 		static void Init();
 		static void Shutdown();
 
@@ -24,53 +23,48 @@ namespace Engine
 		static void DrawQuad(
 			const glm::vec3& position,
 			const glm::vec2& size,
-			const glm::vec4& color,
-			RenderProperties& properties = RenderProperties()
+			const glm::vec4& color
 		);
 
 		static void DrawQuad(
 			const glm::vec3& position,
 			const glm::vec2& size,
-			const Ref<Texture2D> texture,
-			RenderProperties& properties = RenderProperties()
+			const Ref<Texture2D> texture
 		);
 
 		static void DrawQuad(
 			const glm::mat4& transform,
-			const glm::vec4& color,
-			RenderProperties& properties = RenderProperties()
+			const glm::vec4& color
 		);
 
 		static void DrawQuad(
 			const glm::mat4& transform,
-			const Ref<Texture2D> texture,
-			RenderProperties& properties = RenderProperties()
+			const Ref<Texture2D> texture
+		);
+
+		static void DrawQuadSprite(
+			const glm::mat4& transform,
+			SpriteRendererComponent& src,
+			int EntityID = -1
 		);
 
 		static void DrawRotatedQuad(
 			const glm::vec3& position,
 			float Rotation,
 			const glm::vec2& size,
-			const glm::vec4& color,
-			RenderProperties& properties = RenderProperties()
+			const glm::vec4& color
 		);
 
 		static void DrawRotatedQuad(
 			const glm::vec3& position,
 			float Rotation,
 			const glm::vec2& size,
-			const Ref<Texture2D> texture,
-			RenderProperties& properties = RenderProperties()
+			const Ref<Texture2D> texture
 		);
 
 		static void ResetStats();
 
 	public:
-		struct RenderProperties
-		{
-			float TilingFactor = 1.f;
-		};
-
 		struct Statistics
 		{
 			uint32_t DrawCalls = 0;
@@ -87,7 +81,7 @@ namespace Engine
 			const glm::mat4& transform,
 			Ref<Texture2D> texture = nullptr,
 			const glm::vec4& color = glm::vec4(1.f),
-			RenderProperties& properties = RenderProperties()
+			int EntityID = -1
 		);
 
 		static void FlushAndReset();

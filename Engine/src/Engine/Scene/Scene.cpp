@@ -48,9 +48,6 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
-		Engine::RenderCommand::Clear();
-
 		Renderer2D::BeginScene(camera);
 
 		auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
@@ -58,7 +55,7 @@ namespace Engine
 		{
 			auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
-			Renderer2D::DrawQuad(transform.GetTransformMat4(), sprite.Color);
+			Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
 		}
 
 		Renderer2D::EndScene();
@@ -112,7 +109,7 @@ namespace Engine
 			{
 				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				Renderer2D::DrawQuad(transform.GetTransformMat4(), sprite.Color);
+				Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
 			}
 
 			Renderer2D::EndScene();
