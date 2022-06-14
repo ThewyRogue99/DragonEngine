@@ -7,7 +7,7 @@ namespace Engine
 {
 	Application* Application::Instance = nullptr;
 
-	Application::Application(const std::string& name)
+	Application::Application(const std::string& name, ApplicationCommandLineArgs args) : CommandLineArgs(args)
 	{
 		DE_PROFILE_FUNCTION();
 

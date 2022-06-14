@@ -8,14 +8,14 @@ namespace Engine
 	class EngineEditor : public Application
 	{
 	public:
-		EngineEditor() : Application("Dragon Engine Editor")
+		EngineEditor(ApplicationCommandLineArgs args) : Application("Dragon Engine Editor", args)
 		{
 			PushLayer(new EditorLayer());
 		}
 	};
 
-	Application* CreateApplication()
+	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
-		return new EngineEditor();
+		return new EngineEditor(args);
 	}
 }

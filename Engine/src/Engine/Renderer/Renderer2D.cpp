@@ -1,9 +1,10 @@
 #include "depch.h"
 #include "Renderer2D.h"
-
 #include "Shader.h"
+#include "Engine/Renderer/UniformBuffer.h"
 
-#include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Engine
 {
@@ -48,6 +49,13 @@ namespace Engine
 		};
 
 		Renderer2D::Statistics Stats;
+
+		struct CameraData
+		{
+			glm::mat4 ViewProjection;
+		} CameraBuffer;
+
+		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
 	static Renderer2DData Data;
@@ -106,14 +114,9 @@ namespace Engine
 			true
 		);
 
-		int samplers[Data.MaxTextureSlots] = { 0 };
-
-		for (uint32_t i = 0; i < Data.MaxTextureSlots; i++)
-			samplers[i] = i;
-
-		Data.TextureShader->SetIntArray("u_Textures", samplers, Data.MaxTextureSlots);
-
 		Data.TextureSlots[0] = Data.WhiteTexture;
+
+		Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 	}
 
 	void Renderer2D::Shutdown()
@@ -125,9 +128,8 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		glm::mat4 ViewProjection = camera.GetProjection() * glm::inverse(transform);
-
-		Data.TextureShader->SetMat4("ViewProjection", ViewProjection);
+		Data.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+		Data.CameraUniformBuffer->SetData(&Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		Data.QuadIndexCount = 0;
 		Data.QuadVertexBufferPtr = Data.QuadVertexBufferBase;
@@ -139,9 +141,8 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		glm::mat4 ViewProjection = camera.GetViewProjection();
-
-		Data.TextureShader->SetMat4("ViewProjection", ViewProjection);
+		Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+		Data.CameraUniformBuffer->SetData(&Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		Data.QuadIndexCount = 0;
 		Data.QuadVertexBufferPtr = Data.QuadVertexBufferBase;
@@ -178,6 +179,7 @@ namespace Engine
 		for (uint32_t i = 0; i < Data.TextureSlotIndex; i++)
 			Data.TextureSlots[i]->Bind(i);
 
+		Data.TextureShader->Bind();
 		RenderCommand::DrawIndexed(Data.QuadVertexArray, Data.QuadIndexCount);
 
 		Data.Stats.DrawCalls++;

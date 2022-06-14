@@ -6,13 +6,13 @@
 class Sandbox : public Engine::Application
 {
 public:
-	Sandbox() : Engine::Application("Sandbox")
+	Sandbox(Engine::ApplicationCommandLineArgs args) : Engine::Application("Sandbox", args)
 	{
 		PushLayer(new Sandbox2D());
 	}
 };
 
-Engine::Application* Engine::CreateApplication()
+Engine::Application* Engine::CreateApplication(Engine::ApplicationCommandLineArgs args)
 {
-	return new Sandbox();
+	return new Sandbox(args);
 }

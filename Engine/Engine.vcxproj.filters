@@ -1463,6 +1463,9 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Math\Math.h" />
     <ClInclude Include="src\Engine\Renderer\EditorCamera.h" />
+    <ClInclude Include="src\Engine\Core\Timer.h" />
+    <ClInclude Include="src\Engine\Renderer\UniformBuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1575,5 +1578,7 @@
     </ClCompile>
     <ClCompile Include="src\Engine\Math\Math.cpp" />
     <ClCompile Include="src\Engine\Renderer\EditorCamera.cpp" />
+    <ClCompile Include="src\Engine\Renderer\UniformBuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp" />
   </ItemGroup>
 </Project>

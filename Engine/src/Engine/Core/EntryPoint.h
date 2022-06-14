@@ -2,14 +2,14 @@
 
 #ifdef ENGINE_PLATFORM_WINDOWS
 
-extern Engine::Application* Engine::CreateApplication();
+extern Engine::Application* Engine::CreateApplication(ApplicationCommandLineArgs args);
 
 int main(int argc, char** argv)
 {
 	Engine::Log::Init();
 
 	DE_PROFILE_BEGIN_SESSION("Startup", "EngineProfile-Startup.json");
-	auto App = Engine::CreateApplication();
+	auto App = Engine::CreateApplication({ argc, argv });
 	DE_PROFILE_END_SESSION();
 
 	DE_PROFILE_BEGIN_SESSION("Runtime", "EngineProfile-Runtime.json");

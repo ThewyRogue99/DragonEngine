@@ -28,6 +28,14 @@ namespace Engine
 
 		ActiveScene = CreateRef<Scene>();
 
+		auto commandLineArgs = Application::Get().GetCommandLineArgs();
+		if (commandLineArgs.Count > 1)
+		{
+			auto sceneFilePath = commandLineArgs[1];
+			SceneSerializer serializer(ActiveScene);
+			serializer.Deserialize(sceneFilePath);
+		}
+
 		HPanel.SetContext(ActiveScene);
 
 		editorCamera = EditorCamera(30.f, 16 / 9, 0.1f, 1000.f);

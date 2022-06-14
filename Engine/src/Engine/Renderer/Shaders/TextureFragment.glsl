@@ -1,19 +1,24 @@
-#version 450
+#version 450 core
 
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out int ID;
- 
-in vec4 v_Color;
-in vec2 v_TexCoord;
-in float v_TexIndex;
-in float v_TilingFactor;
-in flat int v_EntityID;
 
-uniform sampler2D u_Textures[32];
+struct VertexOutput
+{
+    vec4 Color;
+    vec2 TexCoord;
+    float TexIndex;
+    float TilingFactor;
+};
+
+layout (location = 0) in VertexOutput Input;
+layout (location = 4) in flat int v_EntityID;
+
+layout (binding = 0) uniform sampler2D u_Textures[32];
 
 void main()
 {
-    FragColor = texture(u_Textures[int(v_TexIndex)], v_TexCoord * v_TilingFactor) * v_Color;
+    FragColor = texture(u_Textures[int(Input.TexIndex)], Input.TexCoord * Input.TilingFactor) * Input.Color;
 
     ID = v_EntityID;
 } 

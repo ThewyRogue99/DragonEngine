@@ -8,10 +8,21 @@
 
 namespace Engine
 {
+	struct ApplicationCommandLineArgs
+	{
+		int Count = 0;
+		char** Args = nullptr;
+
+		const char* operator[](int index) const
+		{
+			return Args[index];
+		}
+	};
+
 	class Application
 	{
 	public:
-		Application(const std::string& name = "Dragon Engine");
+		Application(const std::string& name = "Dragon Engine App", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
 
 		virtual ~Application();
 
@@ -26,6 +37,8 @@ namespace Engine
 
 		inline static Application& Get() { return *Instance; }
 		inline Window& GetWindow() { return *AppWindow; }
+
+		ApplicationCommandLineArgs GetCommandLineArgs() const { return CommandLineArgs; }
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
@@ -43,8 +56,10 @@ namespace Engine
 
 		bool bIsMinimized = false;
 
+		ApplicationCommandLineArgs CommandLineArgs;
+
 		static Application* Instance;
 	};
 
-	Application* CreateApplication();
+	Application* CreateApplication(ApplicationCommandLineArgs args);
 };
