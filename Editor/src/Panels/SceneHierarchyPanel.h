@@ -30,5 +30,7 @@ namespace Engine
 		Ref<Scene> Context;
 
 		Entity SelectedEntity;
+
+		static Ref<Texture2D> CheckerboardTexture;
 	};
 }

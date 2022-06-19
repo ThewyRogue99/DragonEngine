@@ -243,7 +243,7 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		DrawQuadWithTransform(transform, nullptr, src.Color, EntityID);
+		DrawQuadWithTransform(transform, src.Texture, src.Color, EntityID, { src.TilingFactor });
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& position, float Rotation, const glm::vec2& size, const glm::vec4& color)
@@ -292,7 +292,7 @@ namespace Engine
 		return Data.Stats;
 	}
 
-	void Renderer2D::DrawQuadWithTransform(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int EntityID)
+	void Renderer2D::DrawQuadWithTransform(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int EntityID, RenderProperties properties)
 	{
 		if (Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 			FlushAndReset();
@@ -301,7 +301,7 @@ namespace Engine
 		bool bIsUsingTexture = texture ? true : false;
 		
 		glm::vec4 VertexColor = bIsUsingTexture ? glm::vec4(1.f) : color;
-		float VertexTilingFactor = 1.f;
+		float VertexTilingFactor = properties.TilingFactor;
 
 		uint32_t textureIndex = 0;
 

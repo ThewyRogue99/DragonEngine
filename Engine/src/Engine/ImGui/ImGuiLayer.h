@@ -24,7 +24,9 @@ namespace Engine
 		void End();
 
 	private:
-		void SetUIStyle(ImGuiStyle& style);
+		void SetUIDarkTheme();
+
+		void SetUIDarkBlueTheme();
 
 		float Time = 0.f;
 	};

@@ -77,11 +77,17 @@ namespace Engine
 		static Statistics GetStats();
 
 	private:
+		struct RenderProperties
+		{
+			float TilingFactor = 1.f;
+		};
+
 		static void DrawQuadWithTransform(
 			const glm::mat4& transform,
 			Ref<Texture2D> texture = nullptr,
 			const glm::vec4& color = glm::vec4(1.f),
-			int EntityID = -1
+			int EntityID = -1,
+			RenderProperties properties = RenderProperties()
 		);
 
 		static void FlushAndReset();

@@ -46,12 +46,11 @@ namespace Engine
 	struct SpriteRendererComponent
 	{
 		glm::vec4 Color = glm::vec4(1.f);
+		Ref<Texture2D> Texture = nullptr;
+		float TilingFactor = 1.f;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
-
-		SpriteRendererComponent(const glm::vec4& color)
-			: Color(color) { }
 	};
 
 	struct CameraComponent

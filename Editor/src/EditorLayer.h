@@ -5,6 +5,7 @@
 #include <Engine/Renderer/OrthographicCameraController.h>
 
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 
 namespace Engine
 {
@@ -26,6 +27,14 @@ namespace Engine
 		bool OnKeyPressedEvent(KeyPressedEvent& event);
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
 
+		void NewScene();
+
+		void OpenScene();
+		void OpenScene(const wchar_t* path);
+
+		void SaveScene();
+		void SaveScene(const wchar_t* path);
+
 	private:
 		Ref<Framebuffer> m_FrameBuffer;
 
@@ -46,5 +55,7 @@ namespace Engine
 
 		// Panels
 		SceneHierarchyPanel HPanel;
+
+		ContentBrowserPanel CBPanel;
 	};
 }

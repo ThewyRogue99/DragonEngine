@@ -9,11 +9,11 @@ namespace Engine
 	public:
 		SceneSerializer(const Ref<Scene>& scene);
 
-		void Serialize(const std::string& filepath);
-		void SerializeRuntime(const std::string& filepath);
+		void Serialize(const std::wstring& filepath);
+		void SerializeRuntime(const std::wstring& filepath);
 
-		bool Deserialize(const std::string& filepath);
-		bool DeserializeRuntime(const std::string& filepath);
+		bool Deserialize(const std::wstring& filepath);
+		bool DeserializeRuntime(const std::wstring& filepath);
 
 	private:
 		Ref<Scene> m_Scene;

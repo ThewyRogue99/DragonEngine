@@ -152,7 +152,7 @@ namespace Engine {
 		out << YAML::EndMap; // Entity
 	}
 
-	void SceneSerializer::Serialize(const std::string& filepath)
+	void SceneSerializer::Serialize(const std::wstring& filepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -174,13 +174,13 @@ namespace Engine {
 		fout << out.c_str();
 	}
 
-	void SceneSerializer::SerializeRuntime(const std::string& filepath)
+	void SceneSerializer::SerializeRuntime(const std::wstring& filepath)
 	{
 		// Not implemented
 		DE_CORE_ASSERT(false, "Runtime serialization is currently not supported!");
 	}
 
-	bool SceneSerializer::Deserialize(const std::string& filepath)
+	bool SceneSerializer::Deserialize(const std::wstring& filepath)
 	{
 		std::ifstream stream(filepath);
 		std::stringstream strStream;
@@ -251,7 +251,7 @@ namespace Engine {
 		return true;
 	}
 
-	bool SceneSerializer::DeserializeRuntime(const std::string& filepath)
+	bool SceneSerializer::DeserializeRuntime(const std::wstring& filepath)
 	{
 		// Not implemented
 		DE_CORE_ASSERT(false, "Runtime deserialization is currently not supported!");

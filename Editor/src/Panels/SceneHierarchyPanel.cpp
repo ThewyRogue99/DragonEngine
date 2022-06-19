@@ -3,8 +3,12 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
+#include <codecvt>
+
 namespace Engine
 {
+	Ref<Texture2D> SceneHierarchyPanel::CheckerboardTexture = nullptr;
+
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
 	{
 		SetContext(context);
@@ -18,6 +22,9 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
+		if (!CheckerboardTexture)
+			CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
+
 		ImGui::Begin("Scene Hierarchy");
 
 		Context->SceneRegistry.each([&](auto entityID)
@@ -265,6 +272,23 @@ namespace Engine
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer Component", entity, [](SpriteRendererComponent& component)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+
+			ImGui::Button("Texture", { 100.f, 0.f });
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+
+					std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
+					std::string utf8path = conv.to_bytes(path);
+
+					component.Texture = Texture2D::Create(utf8path.c_str());
+				}
+
+				ImGui::EndDragDropTarget();
+			}
 		});
 
 		DrawComponent<CameraComponent>("Camera Component", entity, [](CameraComponent& component)

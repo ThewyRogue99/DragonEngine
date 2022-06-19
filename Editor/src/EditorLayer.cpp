@@ -5,6 +5,8 @@
 
 #include "ImGuizmo/ImGuizmo.h"
 
+#include <codecvt>
+
 namespace Engine
 {
 	EditorLayer::EditorLayer() : Layer("Editor Layer")
@@ -31,9 +33,13 @@ namespace Engine
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if (commandLineArgs.Count > 1)
 		{
-			auto sceneFilePath = commandLineArgs[1];
-			SceneSerializer serializer(ActiveScene);
-			serializer.Deserialize(sceneFilePath);
+			/*
+				auto sceneFilePath = commandLineArgs[1];
+				SceneSerializer serializer(ActiveScene);
+				serializer.Deserialize(sceneFilePath);
+
+				----- TODO: Implement a better string api ----
+			*/
 		}
 
 		HPanel.SetContext(ActiveScene);
@@ -162,37 +168,15 @@ namespace Engine
 			if (ImGui::BeginMenu("File"))
 			{
 				if (ImGui::MenuItem("New Scene", "Ctrl+N"))
-				{
-					ActiveScene = CreateRef<Scene>();
-					ActiveScene->OnViewportResize((uint32_t)ViewportSize.x, (uint32_t)ViewportSize.y);
-					HPanel.SetContext(ActiveScene);
-				}
+					NewScene();
 
 				if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
 				{
-					std::string filepath = FileDialogs::OpenFile("Dragon Engine Scene (*.descene)\0*.descene\0");
-
-					if (!filepath.empty())
-					{
-						ActiveScene = CreateRef<Scene>();
-						ActiveScene->OnViewportResize((uint32_t)ViewportSize.x, (uint32_t)ViewportSize.y);
-						HPanel.SetContext(ActiveScene);
-
-						SceneSerializer s(ActiveScene);
-						s.Deserialize(filepath);
-					}
+					OpenScene();
 				}
 
 				if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
-				{
-					std::string filepath = FileDialogs::SaveFile("Dragon Engine Scene (*.descene)\0*.descene\0");
-
-					if (!filepath.empty())
-					{
-						SceneSerializer s(ActiveScene);
-						s.Serialize(filepath);
-					}
-				}
+					SaveScene();
 
 				ImGui::EndMenu();
 			}
@@ -236,6 +220,21 @@ namespace Engine
 
 			uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)BufferID, viewportPanelSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				// Highlight when dragged to viewport
+				ImGui::GetForegroundDrawList()->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 0, 255));
+
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+
+					OpenScene(path);
+				}
+
+				ImGui::EndDragDropTarget();
+			}
 
 			ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
 			ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -305,6 +304,7 @@ namespace Engine
 		}
 
 		HPanel.OnImGuiRender();
+		CBPanel.OnImGuiRender();
 
 		ImGui::End();
 	}
@@ -355,5 +355,50 @@ namespace Engine
 		}
 
 		return false;
+	}
+
+	void EditorLayer::NewScene()
+	{
+		ActiveScene = CreateRef<Scene>();
+		ActiveScene->OnViewportResize((uint32_t)ViewportSize.x, (uint32_t)ViewportSize.y);
+		HPanel.SetContext(ActiveScene);
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filepath = FileDialogs::OpenFile("Dragon Engine Scene (*.descene)\0*.descene\0");
+
+		if (!filepath.empty())
+		{
+			std::wstring str_turned_to_wstr = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(filepath);
+
+			OpenScene(str_turned_to_wstr.c_str());
+		}
+	}
+
+	void EditorLayer::OpenScene(const wchar_t* path)
+	{
+		NewScene();
+
+		SceneSerializer s(ActiveScene);
+		s.Deserialize(path);
+	}
+
+	void EditorLayer::SaveScene()
+	{
+		std::string filepath = FileDialogs::SaveFile("Dragon Engine Scene (*.descene)\0*.descene\0");
+
+		if (!filepath.empty())
+		{
+			std::wstring str_turned_to_wstr = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(filepath);
+
+			SaveScene(str_turned_to_wstr.c_str());
+		}
+	}
+
+	void EditorLayer::SaveScene(const wchar_t* path)
+	{
+		SceneSerializer s(ActiveScene);
+		s.Serialize(path);
 	}
 }
