@@ -11,7 +11,8 @@ namespace Engine
 {
 	EditorLayer::EditorLayer() : Layer("Editor Layer")
 	{
-		
+		PlayIcon = Texture2D::Create("Resource/Icon/PlayButton.png");
+		StopIcon = Texture2D::Create("Resource/Icon/StopButton.png");
 	}
 
 	void EditorLayer::OnAttach()
@@ -65,9 +66,21 @@ namespace Engine
 
 		m_FrameBuffer->ClearAttachment(1, -1);
 
-		editorCamera.OnUpdate(DeltaTime);
+		switch (CurrentSceneState)
+		{
+			case Engine::EditorLayer::SceneState::Edit:
+			{
+				if(bIsViewportFocused)
+					editorCamera.OnUpdate(DeltaTime);
 
-		ActiveScene->OnUpdateEditor(DeltaTime, editorCamera);
+				ActiveScene->OnUpdateEditor(DeltaTime, editorCamera);
+			} break;
+			case Engine::EditorLayer::SceneState::Play:
+			{
+				ActiveScene->OnUpdateRuntime(DeltaTime);
+			} break;
+		}
+
 
 		auto [mx, my] = ImGui::GetMousePos();
 
@@ -303,6 +316,7 @@ namespace Engine
 			ImGui::PopStyleVar();
 		}
 
+		UI_Toolbar();
 		HPanel.OnImGuiRender();
 		CBPanel.OnImGuiRender();
 
@@ -400,5 +414,52 @@ namespace Engine
 	{
 		SceneSerializer s(ActiveScene);
 		s.Serialize(path);
+	}
+
+	void EditorLayer::OnScenePlay()
+	{
+		CurrentSceneState = SceneState::Play;
+	}
+
+	void EditorLayer::OnSceneStop()
+	{
+		CurrentSceneState = SceneState::Edit;
+	}
+
+	void EditorLayer::UI_Toolbar()
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2( 0.f, 2.f ));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2( 0.f, 0.f ));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4( 0.f, 0.f, 0.f, 0.f ));
+		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 0.f));
+		ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.f, 0.f, 0.f, 0.f));
+
+		ImGui::Begin(
+			"##toolbar",
+			nullptr,
+			ImGuiWindowFlags_NoDecoration |
+			ImGuiWindowFlags_NoScrollbar |
+			ImGuiWindowFlags_NoScrollWithMouse
+		);
+
+		ImVec2 windowSize = ImGui::GetWindowSize();
+		float buttonSize = windowSize.y - 6.f;
+
+		Ref<Texture2D> icon = (CurrentSceneState == SceneState::Edit) ? PlayIcon : StopIcon;
+
+		ImGui::SetCursorPos(ImVec2((windowSize.x * 0.5f) - (buttonSize * 0.5f), (windowSize.y * 0.5f) - (buttonSize * 0.5f)));
+
+		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), 0))
+		{
+			if (CurrentSceneState == SceneState::Edit)
+				OnScenePlay();
+			else if (CurrentSceneState == SceneState::Play)
+				OnSceneStop();
+		}
+
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+
+		ImGui::End();
 	}
 }

@@ -35,6 +35,11 @@ namespace Engine
 		void SaveScene();
 		void SaveScene(const wchar_t* path);
 
+		void OnScenePlay();
+		void OnSceneStop();
+
+		void UI_Toolbar();
+
 	private:
 		Ref<Framebuffer> m_FrameBuffer;
 
@@ -53,9 +58,19 @@ namespace Engine
 
 		int GizmoType = -1;
 
+		// Resources
+		Ref<Texture2D> PlayIcon, StopIcon;
+
 		// Panels
 		SceneHierarchyPanel HPanel;
 
 		ContentBrowserPanel CBPanel;
+
+		enum class SceneState
+		{
+			Edit = 0, Play
+		};
+
+		SceneState CurrentSceneState = SceneState::Edit;
 	};
 }

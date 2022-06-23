@@ -15,7 +15,7 @@ namespace Engine
 		glTextureStorage2D(TextureID, 1, InternalFormat, Width, Height);
 
 		glTextureParameteri(TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -55,7 +55,7 @@ namespace Engine
 		glTextureStorage2D(TextureID, 1, InternalFormat, Width, Height);
 
 		glTextureParameteri(TextureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(TextureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTextureParameteri(TextureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);

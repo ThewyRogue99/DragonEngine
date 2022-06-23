@@ -7,8 +7,6 @@
 
 namespace Engine
 {
-	Ref<Texture2D> SceneHierarchyPanel::CheckerboardTexture = nullptr;
-
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
 	{
 		SetContext(context);
@@ -22,9 +20,6 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
-		if (!CheckerboardTexture)
-			CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
-
 		ImGui::Begin("Scene Hierarchy");
 
 		Context->SceneRegistry.each([&](auto entityID)
