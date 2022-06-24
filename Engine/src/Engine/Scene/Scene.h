@@ -4,6 +4,8 @@
 #include "Engine/Core/Timestep.h"
 #include "Engine/Renderer/EditorCamera.h"
 
+class b2World;
+
 namespace Engine
 {
 	class Entity;
@@ -17,6 +19,9 @@ namespace Engine
 		Entity CreateEntity(const std::string& name = std::string());
 
 		void DestroyEntity(Entity entity);
+
+		void OnRuntimeStart();
+		void OnRuntimeStop();
 
 		void OnUpdateEditor(Timestep timestep, EditorCamera& camera);
 		void OnUpdateRuntime(Timestep timestep);
@@ -35,6 +40,8 @@ namespace Engine
 
 	private:
 		entt::registry SceneRegistry;
+
+		b2World* m_PhysicsWorld = nullptr;
 
 		uint32_t ViewportWidth = 0, ViewportHeight = 0;
 	};

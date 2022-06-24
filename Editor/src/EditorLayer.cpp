@@ -419,11 +419,13 @@ namespace Engine
 	void EditorLayer::OnScenePlay()
 	{
 		CurrentSceneState = SceneState::Play;
+		ActiveScene->OnRuntimeStart();
 	}
 
 	void EditorLayer::OnSceneStop()
 	{
 		CurrentSceneState = SceneState::Edit;
+		ActiveScene->OnRuntimeStop();
 	}
 
 	void EditorLayer::UI_Toolbar()

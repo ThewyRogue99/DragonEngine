@@ -2,7 +2,7 @@ project "Engine"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
@@ -33,7 +33,8 @@ project "Engine"
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.Box2D}"
 	}
 
 	links
@@ -42,6 +43,7 @@ project "Engine"
 		"GLAD",
 		"ImGui",
 		"yaml-cpp",
+		"Box2D",
 		"opengl32.lib"
 	}
 
