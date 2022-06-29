@@ -1,46 +1,39 @@
+#include "depch.h"
 #include "SceneHierarchyPanel.h"
+
+#include "Engine/Scene/Components.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
-#include <codecvt>
-
 namespace Engine
 {
-	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
+	SceneHierarchyPanel::SceneHierarchyPanel() : EditorPanel("Scene Hierarchy")
 	{
-		SetContext(context);
+
 	}
 
-	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
+	void SceneHierarchyPanel::OnRender(float DeltaTime)
 	{
-		Context = context;
-		SelectedEntity = {};
-	}
-
-	void SceneHierarchyPanel::OnImGuiRender()
-	{
-		ImGui::Begin("Scene Hierarchy");
+		EditorPanel::OnRender(DeltaTime);
 
 		Context->SceneRegistry.each([&](auto entityID)
 		{
-			DrawEntityNode({ entityID, Context.get() });
+			DrawEntityNode({ entityID, Context });
 		});
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-			SelectedEntity = { };
+			SetSelectedEntity({ });
 
 		if (ImGui::BeginPopupContextWindow(0, 1, false))
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
 			{
-				Context->CreateEntity("Empty Entity");
+				Context->CreateEntity(TEXT("Empty Entity"));
 			}
 
 			ImGui::EndPopup();
 		}
-
-		ImGui::End();
 
 		ImGui::Begin("Properties");
 
@@ -50,12 +43,34 @@ namespace Engine
 		ImGui::End();
 	}
 
-	void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
+	void SceneHierarchyPanel::SetSelectedEntity(Entity entity, bool SetData)
 	{
 		if (entity.IsValid())
 			SelectedEntity = entity;
 		else
 			SelectedEntity = { };
+
+		if (SetData)
+			AddData(TEXT("SelectedEntity"), &entity, sizeof(entity));
+	}
+
+	void SceneHierarchyPanel::OnData(const CString& Name, void* Data, size_t size)
+	{
+		EditorPanel::OnData(Name, Data, size);
+
+		if (Name == TEXT("Scene"))
+		{
+			memcpy(&Context, Data, size);
+		}
+		else if(Name == TEXT("SelectedEntity"))
+		{
+			Entity entity = *static_cast<Entity*>(Data);
+
+			if (entity.IsValid())
+				SelectedEntity = entity;
+			else
+				SelectedEntity = { };
+		}
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
@@ -65,11 +80,13 @@ namespace Engine
 		ImGuiTreeNodeFlags flags = (SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 
-		bool open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
+		std::string tag_str = TypeUtils::FromUTF16(tag);
+
+		bool open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag_str.c_str());
 
 		if (ImGui::IsItemClicked())
 		{
-			SelectedEntity = entity;
+			SetSelectedEntity(entity);
 		}
 
 		if (ImGui::BeginPopupContextItem())
@@ -79,7 +96,7 @@ namespace Engine
 				Context->DestroyEntity(entity);
 
 				if (SelectedEntity == entity)
-					SelectedEntity = { };
+					SetSelectedEntity({ });
 			}
 
 			ImGui::EndPopup();
@@ -225,11 +242,13 @@ namespace Engine
 		{
 			auto& component = entity.GetComponent<TagComponent>();
 
+			std::string tag_str = TypeUtils::FromUTF16(component.Tag);
+
 			char buffer[64];
 			memset(buffer, 0, sizeof(buffer));
-			strcpy_s(buffer, sizeof(buffer), component.Tag.c_str());
+			strcpy_s(buffer, sizeof(buffer), tag_str.c_str());
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
-				component.Tag = std::string(buffer);
+				component.Tag = TypeUtils::FromUTF8(buffer);
 		}
 
 		ImGui::SameLine();
@@ -300,10 +319,7 @@ namespace Engine
 				{
 					const wchar_t* path = (const wchar_t*)payload->Data;
 
-					std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
-					std::string utf8path = conv.to_bytes(path);
-
-					component.Texture = Texture2D::Create(utf8path.c_str());
+					component.Texture = Texture2D::Create(path);
 				}
 
 				ImGui::EndDragDropTarget();

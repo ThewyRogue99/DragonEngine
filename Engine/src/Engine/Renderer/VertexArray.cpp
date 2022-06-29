@@ -1,7 +1,11 @@
 #include "depch.h"
-#include "Platform/OpenGL/OpenGLVertexArray.h"
 
 #include "Renderer.h"
+#include "RendererAPI.h"
+
+#include "Engine/Core/Log.h"
+
+#include "Platform/OpenGL/OpenGLVertexArray.h"
 
 namespace Engine
 {

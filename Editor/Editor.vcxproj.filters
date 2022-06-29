@@ -13,6 +13,11 @@
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
+    <ClInclude Include="src\Panels\EditorPanel.h" />
+    <ClInclude Include="src\Panels\PanelManager.h" />
+    <ClInclude Include="src\Panels\ViewportPanel.h" />
+    <ClInclude Include="src\Scene\EditorScene.h" />
+    <ClInclude Include="src\Panels\ToolbarPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApp.cpp" />
@@ -23,5 +28,10 @@
     <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp">
       <Filter>Panels</Filter>
     </ClCompile>
+    <ClCompile Include="src\Panels\EditorPanel.cpp" />
+    <ClCompile Include="src\Panels\PanelManager.cpp" />
+    <ClCompile Include="src\Panels\ViewportPanel.cpp" />
+    <ClCompile Include="src\Scene\EditorScene.cpp" />
+    <ClCompile Include="src\Panels\ToolbarPanel.cpp" />
   </ItemGroup>
 </Project>

@@ -75,7 +75,7 @@ namespace Engine
 					ShaderDataTypeToOpenGLBaseType(element.Type),
 					element.Normalized ? GL_TRUE : GL_FALSE,
 					layout.GetStride(),
-					(const void*)element.Offset
+					(const void*)((uint8_t)element.Offset)
 				);
 
 				index++;
@@ -94,7 +94,7 @@ namespace Engine
 					element.GetComponentCount(),
 					ShaderDataTypeToOpenGLBaseType(element.Type),
 					layout.GetStride(),
-					(const void*)element.Offset
+					(const void*)((uint8_t)element.Offset)
 				);
 
 				index++;

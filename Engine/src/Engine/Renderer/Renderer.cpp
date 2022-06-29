@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Renderer.h"
 
+#include "RenderCommand.h"
+
 #include "Renderer2D.h"
 
 namespace Engine
@@ -12,11 +14,6 @@ namespace Engine
 		RenderCommand::Init();
 
 		Renderer2D::Init();
-	}
-
-	void Renderer::BeginScene(OrthographicCamera& camera)
-	{
-		sceneData.ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 	}
 
 	void Renderer::EndScene()

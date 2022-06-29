@@ -3,7 +3,6 @@
 #include "Camera.h"
 
 #include "Engine/Events/MouseEvent.h"
-
 #include <glm/glm.hpp>
 
 
@@ -15,7 +14,7 @@ namespace Engine
 		EditorCamera() = default;
 		EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
-		void OnUpdate(Timestep ts);
+		void OnUpdate(float DeltaTime);
 		void OnEvent(Event& e);
 
 		inline float GetDistance() const { return m_Distance; }

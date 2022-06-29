@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
+#include "Engine/Debug/Instrumentor.h"
+
 #ifdef ENGINE_PLATFORM_WINDOWS
 
 extern Engine::Application* Engine::CreateApplication(ApplicationCommandLineArgs args);

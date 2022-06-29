@@ -1,12 +1,10 @@
 #include "depch.h"
 #include "ImGuiLayer.h"
 
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include <GLFW/glfw3.h>
 
 #include "Engine/Core/Application.h"
 
@@ -14,7 +12,7 @@
 
 namespace Engine
 {
-	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer")
+	ImGuiLayer::ImGuiLayer() : Layer(TEXT("ImGuiLayer"))
 	{
 
 	}
@@ -181,10 +179,9 @@ namespace Engine
 
 		ImGuiStyle& style = ImGui::GetStyle();
 
-
-		const float kC = .2f;
+		const float kC = 0.2f;
 		const float lum = color.x * .299f + color.y * .587f + color.z * .114f;
-		const float lumK = 1 + lum * .25;
+		const float lumK = 1 + lum * 0.25f;
 
 		ImVec4 wBG(color.x * kC, color.y * kC, color.z * kC, 1.0f);
 
@@ -208,10 +205,8 @@ namespace Engine
 		ImVec4 lin(1.0f, 1.0f, 1.0f, 1.0f);
 		ImVec4 chk(0.60f * lumK, 0.60f * lumK, 0.60f * lumK, 1.0f);
 
-		const ImVec4 ch1(chk.x * .60, chk.y * .60, chk.z * .60, 1.00f);
-		const ImVec4 ch2(chk.x * .80, chk.y * .80, chk.z * .80, 1.00f);
-
-
+		const ImVec4 ch1(chk.x * 0.60f, chk.y * 0.60f, chk.z * 0.60f, 1.00f);
+		const ImVec4 ch2(chk.x * 0.80f, chk.y * 0.80f, chk.z * 0.80f, 1.00f);
 
 		//ImVec4 chk(0.00f, 0.25f, 0.57f, 1.00f);
 

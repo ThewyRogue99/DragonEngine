@@ -41,9 +41,9 @@ namespace Engine
 
 		struct WindowData
 		{
-			const char* Title;
-			unsigned int Width, Height;
-			bool VSync;
+			const char* Title = nullptr;
+			unsigned int Width = 1280, Height = 720;
+			bool VSync = true;
 
 			EventCallbackFn EventCallback;
 		} Data;

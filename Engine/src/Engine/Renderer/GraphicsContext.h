@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
+
 namespace Engine
 {
 	class ENGINE_API GraphicsContext

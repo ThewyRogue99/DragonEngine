@@ -9,12 +9,14 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
+#include <windows.h>
+
 namespace Engine
 {
-	std::string FileDialogs::OpenFile(const char* filter)
+	CString FileDialogs::OpenFile(const wchar_t* filter)
 	{
-		OPENFILENAMEA ofn;
-		CHAR szFile[MAX_PATH] = { 0 };
+		OPENFILENAMEW ofn;
+		WCHAR szFile[MAX_PATH] = { 0 };
 
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
@@ -25,18 +27,18 @@ namespace Engine
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
-		if (GetOpenFileNameA(&ofn) == TRUE)
+		if (GetOpenFileNameW(&ofn) == TRUE)
 		{
 			return ofn.lpstrFile;
 		}
 
-		return std::string();
+		return CString();
 	}
 
-	std::string FileDialogs::SaveFile(const char* filter)
+	CString FileDialogs::SaveFile(const wchar_t* filter)
 	{
-		OPENFILENAMEA ofn;
-		CHAR szFile[MAX_PATH] = { 0 };
+		OPENFILENAMEW ofn;
+		WCHAR szFile[MAX_PATH] = { 0 };
 
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
@@ -47,11 +49,11 @@ namespace Engine
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
-		if (GetSaveFileNameA(&ofn) == TRUE)
+		if (GetSaveFileNameW(&ofn) == TRUE)
 		{
 			return ofn.lpstrFile;
 		}
 
-		return std::string();
+		return CString();
 	}
 }

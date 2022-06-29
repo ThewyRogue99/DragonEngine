@@ -5,17 +5,31 @@
 
 namespace Engine
 {
+	Ref<Texture2D> ContentBrowserPanel::DirectoryIcon = nullptr;
+	Ref<Texture2D> ContentBrowserPanel::FileIcon = nullptr;
+
 	static const std::filesystem::path AssetPath = "assets";
 
-	ContentBrowserPanel::ContentBrowserPanel() : CurrentDirectory(AssetPath)
+	ContentBrowserPanel::ContentBrowserPanel() : EditorPanel("Content Browser"), CurrentDirectory(AssetPath)
 	{
-		DirectoryIcon = Texture2D::Create("Resource/Icon/ContentBrowser/DirectoryIcon.png");
-		FileIcon = Texture2D::Create("Resource/Icon/ContentBrowser/FileIcon.png");
+		DirectoryIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/DirectoryIcon.png"));
+		FileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/FileIcon.png"));
 	}
 
-	void ContentBrowserPanel::OnImGuiRender()
+	void ContentBrowserPanel::OnCreate()
 	{
-		ImGui::Begin("Content Browser");
+		EditorPanel::OnCreate();
+
+		if(!DirectoryIcon)
+			DirectoryIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/DirectoryIcon.png"));
+
+		if(!FileIcon)
+			FileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/FileIcon.png"));
+	}
+
+	void ContentBrowserPanel::OnRender(float DeltaTime)
+	{
+		EditorPanel::OnRender(DeltaTime);
 
 		if (CurrentDirectory != std::filesystem::path(AssetPath))
 		{
@@ -29,7 +43,7 @@ namespace Engine
 		static float thumbnailSize = 100.f;
 		float cellSize = thumbnailSize + padding;
 
-		float panelWidth = ImGui::GetContentRegionAvail().x;
+		float panelWidth = GetWidth();
 		int columnCount = (int)(panelWidth / cellSize);
 		if (columnCount < 1)
 			columnCount = 1;
@@ -79,7 +93,5 @@ namespace Engine
 		}
 
 		ImGui::Columns(1);
-
-		ImGui::End();
 	}
 }

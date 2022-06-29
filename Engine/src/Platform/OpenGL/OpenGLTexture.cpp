@@ -4,6 +4,10 @@
 #include <glad/glad.h>
 #include <stb_image.h>
 
+#pragma warning(push, 0)
+#include <codecvt>
+#pragma warning(pop, 0)
+
 namespace Engine
 {
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
@@ -21,12 +25,16 @@ namespace Engine
 		glTextureParameteri(TextureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(const char* path) : Path(path)
+	OpenGLTexture2D::OpenGLTexture2D(const wchar_t* path) : Path(path)
 	{
 		stbi_set_flip_vertically_on_load(true);
 
+#pragma warning(push, 0)
+		std::string path_str = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(path);
+#pragma warning(pop, 0)
+
 		int width, height, channels;
-		unsigned char* data = stbi_load(Path, &width, &height, &channels, 0);
+		unsigned char* data = stbi_load(path_str.c_str(), &width, &height, &channels, 0);
 		DE_CORE_ASSERT(data, "Failed to load texture image");
 
 		Width = width;

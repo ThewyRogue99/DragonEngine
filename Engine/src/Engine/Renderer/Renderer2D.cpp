@@ -1,7 +1,12 @@
 #include "depch.h"
 #include "Renderer2D.h"
+
+#include "RenderCommand.h"
+
 #include "Shader.h"
 #include "Engine/Renderer/UniformBuffer.h"
+#include "Engine/Renderer/VertexArray.h"
+#include "Engine/Renderer/Buffer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -69,12 +74,12 @@ namespace Engine
 		Data.QuadVertexBuffer = Engine::VertexBuffer::Create(Renderer2DData::MaxVertices * sizeof(QuadVertex));
 
 		Data.QuadVertexBuffer->SetLayout({
-			{ Engine::ShaderDataType::Float3, "a_Position" },
-			{ Engine::ShaderDataType::Float4, "a_Color" },
-			{ Engine::ShaderDataType::Float2, "a_TexCoord" },
-			{ Engine::ShaderDataType::Float, "a_TexIndex" },
-			{ Engine::ShaderDataType::Float, "a_TilingFactor" },
-			{ Engine::ShaderDataType::Int, "a_EntityID" }
+			{ Engine::ShaderDataType::Float3, TEXT("a_Position") },
+			{ Engine::ShaderDataType::Float4, TEXT("a_Color") },
+			{ Engine::ShaderDataType::Float2, TEXT("a_TexCoord") },
+			{ Engine::ShaderDataType::Float, TEXT("a_TexIndex") },
+			{ Engine::ShaderDataType::Float, TEXT("a_TilingFactor") },
+			{ Engine::ShaderDataType::Int, TEXT("a_EntityID") }
 		});
 
 		Data.QuadVertexArray->AddVertexBuffer(Data.QuadVertexBuffer);
@@ -108,7 +113,7 @@ namespace Engine
 		Data.WhiteTexture->SetData(&whiteTextureData, sizeof(whiteTextureData));
 
 		Data.TextureShader = Engine::Shader::Create(
-			"TextureShader",
+			TEXT("TextureShader"),
 			"../Engine/src/Engine/Renderer/Shaders/TextureVertex.glsl",
 			"../Engine/src/Engine/Renderer/Shaders/TextureFragment.glsl",
 			true
@@ -143,20 +148,6 @@ namespace Engine
 
 		Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
 		Data.CameraUniformBuffer->SetData(&Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
-
-		Data.QuadIndexCount = 0;
-		Data.QuadVertexBufferPtr = Data.QuadVertexBufferBase;
-
-		Data.TextureSlotIndex = 1;
-	}
-
-	void Renderer2D::BeginScene(const OrthographicCamera& camera)
-	{
-		DE_PROFILE_FUNCTION();
-
-		glm::mat4 ViewProjection = camera.GetViewProjectionMatrix();
-
-		Data.TextureShader->SetMat4("ViewProjection", ViewProjection);
 
 		Data.QuadIndexCount = 0;
 		Data.QuadVertexBufferPtr = Data.QuadVertexBufferBase;

@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Core.h"
 
+#include <vector>
+
 namespace Engine
 {
 	enum class FramebufferTextureFormat

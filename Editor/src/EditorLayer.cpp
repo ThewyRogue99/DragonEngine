@@ -1,35 +1,29 @@
 #include "EditorLayer.h"
 
+#include "Engine/Types/Types.h"
+#include "Engine/Core/Application.h"
+#include "Engine/Renderer/Renderer2D.h"
+
 #include "Engine/Scene/SceneSerializer.h"
 #include "Engine/Utils/PlatformUtils.h"
 
 #include "ImGuizmo/ImGuizmo.h"
 
-#include <codecvt>
+#include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
+#include "Panels/ViewportPanel.h"
+#include "Panels/ToolbarPanel.h"
 
 namespace Engine
 {
-	EditorLayer::EditorLayer() : Layer("Editor Layer")
+	EditorLayer::EditorLayer() : Layer(TEXT("Editor Layer"))
 	{
-		PlayIcon = Texture2D::Create("Resource/Icon/PlayButton.png");
-		StopIcon = Texture2D::Create("Resource/Icon/StopButton.png");
+		
 	}
 
 	void EditorLayer::OnAttach()
 	{
-		Engine::FramebufferSpecification Specs;
-
-		Specs.Attachments = {
-			FramebufferTextureFormat::RGBA8,
-			FramebufferTextureFormat::RED_INTEGER,
-			FramebufferTextureFormat::Depth
-		};
-
-		Specs.Width = 1280;
-		Specs.Height = 720;
-		m_FrameBuffer = Engine::Framebuffer::Create(Specs);
-
-		ActiveScene = CreateRef<Scene>();
+		ActiveScene = CreateRef<EditorScene>();
 
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if (commandLineArgs.Count > 1)
@@ -43,9 +37,10 @@ namespace Engine
 			*/
 		}
 
-		HPanel.SetContext(ActiveScene);
+		PManager.AddPanels({ new ContentBrowserPanel(), new SceneHierarchyPanel(), new ViewportPanel(), new ToolbarPanel() });
 
-		editorCamera = EditorCamera(30.f, 16 / 9, 0.1f, 1000.f);
+		Scene* ptr = ActiveScene.get();
+		PManager.AddData(TEXT("Scene"), &ptr, sizeof(ptr));
 	}
 
 	void EditorLayer::OnDetach()
@@ -53,72 +48,18 @@ namespace Engine
 
 	}
 
-	void EditorLayer::OnUpdate(Engine::Timestep DeltaTime)
+	void EditorLayer::OnUpdate(float DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
 
 		Engine::Renderer2D::ResetStats();
 
-		m_FrameBuffer->Bind();
-
-		Engine::RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
-		Engine::RenderCommand::Clear();
-
-		m_FrameBuffer->ClearAttachment(1, -1);
-
-		switch (CurrentSceneState)
-		{
-			case Engine::EditorLayer::SceneState::Edit:
-			{
-				if(bIsViewportFocused)
-					editorCamera.OnUpdate(DeltaTime);
-
-				ActiveScene->OnUpdateEditor(DeltaTime, editorCamera);
-			} break;
-			case Engine::EditorLayer::SceneState::Play:
-			{
-				ActiveScene->OnUpdateRuntime(DeltaTime);
-			} break;
-		}
-
-
-		auto [mx, my] = ImGui::GetMousePos();
-
-		mx -= ViewportBounds[0].x;
-		my -= ViewportBounds[0].y;
-		glm::vec2 ViewportSize = ViewportBounds[1] - ViewportBounds[0];
-		my = ViewportSize.y - my;
-
-		int MouseX = (int)mx;
-		int MouseY = (int)my;
-
-		if (MouseX >= 0 && MouseY >= 0 && MouseX < (int)ViewportSize.x && MouseY < (int)ViewportSize.y)
-		{
-			int pixelData = m_FrameBuffer->ReadPixel(1, MouseX, MouseY);
-
-			if (pixelData == -1)
-				HoveredEntity = { };
-			else
-				HoveredEntity = { (entt::entity)pixelData, ActiveScene.get() };
-		}
-
-		m_FrameBuffer->Unbind();
+		PManager.Update(DeltaTime);
 	}
 
-	void EditorLayer::OnImGuiRender(Engine::Timestep DeltaTime)
+	void EditorLayer::OnImGuiRender(float DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
-
-		static float t = 0;
-		t += DeltaTime;
-
-		static unsigned int fps = 0;
-
-		if (t > 0.5f)
-		{
-			fps = (unsigned int)(1 / DeltaTime);
-			t = 0.f;
-		}
 
 		static bool bIsDockSpaceOpen = true;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -199,198 +140,34 @@ namespace Engine
 
 		auto stats = Engine::Renderer2D::GetStats();
 
-		{
-			ImGui::Begin("Settings");
-
-			const char* tag = HoveredEntity.IsValid() ? HoveredEntity.GetComponent<TagComponent>().Tag.c_str() : "None";
-
-			ImGui::Text("Hovered Entity: %s", tag);
-			ImGui::Text("Renderer2D Stats:");
-			ImGui::Text("Draw Calls: %i", stats.DrawCalls);
-			ImGui::Text("Quad Count: %i", stats.QuadCount);
-			ImGui::Text("Vertex Count: %i", stats.GetTotalVertexCount());
-			ImGui::Text("Index Count: %i", stats.GetTotalIndexCount());
-
-			ImGui::Text("FPS: %i", fps);
-
-			ImGui::End();
-		}
-
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f, 0.f });
-			ImGui::Begin("Viewport");
-
-			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-			
-			if (ViewportSize != *((glm::vec2*)&viewportPanelSize) && viewportPanelSize.x > 0 && viewportPanelSize.y > 0)
-			{
-				m_FrameBuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-				ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-
-				ActiveScene->OnViewportResize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-				editorCamera.SetViewportSize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-			}
-
-			uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
-			ImGui::Image((void*)BufferID, viewportPanelSize, ImVec2{ 0.f, 1.f }, ImVec2{ 1.f, 0.f });
-
-			if (ImGui::BeginDragDropTarget())
-			{
-				// Highlight when dragged to viewport
-				ImGui::GetForegroundDrawList()->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 0, 255));
-
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-				{
-					const wchar_t* path = (const wchar_t*)payload->Data;
-
-					OpenScene(path);
-				}
-
-				ImGui::EndDragDropTarget();
-			}
-
-			ImVec2 viewportMinRegion = ImGui::GetWindowContentRegionMin();
-			ImVec2 viewportMaxRegion = ImGui::GetWindowContentRegionMax();
-
-			ImVec2 viewportOffset = ImGui::GetWindowPos();
-
-			ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
-			ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
-
-			//Gizmos
-			Entity selectedEntity = HPanel.GetSelectedEntity();
-
-			if (selectedEntity.IsValid())
-			{
-				ImGuizmo::SetOrthographic(false);
-
-				ImGuizmo::SetDrawlist();
-
-				ImGuizmo::SetRect(
-					ViewportBounds[0].x,
-					ViewportBounds[0].y,
-					ViewportBounds[1].x - ViewportBounds[0].x,
-					ViewportBounds[1].y - ViewportBounds[0].y
-				);
-
-				const glm::mat4& cameraProjection = editorCamera.GetProjection();
-				glm::mat4 cameraView = editorCamera.GetViewMatrix();
-
-				auto& tc = selectedEntity.GetComponent<TransformComponent>();
-				glm::mat4 transform = tc.GetTransformMat4();
-
-				if (GizmoType < 0)
-					GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-
-				ImGuizmo::Manipulate(
-					glm::value_ptr(cameraView),
-					glm::value_ptr(cameraProjection),
-					(ImGuizmo::OPERATION)GizmoType,
-					GizmoType == ImGuizmo::OPERATION::SCALE ? ImGuizmo::LOCAL : ImGuizmo::WORLD,
-					glm::value_ptr(transform)
-				);
-
-				if (ImGuizmo::IsUsing())
-				{
-					glm::vec3 position, rotation, scale;
-					Math::DecomposeTransform(transform, position, rotation, scale);
-
-					glm::vec3 deltaRotation = rotation - tc.Rotation;
-					tc.Position = position;
-					tc.Rotation += deltaRotation;
-					tc.Scale = scale;
-				}
-			}
-
-			if (ImGui::IsWindowFocused())
-				bIsViewportFocused = true;
-			else
-				bIsViewportFocused = false;
-
-			if (ImGui::IsWindowHovered())
-				bIsViewportHovered = true;
-			else
-				bIsViewportHovered = false;
-
-			ImGui::End();
-			ImGui::PopStyleVar();
-		}
-
-		UI_Toolbar();
-		HPanel.OnImGuiRender();
-		CBPanel.OnImGuiRender();
+		PManager.Render(DeltaTime);
 
 		ImGui::End();
 	}
 
 	void EditorLayer::OnEvent(Engine::Event& event)
 	{
-		EventDispatcher d(event);
-		d.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressedEvent));
-		d.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(OnMouseButtonPressedEvent));
-
-		editorCamera.OnEvent(event);
-	}
-
-	bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& event)
-	{
-		if (bIsViewportFocused)
-		{
-			if (event.GetRepeatCount() > 0)
-				return false;
-
-			switch (event.GetKey())
-			{
-			case KeyInput::Key_Q:
-				GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-				return true;
-			case KeyInput::Key_W:
-				GizmoType = ImGuizmo::OPERATION::ROTATE;
-				return true;
-			case KeyInput::Key_E:
-				GizmoType = ImGuizmo::OPERATION::SCALE;
-				return true;
-			default:
-				return false;
-			}
-		}
-
-		return false;
-	}
-
-	bool EditorLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& event)
-	{
-		if (event.GetMouseButton() == MouseButtonInput::MouseButton_Left)
-		{
-			if(bIsViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(KeyInput::Key_LeftAlt))
-				HPanel.SetSelectedEntity(HoveredEntity);
-
-			return true;
-		}
-
-		return false;
+		PManager.OnEvent(event);
 	}
 
 	void EditorLayer::NewScene()
 	{
-		ActiveScene = CreateRef<Scene>();
-		ActiveScene->OnViewportResize((uint32_t)ViewportSize.x, (uint32_t)ViewportSize.y);
-		HPanel.SetContext(ActiveScene);
+		ActiveScene = CreateRef<EditorScene>();
+		//ActiveScene->OnViewportResize((uint32_t)ViewportSize.x, (uint32_t)ViewportSize.y);
+
+		Scene* ptr = ActiveScene.get();
+		PManager.AddData(TEXT("Scene"), &ptr, sizeof(ptr));
 	}
 
 	void EditorLayer::OpenScene()
 	{
-		std::string filepath = FileDialogs::OpenFile("Dragon Engine Scene (*.descene)\0*.descene\0");
+		CString filepath = FileDialogs::OpenFile(TEXT("Dragon Engine Scene (*.descene)\0*.descene\0"));
 
 		if (!filepath.empty())
-		{
-			std::wstring str_turned_to_wstr = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(filepath);
-
-			OpenScene(str_turned_to_wstr.c_str());
-		}
+			OpenScene(filepath);
 	}
 
-	void EditorLayer::OpenScene(const wchar_t* path)
+	void EditorLayer::OpenScene(const CString& path)
 	{
 		NewScene();
 
@@ -400,68 +177,15 @@ namespace Engine
 
 	void EditorLayer::SaveScene()
 	{
-		std::string filepath = FileDialogs::SaveFile("Dragon Engine Scene (*.descene)\0*.descene\0");
+		CString filepath = FileDialogs::SaveFile(TEXT("Dragon Engine Scene (*.descene)\0*.descene\0"));
 
 		if (!filepath.empty())
-		{
-			std::wstring str_turned_to_wstr = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(filepath);
-
-			SaveScene(str_turned_to_wstr.c_str());
-		}
+			SaveScene(filepath);
 	}
 
-	void EditorLayer::SaveScene(const wchar_t* path)
+	void EditorLayer::SaveScene(const CString& path)
 	{
 		SceneSerializer s(ActiveScene);
 		s.Serialize(path);
-	}
-
-	void EditorLayer::OnScenePlay()
-	{
-		CurrentSceneState = SceneState::Play;
-		ActiveScene->OnRuntimeStart();
-	}
-
-	void EditorLayer::OnSceneStop()
-	{
-		CurrentSceneState = SceneState::Edit;
-		ActiveScene->OnRuntimeStop();
-	}
-
-	void EditorLayer::UI_Toolbar()
-	{
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2( 0.f, 2.f ));
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2( 0.f, 0.f ));
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4( 0.f, 0.f, 0.f, 0.f ));
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 0.f));
-		ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.f, 0.f, 0.f, 0.f));
-
-		ImGui::Begin(
-			"##toolbar",
-			nullptr,
-			ImGuiWindowFlags_NoDecoration |
-			ImGuiWindowFlags_NoScrollbar |
-			ImGuiWindowFlags_NoScrollWithMouse
-		);
-
-		ImVec2 windowSize = ImGui::GetWindowSize();
-		float buttonSize = windowSize.y - 6.f;
-
-		Ref<Texture2D> icon = (CurrentSceneState == SceneState::Edit) ? PlayIcon : StopIcon;
-
-		ImGui::SetCursorPos(ImVec2((windowSize.x * 0.5f) - (buttonSize * 0.5f), (windowSize.y * 0.5f) - (buttonSize * 0.5f)));
-
-		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), 0))
-		{
-			if (CurrentSceneState == SceneState::Edit)
-				OnScenePlay();
-			else if (CurrentSceneState == SceneState::Play)
-				OnSceneStop();
-		}
-
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(3);
-
-		ImGui::End();
 	}
 }

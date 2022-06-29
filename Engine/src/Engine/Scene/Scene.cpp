@@ -1,14 +1,17 @@
 #include "depch.h"
 #include "Scene.h"
 
-#include "Entity.h"
 #include "Components.h"
+
+#include "Entity.h"
 #include "Engine/Renderer/Renderer2D.h"
 
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+
+#include <glm/glm.hpp>
 
 namespace Engine
 {
@@ -28,27 +31,17 @@ namespace Engine
 		return b2_staticBody;
 	}
 
-	Scene::Scene()
+	Entity Scene::CreateEntity(const CString& name)
 	{
-
-	}
-
-	Scene::~Scene()
-	{
-
-	}
-
-	Entity Scene::CreateEntity(const std::string& name)
-	{
-		Entity entity = { SceneRegistry.create(), this };
+		Entity entity = Entity(SceneRegistry.create(), this);
 		entity.AddComponent<TransformComponent>();
 
 		if (name.empty())
 		{
-			std::stringstream sstream;
+			std::wstringstream sstream;
 
-			sstream << "Entity ";
-			sstream << std::to_string(SceneRegistry.size() - 1);
+			sstream << TEXT("Entity ");
+			sstream << std::to_wstring(SceneRegistry.size() - 1);
 
 			entity.AddComponent<TagComponent>(sstream.str());
 		}
@@ -65,14 +58,14 @@ namespace Engine
 		SceneRegistry.destroy(entity.EntityHandle);
 	}
 
-	void Scene::OnRuntimeStart()
+	void Scene::OnSceneStart()
 	{
 		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
 
 		auto view = SceneRegistry.view<Rigidbody2DComponent>();
 		for (auto e : view)
 		{
-			Entity entity = { e, this };
+			Entity entity = Entity(e, this);
 			auto& transform = entity.GetComponent<TransformComponent>();
 			auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
 
@@ -103,30 +96,13 @@ namespace Engine
 		}
 	}
 
-	void Scene::OnRuntimeStop()
+	void Scene::OnSceneStop()
 	{
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
 	}
 
-	void Scene::OnUpdateEditor(Timestep timestep, EditorCamera& camera)
-	{
-		DE_PROFILE_FUNCTION();
-
-		Renderer2D::BeginScene(camera);
-
-		auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-		for (auto entity : view)
-		{
-			auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-
-			Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
-		}
-
-		Renderer2D::EndScene();
-	}
-
-	void Scene::OnUpdateRuntime(Timestep timestep)
+	void Scene::OnUpdate(float DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
 
@@ -141,7 +117,7 @@ namespace Engine
 					nsc.Instance->OnCreate();
 				}
 
-				nsc.Instance->OnUpdate(timestep);
+				nsc.Instance->OnUpdate(DeltaTime);
 			});
 		}
 
@@ -149,13 +125,13 @@ namespace Engine
 		{
 			const int32_t velocityIterations = 6;
 			const int32_t positionIterations = 2;
-			m_PhysicsWorld->Step(timestep, velocityIterations, positionIterations);
+			m_PhysicsWorld->Step(DeltaTime, velocityIterations, positionIterations);
 
 			// Retrieve transform from Box2D
 			auto view = SceneRegistry.view<Rigidbody2DComponent>();
 			for (auto e : view)
 			{
-				Entity entity = { e, this };
+				Entity entity = Entity(e, this);
 				auto& transform = entity.GetComponent<TransformComponent>();
 				auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
 
@@ -167,7 +143,6 @@ namespace Engine
 			}
 		}
 
-		Camera* mainCamera = nullptr;
 		glm::mat4 cameraTransform;
 		{
 			auto view = SceneRegistry.view<TransformComponent, CameraComponent>();
@@ -177,16 +152,15 @@ namespace Engine
 
 				if (camera.Primary)
 				{
-					mainCamera = &camera.Camera;
 					cameraTransform = transform.GetTransformMat4();
 					break;
 				}
 			}
 		}
 
-		if (mainCamera)
+		if (PrimaryCameraComponent)
 		{
-			Renderer2D::BeginScene(*mainCamera, cameraTransform);
+			Renderer2D::BeginScene(PrimaryCameraComponent->Camera, cameraTransform);
 
 			auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : view)
@@ -228,6 +202,35 @@ namespace Engine
 		return { };
 	}
 
+	void Scene::SetPrimaryCameraComponent(CameraComponent* camera)
+	{
+		if (camera)
+			camera->Primary = true;
+
+		if (PrimaryCameraComponent)
+			PrimaryCameraComponent->Primary = false;
+
+		PrimaryCameraComponent = camera;
+	}
+
+	void Scene::SetSceneState(SceneState state)
+	{
+		if (CurrentSceneState == state)
+			return;
+
+		CurrentSceneState = state;
+
+		if (state == SceneState::Play)
+			OnSceneStart();
+		else if (state == SceneState::Stop)
+			OnSceneStop();
+	}
+
+	void Scene::OnEvent(Event& event)
+	{
+
+	}
+
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component)
 	{
@@ -245,6 +248,9 @@ namespace Engine
 	{
 		if (ViewportWidth > 0 && ViewportHeight > 0)
 			component.Camera.SetViewportSize(ViewportWidth, ViewportHeight);
+
+		if (PrimaryCameraComponent == nullptr)
+			SetPrimaryCameraComponent(&component);
 	}
 
 	template<>

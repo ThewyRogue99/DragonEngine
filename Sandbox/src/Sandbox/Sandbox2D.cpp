@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 
-Sandbox2D::Sandbox2D() : CameraController(1280.f / 720.f), Layer("Sandbox2D")
+Sandbox2D::Sandbox2D() : CameraController(1280.f / 720.f), Layer(TEXT("Sandbox2D"))
 {
 
 }
@@ -25,7 +25,7 @@ void Sandbox2D::OnAttach()
 	auto VertexBuffer = Engine::VertexBuffer::Create(SquareVertices, sizeof(SquareVertices));
 
 	VertexBuffer->SetLayout({
-		{ Engine::ShaderDataType::Float3, "a_Position" }
+		{ Engine::ShaderDataType::Float3, TEXT("a_Position") }
 	});
 
 	VertexArray->AddVertexBuffer(VertexBuffer);
@@ -36,13 +36,13 @@ void Sandbox2D::OnAttach()
 	VertexArray->SetIndexBuffer(IndexBuffer);
 
 	Shader = Engine::Shader::Create(
-		"Shader",
+		TEXT("Shader"),
 		"../Engine/src/Engine/Renderer/Shaders/MaterialVertex.glsl",
 		"../Engine/src/Engine/Renderer/Shaders/MaterialFragment.glsl",
 		true
 	);
 
-	SquareTexture = Engine::Texture2D::Create("assets/textures/cat.jpg");
+	SquareTexture = Engine::Texture2D::Create(TEXT("assets/textures/cat.jpg"));
 
 	particleProps.ColorBegin = { 254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f };
 	particleProps.ColorEnd = { 254 / 255.0f, 109 / 255.0f, 41 / 255.0f, 1.0f };

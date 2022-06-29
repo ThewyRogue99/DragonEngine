@@ -1,6 +1,11 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
 #include "RendererAPI.h"
+
+#include "VertexArray.h"
+
+#include <glm/glm.hpp>
 
 namespace Engine
 {

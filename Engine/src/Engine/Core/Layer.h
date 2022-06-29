@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
-#include "Timestep.h"
+#include "Engine/Core/Core.h"
+#include "Engine/Types/Types.h"
 #include "Engine/Events/Event.h"
 
 namespace Engine
@@ -9,18 +9,18 @@ namespace Engine
 	class ENGINE_API Layer
 	{
 	public:
-		Layer(const std::string& Name = "Layer");
+		Layer(const CString& Name = TEXT("Layer"));
 		virtual ~Layer();
 
-		virtual void OnAttach() { }
-		virtual void OnDetach() { }
-		virtual void OnUpdate(Timestep DeltaTime) { }
-		virtual void OnImGuiRender(Timestep DeltaTime) { }
-		virtual void OnEvent(Event& event) { }
+		virtual void OnAttach();
+		virtual void OnDetach();
+		virtual void OnUpdate(float DeltaTime);
+		virtual void OnImGuiRender(float DeltaTime);
+		virtual void OnEvent(Event& event);
 
-		inline const std::string& GetName() const { return DebugName; }
+		inline const CString& GetName() const { return DebugName; }
 
 	protected:
-		std::string DebugName;
+		CString DebugName;
 	};
 }

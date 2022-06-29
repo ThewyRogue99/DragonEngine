@@ -1,15 +1,18 @@
 #include "depch.h"
 #include "Shader.h"
 
-#include "Engine/Core/Log.h"
+#include "Renderer.h"
+#include "RendererAPI.h"
 
-#include <fstream>
+#include "Engine/Core/Log.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
+#include <fstream>
+
 namespace Engine
 {
-	Ref<Shader> Shader::Create(const std::string& ShaderName, const std::string& VertexSource, const std::string& FragmentSource, bool isFilePath)
+	Ref<Shader> Shader::Create(const CString& ShaderName, const std::string& VertexSource, const std::string& FragmentSource, bool isFilePath)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -72,37 +75,5 @@ namespace Engine
 		}
 
 		return true;
-	}
-
-	void ShaderLibrary::Add(const Ref<Shader>& ShaderRef)
-	{
-		auto& name = ShaderRef->GetName();
-		DE_CORE_ASSERT(!name.empty(), "Shader name is required to add to shader library");
-
-		bool exists = Exists(name);
-		DE_CORE_ASSERT(!exists, "Shader with provided name already exists");
-
-		if(!exists) Shaders[name] = ShaderRef;
-	}
-
-	Ref<Shader> ShaderLibrary::Load(const std::string& ShaderName, const std::string& VertexFilePath, const std::string& FragmentFilePath)
-	{
-		auto shader = Shader::Create(ShaderName, VertexFilePath, FragmentFilePath, true);
-		Add(shader);
-
-		return shader;
-	}
-
-	Ref<Shader> ShaderLibrary::Get(const std::string& ShaderName)
-	{
-		bool exists = Exists(ShaderName);
-		DE_CORE_ASSERT(exists, "Shader not found!");
-
-		return (exists ? Shaders[ShaderName] : nullptr);
-	}
-
-	bool ShaderLibrary::Exists(const std::string& ShaderName)
-	{
-		return Shaders.find(ShaderName) != Shaders.end();
 	}
 }

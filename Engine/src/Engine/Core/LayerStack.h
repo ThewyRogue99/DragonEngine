@@ -1,5 +1,7 @@
 #pragma once
+#include "depch.h"
 
+#include "Engine/Core/Core.h"
 #include "Layer.h"
 
 namespace Engine

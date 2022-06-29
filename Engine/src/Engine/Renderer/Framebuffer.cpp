@@ -1,6 +1,9 @@
 #include "depch.h"
 #include "Framebuffer.h"
 
+#include "Renderer.h"
+#include "RendererAPI.h"
+
 #include "Platform/OpenGL/OpenGLFramebuffer.h"
 
 namespace Engine

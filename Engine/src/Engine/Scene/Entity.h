@@ -2,9 +2,10 @@
 
 #include "Scene.h"
 
-#include "entt.hpp"
-
+#include "Engine/Core/Core.h"
 #include "Engine/Core/Log.h"
+
+#include "entt.hpp"
 
 namespace Engine
 {
@@ -48,7 +49,7 @@ namespace Engine
 			CurrentScene->SceneRegistry.remove<T>(EntityHandle);
 		}
 
-		inline bool IsValid() { return EntityHandle != entt::null; }
+		bool IsValid();
 
 		operator uint32_t() const { return (uint32_t)EntityHandle; }
 
@@ -63,8 +64,10 @@ namespace Engine
 		}
 
 		friend class Scene;
+
 	private:
 		entt::entity EntityHandle = entt::null;
+
 		Scene* CurrentScene = nullptr;
 	};
 }

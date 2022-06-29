@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "EditorCamera.h"
 
+#include "Engine/Core/Input.h"
+
 #include <glm/gtx/quaternion.hpp>
 
 namespace Engine
@@ -52,7 +54,7 @@ namespace Engine
 		return speed;
 	}
 
-	void EditorCamera::OnUpdate(Timestep ts)
+	void EditorCamera::OnUpdate(float DeltaTime)
 	{
 		if (Input::IsKeyPressed(KeyInput::Key_LeftAlt))
 		{

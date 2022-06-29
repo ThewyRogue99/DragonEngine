@@ -1,6 +1,8 @@
 #pragma once
+#include "depch.h"
 
 #include "Engine/Core/Core.h"
+#include "Engine/Types/Types.h"
 
 namespace Engine
 {
@@ -17,13 +19,13 @@ namespace Engine
 
 	struct ENGINE_API BufferElement
 	{
-		std::string Name;
+		CString Name;
 		ShaderDataType Type;
 		uint32_t Size;
 		uint32_t Offset;
 		bool Normalized;
 
-		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
+		BufferElement(ShaderDataType type, const CString& name, bool normalized = false)
 			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) { }
 
 		uint32_t GetComponentCount() const;

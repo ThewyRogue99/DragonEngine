@@ -1,47 +1,64 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
+#include "Engine/Types/Types.h"
+#include "Engine/Events/Event.h"
 #include "entt.hpp"
-#include "Engine/Core/Timestep.h"
-#include "Engine/Renderer/EditorCamera.h"
 
 class b2World;
 
 namespace Engine
 {
 	class Entity;
+	struct CameraComponent;
 
 	class Scene
 	{
 	public:
-		Scene();
-		~Scene();
+		Scene() = default;
+		Scene(const Scene&) = default;
 
-		Entity CreateEntity(const std::string& name = std::string());
+		Entity CreateEntity(const CString& name = CString());
 
 		void DestroyEntity(Entity entity);
 
-		void OnRuntimeStart();
-		void OnRuntimeStop();
+		void OnSceneStart();
+		void OnSceneStop();
 
-		void OnUpdateEditor(Timestep timestep, EditorCamera& camera);
-		void OnUpdateRuntime(Timestep timestep);
+		virtual void OnUpdate(float DeltaTime);
 
-		void OnViewportResize(uint32_t width, uint32_t height);
+		virtual void OnViewportResize(uint32_t width, uint32_t height);
+
+		Entity GetPrimaryCameraEntity();
+
+		void SetPrimaryCameraComponent(CameraComponent* camera);
+
+		enum class SceneState
+		{
+			Edit = 0, Play, Stop
+		};
+
+		void SetSceneState(SceneState state);
+		inline const SceneState GetSceneState() const { return CurrentSceneState; }
+
+		virtual void OnEvent(Event& event);
 
 		friend class Entity;
 		friend class SceneSerializer;
 		friend class SceneHierarchyPanel;
 
-		Entity GetPrimaryCameraEntity();
-
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 
-	private:
+	protected:
 		entt::registry SceneRegistry;
 
 		b2World* m_PhysicsWorld = nullptr;
+
+		CameraComponent* PrimaryCameraComponent = nullptr;
+
+		SceneState CurrentSceneState = SceneState::Edit;
 
 		uint32_t ViewportWidth = 0, ViewportHeight = 0;
 	};

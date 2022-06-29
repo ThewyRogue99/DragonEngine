@@ -1,10 +1,13 @@
 #pragma once
 
+#include "Engine/Types/Types.h"
+#include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/SceneCamera.h"
 #include "ScriptableEntity.h"
 
 #include "Engine/Math/Math.h"
 
+#include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
@@ -12,12 +15,12 @@ namespace Engine
 {
 	struct TagComponent
 	{
-		std::string Tag;
+		CString Tag;
 		
 		TagComponent() = default;
 		TagComponent(const TagComponent&) = default;
 
-		TagComponent(const std::string& tag)
+		TagComponent(const CString& tag)
 			: Tag(tag) { }
 	};
 
@@ -56,7 +59,7 @@ namespace Engine
 	struct CameraComponent
 	{
 		SceneCamera Camera;
-		bool Primary = true;
+		bool Primary = false;
 		bool FixedAspectRatio = false;
 
 		CameraComponent() = default;

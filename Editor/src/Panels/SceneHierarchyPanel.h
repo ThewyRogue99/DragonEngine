@@ -1,25 +1,24 @@
 #pragma once
 
-#include "Engine/Scene/Scene.h"
 #include "Engine/Core/Core.h"
-
-#include "Engine/Scene/Components.h"
+#include "EditorPanel.h"
+#include "../Scene/EditorScene.h"
+#include "Engine/Scene/Entity.h"
 
 namespace Engine
 {
-	class SceneHierarchyPanel
+	class SceneHierarchyPanel : public EditorPanel
 	{
 	public:
-		SceneHierarchyPanel() = default;
+		SceneHierarchyPanel();
 
-		SceneHierarchyPanel(const Ref<Scene>& context);
-
-		void SetContext(const Ref<Scene>& context);
-
-		void OnImGuiRender();
+		virtual void OnRender(float DeltaTime) override;
 
 		Entity GetSelectedEntity() const { return SelectedEntity; }
-		void SetSelectedEntity(Entity entity);
+		void SetSelectedEntity(Entity entity, bool SetData = true);
+
+	protected:
+		virtual void OnData(const CString& Name, void* Data, size_t size) override;
 
 	private:
 		void DrawEntityNode(Entity entity);
@@ -27,8 +26,8 @@ namespace Engine
 		void DrawComponents(Entity entity);
 
 	private:
-		Ref<Scene> Context;
+		EditorScene* Context = nullptr;
 
-		Entity SelectedEntity;
+		Entity SelectedEntity = { };
 	};
 }

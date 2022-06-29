@@ -1,7 +1,10 @@
 #pragma once
-#include <memory>
+
+#include "Engine/Core/Core.h"
 
 #include "Buffer.h"
+
+#include <vector>
 
 namespace Engine
 {

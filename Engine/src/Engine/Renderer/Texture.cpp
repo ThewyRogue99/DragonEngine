@@ -2,14 +2,15 @@
 #include "Texture.h"
 
 #include "Renderer.h"
-#include "Engine/Core/Log.h"
-#include "Platform/OpenGL/OpenGLTexture.h"
+#include "RendererAPI.h"
 
-#include <stb_image.h>
+#include "Engine/Core/Log.h"
+
+#include "Platform/OpenGL/OpenGLTexture.h"
 
 namespace Engine
 {
-	Ref<Texture2D> Texture2D::Create(const char* path)
+	Ref<Texture2D> Texture2D::Create(const wchar_t* path)
 	{
 		switch (Renderer::GetAPI())
 		{

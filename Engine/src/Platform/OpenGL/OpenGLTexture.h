@@ -9,7 +9,7 @@ namespace Engine
 	{
 	public:
 		OpenGLTexture2D(uint32_t width, uint32_t height);
-		OpenGLTexture2D(const char* path);
+		OpenGLTexture2D(const wchar_t* path);
 
 		virtual ~OpenGLTexture2D();
 
@@ -25,7 +25,7 @@ namespace Engine
 		virtual bool operator==(Texture2D& texture) override;
 
 	private:
-		const char* Path;
+		const wchar_t* Path = nullptr;
 
 		uint32_t Width = 0, Height = 0;
 

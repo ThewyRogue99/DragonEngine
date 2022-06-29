@@ -145,7 +145,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Core\Application.h" />
-    <ClInclude Include="src\Engine\Core\ApplicationCore.h" />
     <ClInclude Include="src\Engine\Core\Core.h" />
     <ClInclude Include="src\Engine\Core\EntryPoint.h" />
     <ClInclude Include="src\Engine\Core\Input.h" />
@@ -154,7 +153,6 @@
     <ClInclude Include="src\Engine\Core\LayerStack.h" />
     <ClInclude Include="src\Engine\Core\Log.h" />
     <ClInclude Include="src\Engine\Core\Timer.h" />
-    <ClInclude Include="src\Engine\Core\Timestep.h" />
     <ClInclude Include="src\Engine\Core\Window.h" />
     <ClInclude Include="src\Engine\Debug\Instrumentor.h" />
     <ClInclude Include="src\Engine\Events\ApplicationEvent.h" />
@@ -168,8 +166,6 @@
     <ClInclude Include="src\Engine\Renderer\EditorCamera.h" />
     <ClInclude Include="src\Engine\Renderer\Framebuffer.h" />
     <ClInclude Include="src\Engine\Renderer\GraphicsContext.h" />
-    <ClInclude Include="src\Engine\Renderer\OrthographicCamera.h" />
-    <ClInclude Include="src\Engine\Renderer\OrthographicCameraController.h" />
     <ClInclude Include="src\Engine\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Engine\Renderer\Renderer.h" />
     <ClInclude Include="src\Engine\Renderer\Renderer2D.h" />
@@ -184,6 +180,7 @@
     <ClInclude Include="src\Engine\Scene\SceneCamera.h" />
     <ClInclude Include="src\Engine\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Engine\Scene\ScriptableEntity.h" />
+    <ClInclude Include="src\Engine\Types\Types.h" />
     <ClInclude Include="src\Engine\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
@@ -627,8 +624,6 @@
     <ClCompile Include="src\Engine\Renderer\Buffer.cpp" />
     <ClCompile Include="src\Engine\Renderer\EditorCamera.cpp" />
     <ClCompile Include="src\Engine\Renderer\Framebuffer.cpp" />
-    <ClCompile Include="src\Engine\Renderer\OrthographicCamera.cpp" />
-    <ClCompile Include="src\Engine\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="src\Engine\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Engine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Engine\Renderer\Renderer2D.cpp" />
@@ -641,6 +636,7 @@
     <ClCompile Include="src\Engine\Scene\Scene.cpp" />
     <ClCompile Include="src\Engine\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\Engine\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Engine\Types\Types.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />

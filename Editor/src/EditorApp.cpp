@@ -1,4 +1,4 @@
-#include <Engine/Core/ApplicationCore.h>
+#include <Engine/Core/Application.h>
 #include <Engine/Core/EntryPoint.h>
 
 #include "EditorLayer.h"

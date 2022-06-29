@@ -1,8 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
+#include "Engine/Core/Core.h"
 #include "VertexArray.h"
+
+#include <glm/glm.hpp>
 
 namespace Engine
 {

@@ -1,8 +1,12 @@
 #pragma once
 
-#include "RenderCommand.h"
-#include "OrthographicCamera.h"
+#include "Engine/Core/Core.h"
+
 #include "Shader.h"
+#include "VertexArray.h"
+#include "RendererAPI.h"
+
+#include <glm/glm.hpp>
 
 namespace Engine
 {
@@ -10,8 +14,6 @@ namespace Engine
 	{
 	public:
 		static void Init();
-
-		static void BeginScene(OrthographicCamera& camera);
 
 		static void EndScene();
 

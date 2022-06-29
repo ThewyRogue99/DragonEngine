@@ -1,11 +1,11 @@
 #pragma once
 
-#include <imgui/imgui.h>
-#include <Engine/Core/ApplicationCore.h>
-#include <Engine/Renderer/OrthographicCameraController.h>
+#include "Engine/Core/Core.h"
+#include "Engine/Core/Layer.h"
+#include "Panels/PanelManager.h"
+#include "Scene/EditorScene.h"
 
-#include "Panels/SceneHierarchyPanel.h"
-#include "Panels/ContentBrowserPanel.h"
+#include <imgui/imgui.h>
 
 namespace Engine
 {
@@ -17,60 +17,25 @@ namespace Engine
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 
-		virtual void OnUpdate(Timestep DeltaTime) override;
+		virtual void OnUpdate(float DeltaTime) override;
 
-		virtual void OnImGuiRender(Timestep DeltaTime) override;
+		virtual void OnImGuiRender(float DeltaTime) override;
 
 		virtual void OnEvent(Event& event) override;
 
 	private:
-		bool OnKeyPressedEvent(KeyPressedEvent& event);
-		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
-
 		void NewScene();
 
 		void OpenScene();
-		void OpenScene(const wchar_t* path);
+		void OpenScene(const CString& path);
 
 		void SaveScene();
-		void SaveScene(const wchar_t* path);
-
-		void OnScenePlay();
-		void OnSceneStop();
-
-		void UI_Toolbar();
+		void SaveScene(const CString& path);
 
 	private:
-		Ref<Framebuffer> m_FrameBuffer;
-
-		Ref<Scene> ActiveScene;
-
-		glm::vec2 ViewportSize = { 0.f, 0.f };
-
-		bool bIsViewportFocused = false;
-		bool bIsViewportHovered = false;
-
-		glm::vec2 ViewportBounds[2];
-
-		EditorCamera editorCamera;
-
-		Entity HoveredEntity;
-
-		int GizmoType = -1;
-
-		// Resources
-		Ref<Texture2D> PlayIcon, StopIcon;
+		Ref<EditorScene> ActiveScene;
 
 		// Panels
-		SceneHierarchyPanel HPanel;
-
-		ContentBrowserPanel CBPanel;
-
-		enum class SceneState
-		{
-			Edit = 0, Play
-		};
-
-		SceneState CurrentSceneState = SceneState::Edit;
+		PanelManager PManager;
 	};
 }

@@ -14,11 +14,11 @@ namespace Engine
 		inline float GetX() const { return MouseX; }
 		inline float GetY() const { return MouseY; }
 
-		virtual std::string ToString() const override
+		virtual CString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "MouseMovedEvent: [ X: "
-				<< MouseX << ", Y: " << MouseY << " ]";
+			std::wstringstream ss;
+			ss << TEXT("MouseMovedEvent: [ X: ")
+				<< MouseX << TEXT(", Y: ") << MouseY << TEXT(" ]");
 
 			return ss.str();
 		}
@@ -39,11 +39,11 @@ namespace Engine
 		inline float GetXOffset() const { return xOffset; }
 		inline float GetYOffset() const { return yOffset; }
 
-		virtual std::string ToString() const override
+		virtual CString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "MouseScrolledEvent: [ X Offset: "
-				<< xOffset << ", Y Offset: " << yOffset << " ]";
+			std::wstringstream ss;
+			ss << TEXT("MouseScrolledEvent: [ X Offset: ")
+				<< xOffset << TEXT(", Y Offset: ") << yOffset << TEXT(" ]");
 
 			return ss.str();
 		}
@@ -74,10 +74,10 @@ namespace Engine
 		MouseButtonPressedEvent(MouseButtonInput Button) : MouseButtonEvent(Button) { }
 
 
-		virtual std::string ToString() const override
+		virtual CString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "MouseButtonPressedEvent: [ Button: " << (int)Button << " ]";
+			std::wstringstream ss;
+			ss << TEXT("MouseButtonPressedEvent: [ Button: ") << (int)Button << TEXT(" ]");
 
 			return ss.str();
 		}
@@ -91,10 +91,10 @@ namespace Engine
 		MouseButtonReleasedEvent(MouseButtonInput Button) : MouseButtonEvent(Button) { }
 
 
-		virtual std::string ToString() const override
+		virtual CString ToString() const override
 		{
-			std::stringstream ss;
-			ss << "MouseButtonReleasedEvent: [ Button: " << (int)Button << " ]";
+			std::wstringstream ss;
+			ss << TEXT("MouseButtonReleasedEvent: [ Button: ") << (int)Button << TEXT(" ]");
 
 			return ss.str();
 		}

@@ -1,6 +1,9 @@
 #include "depch.h"
+#include "Buffer.h"
 
 #include "Engine/Core/Log.h"
+#include "Renderer.h"
+#include "RendererAPI.h"
 
 #include "Platform/OpenGL/OpenGLBuffer.h"
 

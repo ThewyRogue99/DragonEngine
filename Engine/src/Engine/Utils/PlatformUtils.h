@@ -1,13 +1,13 @@
 #pragma once
 
-#include <string>
+#include "Engine/Types/Types.h"
 
 namespace Engine
 {
 	class FileDialogs
 	{
 	public:
-		static std::string OpenFile(const char* filter);
-		static std::string SaveFile(const char* filter);
+		static CString OpenFile(const wchar_t* filter);
+		static CString SaveFile(const wchar_t* filter);
 	};
 }

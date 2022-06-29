@@ -1,5 +1,4 @@
 #include "depch.h"
-
 #include "LayerStack.h"
 
 namespace Engine

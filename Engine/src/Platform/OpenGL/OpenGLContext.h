@@ -2,7 +2,6 @@
 
 #include "Engine/Renderer/GraphicsContext.h"
 
-
 struct GLFWwindow;
 
 namespace Engine

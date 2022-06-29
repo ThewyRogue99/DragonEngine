@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
+#include "Engine/Types/Types.h"
+
 #include "Scene.h"
 
 namespace Engine
@@ -9,11 +12,11 @@ namespace Engine
 	public:
 		SceneSerializer(const Ref<Scene>& scene);
 
-		void Serialize(const std::wstring& filepath);
-		void SerializeRuntime(const std::wstring& filepath);
+		void Serialize(const CString& filepath);
+		void SerializeRuntime(const CString& filepath);
 
-		bool Deserialize(const std::wstring& filepath);
-		bool DeserializeRuntime(const std::wstring& filepath);
+		bool Deserialize(const CString& filepath);
+		bool DeserializeRuntime(const CString& filepath);
 
 	private:
 		Ref<Scene> m_Scene;

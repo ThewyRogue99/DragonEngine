@@ -5,6 +5,7 @@
 #include "Components.h"
 
 #include <yaml-cpp/yaml.h>
+#include <glm/glm.hpp>
 
 namespace YAML
 {
@@ -146,9 +147,11 @@ namespace Engine
 
 			auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-			DE_CORE_TRACE("Serializing entity with Tag: {0}", tag.c_str());
+			std::string tag_str = TypeUtils::FromUTF16(tag);
 
-			out << YAML::Key << "Tag" << YAML::Value << tag;
+			DE_CORE_TRACE("Serializing entity with Tag: {0}", tag_str.c_str());
+
+			out << YAML::Key << "Tag" << YAML::Value << tag_str;
 
 			out << YAML::EndMap;
 		}
@@ -233,7 +236,7 @@ namespace Engine
 		out << YAML::EndMap;
 	}
 
-	void SceneSerializer::Serialize(const std::wstring& filepath)
+	void SceneSerializer::Serialize(const CString& filepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -255,13 +258,13 @@ namespace Engine
 		fout << out.c_str();
 	}
 
-	void SceneSerializer::SerializeRuntime(const std::wstring& filepath)
+	void SceneSerializer::SerializeRuntime(const CString& filepath)
 	{
 		// Not implemented
 		DE_CORE_ASSERT(false, "Runtime serialization is currently not supported!");
 	}
 
-	bool SceneSerializer::Deserialize(const std::wstring& filepath)
+	bool SceneSerializer::Deserialize(const CString& filepath)
 	{
 		std::ifstream stream(filepath);
 		std::stringstream strStream;
@@ -288,7 +291,9 @@ namespace Engine
 
 				DE_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-				Entity deserializedEntity = m_Scene->CreateEntity(name);
+				CString name_wstr = TypeUtils::FromUTF8(name);
+
+				Entity deserializedEntity = m_Scene->CreateEntity(name_wstr);
 
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)
@@ -352,7 +357,7 @@ namespace Engine
 		return true;
 	}
 
-	bool SceneSerializer::DeserializeRuntime(const std::wstring& filepath)
+	bool SceneSerializer::DeserializeRuntime(const CString& filepath)
 	{
 		// Not implemented
 		DE_CORE_ASSERT(false, "Runtime deserialization is currently not supported!");

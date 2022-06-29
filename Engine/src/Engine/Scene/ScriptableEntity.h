@@ -18,7 +18,7 @@ namespace Engine
 	protected:
 		virtual void OnCreate() { }
 		virtual void OnDestroy() { }
-		virtual void OnUpdate(Timestep DeltaTime) { }
+		virtual void OnUpdate(float DeltaTime) { }
 
 	private:
 		Entity entity;

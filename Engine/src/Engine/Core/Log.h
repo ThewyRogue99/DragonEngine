@@ -1,6 +1,4 @@
 #pragma once
-#include "Application.h"
-
 #include "Core.h"
 
 #pragma warning(push, 0)

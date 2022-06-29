@@ -1,20 +1,26 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
+#include "EditorPanel.h"
+#include "Engine/Renderer/Texture.h"
+
 #include <filesystem>
 
 namespace Engine
 {
-	class ContentBrowserPanel
+	class ContentBrowserPanel : public EditorPanel
 	{
 	public:
 		ContentBrowserPanel();
 
-		void OnImGuiRender();
+		virtual void OnCreate() override;
+
+		virtual void OnRender(float DeltaTime) override;
 
 	private:
 		std::filesystem::path CurrentDirectory;
 
-		Ref<Texture2D> DirectoryIcon;
-		Ref<Texture2D> FileIcon;
+		static Ref<Texture2D> DirectoryIcon;
+		static Ref<Texture2D> FileIcon;
 	};
 }

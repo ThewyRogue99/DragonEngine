@@ -112,7 +112,7 @@ namespace Engine
 	OpenGLFramebuffer::~OpenGLFramebuffer()
 	{
 		glDeleteFramebuffers(1, &RendererID);
-		glDeleteTextures(ColorAttachments.size(), ColorAttachments.data());
+		glDeleteTextures((GLsizei)ColorAttachments.size(), ColorAttachments.data());
 		glDeleteTextures(1, &DepthAttachment);
 	}
 
@@ -121,7 +121,7 @@ namespace Engine
 		if (RendererID)
 		{
 			glDeleteFramebuffers(1, &RendererID);
-			glDeleteTextures(ColorAttachments.size(), ColorAttachments.data());
+			glDeleteTextures((GLsizei)ColorAttachments.size(), ColorAttachments.data());
 			glDeleteTextures(1, &DepthAttachment);
 
 			ColorAttachments.clear();
@@ -138,7 +138,7 @@ namespace Engine
 		if (ColorAttachmentSpecifications.size() > 0)
 		{
 			ColorAttachments.resize(ColorAttachmentSpecifications.size());
-			Utils::CreateTextures(multisample, ColorAttachments.data(), ColorAttachments.size());
+			Utils::CreateTextures(multisample, ColorAttachments.data(), (uint32_t)ColorAttachments.size());
 
 			for (size_t i = 0; i < ColorAttachmentSpecifications.size(); i++)
 			{
@@ -155,7 +155,7 @@ namespace Engine
 							GL_RGBA,
 							BufferSpecification.Width,
 							BufferSpecification.Height,
-							i
+							(int)i
 						);
 					} break;
 					case FramebufferTextureFormat::RED_INTEGER:
@@ -167,7 +167,7 @@ namespace Engine
 							GL_RED_INTEGER,
 							BufferSpecification.Width,
 							BufferSpecification.Height,
-							i
+							(int)i
 						);
 					} break;
 					default:
@@ -210,7 +210,7 @@ namespace Engine
 				GL_COLOR_ATTACHMENT3
 			};
 
-			glDrawBuffers(ColorAttachments.size(), buffers);
+			glDrawBuffers((GLsizei)ColorAttachments.size(), buffers);
 		}
 		else if (ColorAttachments.empty())
 		{

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
+#include "Engine/Types/Types.h"
+
+#include <glm/glm.hpp>
+
 namespace Engine
 {
 	class ENGINE_API Shader
@@ -11,13 +16,13 @@ namespace Engine
 		virtual void Unbind() const = 0;
 
 		static Ref<Shader> Create(
-			const std::string& ShaderName,
+			const CString& ShaderName,
 			const std::string& VertexSource,
 			const std::string& FragmentSource,
 			bool isFilePath = false
 		);
 
-		inline const std::string& GetName() const { return ShaderName; }
+		inline const CString& GetName() const { return ShaderName; }
 
 		virtual void SetInt(const char* name, int value) = 0;
 		virtual void SetIntArray(const char* name, int* values, size_t count) = 0;
@@ -41,25 +46,6 @@ namespace Engine
 		bool isFilePath = false;
 
 	private:
-		std::string ShaderName;
-	};
-
-	class ShaderLibrary
-	{
-	public:
-		void Add(const Ref<Shader>& ShaderRef);
-
-		Ref<Shader> Load(
-			const std::string& ShaderName,
-			const std::string& VertexFilePath,
-			const std::string& FragmentFilePath
-		);
-
-		Ref<Shader> Get(const std::string& ShaderName);
-
-		bool Exists(const std::string& ShaderName);
-
-	private:
-		std::unordered_map<std::string, Ref<Shader>> Shaders;
+		CString ShaderName;
 	};
 }
