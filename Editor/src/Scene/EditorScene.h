@@ -20,7 +20,11 @@ namespace Engine
 
 		inline const EditorCamera& GetEditorCamera() const { return editorCamera; }
 
+		inline void SetShouldBlockEvents(bool state) { bShouldBlockEvents = state; }
+
 	private:
 		EditorCamera editorCamera;
+
+		bool bShouldBlockEvents = false;
 	};
 }

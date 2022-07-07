@@ -138,7 +138,7 @@ namespace Engine
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << "12837192831273"; // TODO: Entity ID goes here
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID(); // TODO: Entity ID goes here
 
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -293,7 +293,7 @@ namespace Engine
 
 				CString name_wstr = TypeUtils::FromUTF8(name);
 
-				Entity deserializedEntity = m_Scene->CreateEntity(name_wstr);
+				Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name_wstr);
 
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)

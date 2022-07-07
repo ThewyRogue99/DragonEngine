@@ -28,16 +28,20 @@ namespace Engine
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if (commandLineArgs.Count > 1)
 		{
-			/*
-				auto sceneFilePath = commandLineArgs[1];
-				SceneSerializer serializer(ActiveScene);
-				serializer.Deserialize(sceneFilePath);
+			auto sceneFilePath = commandLineArgs[1];
 
-				----- TODO: Implement a better string api ----
-			*/
+			CString path_wstring = TypeUtils::FromUTF8(sceneFilePath);
+
+			SceneSerializer serializer(ActiveScene);
+			serializer.Deserialize(path_wstring);
 		}
 
-		PManager.AddPanels({ new ContentBrowserPanel(), new SceneHierarchyPanel(), new ViewportPanel(), new ToolbarPanel() });
+		PManager.AddPanels({
+			new ContentBrowserPanel(),
+			new SceneHierarchyPanel(),
+			new ViewportPanel(),
+			new ToolbarPanel()
+		});
 
 		Scene* ptr = ActiveScene.get();
 		PManager.AddData(TEXT("Scene"), &ptr, sizeof(ptr));
@@ -61,7 +65,6 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		static bool bIsDockSpaceOpen = true;
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
 		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
@@ -90,7 +93,7 @@ namespace Engine
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-		ImGui::Begin("DockSpace Demo", &bIsDockSpaceOpen, window_flags);
+		ImGui::Begin("DockSpace Demo", nullptr, window_flags);
 
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar(2);
@@ -153,7 +156,6 @@ namespace Engine
 	void EditorLayer::NewScene()
 	{
 		ActiveScene = CreateRef<EditorScene>();
-		//ActiveScene->OnViewportResize((uint32_t)ViewportSize.x, (uint32_t)ViewportSize.y);
 
 		Scene* ptr = ActiveScene.get();
 		PManager.AddData(TEXT("Scene"), &ptr, sizeof(ptr));

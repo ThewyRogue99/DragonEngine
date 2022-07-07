@@ -41,7 +41,8 @@ namespace Engine
 
 	void EditorScene::OnEvent(Event& event)
 	{
-		editorCamera.OnEvent(event);
+		if(!bShouldBlockEvents)
+			editorCamera.OnEvent(event);
 	}
 
 	void EditorScene::OnViewportResize(uint32_t width, uint32_t height)

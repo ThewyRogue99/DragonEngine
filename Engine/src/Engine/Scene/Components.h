@@ -3,9 +3,9 @@
 #include "Engine/Types/Types.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/SceneCamera.h"
-#include "ScriptableEntity.h"
 
 #include "Engine/Math/Math.h"
+#include "Engine/Core/UUID.h"
 
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -13,6 +13,15 @@
 
 namespace Engine
 {
+	struct IDComponent
+	{
+		UUID ID;
+
+		IDComponent() = default;
+		IDComponent(const IDComponent&) = default;
+		IDComponent(UUID id) : ID(id) { }
+	};
+
 	struct TagComponent
 	{
 		CString Tag;
@@ -65,6 +74,8 @@ namespace Engine
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
 	};
+
+	class ScriptableEntity;
 
 	struct NativeScriptComponent
 	{

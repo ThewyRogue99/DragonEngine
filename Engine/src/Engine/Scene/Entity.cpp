@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Entity.h"
 
+#include "Components.h"
+
 namespace Engine
 {
 	Entity::Entity(entt::entity handle, Scene* scene)

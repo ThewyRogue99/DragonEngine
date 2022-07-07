@@ -6,7 +6,9 @@
 #include "EditorPanel.h"
 #include "../Scene/EditorScene.h"
 #include "Engine/Renderer/Framebuffer.h"
+
 #include "Engine/Events/MouseEvent.h"
+#include "Engine/Events/KeyEvent.h"
 
 #include <ImGuizmo/ImGuizmo.h>
 
@@ -32,6 +34,7 @@ namespace Engine
 
 	private:
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
+		bool OnKeyPressedEvent(KeyPressedEvent& event);
 
 	private:
 		EditorScene* ActiveScene = nullptr;

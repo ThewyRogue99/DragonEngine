@@ -13,6 +13,8 @@
 
 #include <glm/glm.hpp>
 
+#include "ScriptableEntity.h"
+
 namespace Engine
 {
 	static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::BodyType bodyType)
@@ -31,9 +33,20 @@ namespace Engine
 		return b2_staticBody;
 	}
 
+	Scene::Scene()
+	{
+		SceneRegistry.on_construct<CameraComponent>().connect<&Scene::OnCameraComponentAdded>(this);
+	}
+
 	Entity Scene::CreateEntity(const CString& name)
 	{
+		return CreateEntityWithUUID(UUID(), name);
+	}
+
+	Entity Scene::CreateEntityWithUUID(UUID uuid, const CString& name)
+	{
 		Entity entity = Entity(SceneRegistry.create(), this);
+		entity.AddComponent<IDComponent>(uuid);
 		entity.AddComponent<TransformComponent>();
 
 		if (name.empty())
@@ -231,53 +244,14 @@ namespace Engine
 
 	}
 
-	template<typename T>
-	void Scene::OnComponentAdded(Entity entity, T& component)
+	void Scene::OnCameraComponentAdded(entt::registry& registry, entt::entity entity)
 	{
-		static_assert(false);
-	}
+		auto& component = registry.get<CameraComponent>(entity);
 
-	template<>
-	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
-	{
-		
-	}
-
-	template<>
-	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
-	{
 		if (ViewportWidth > 0 && ViewportHeight > 0)
 			component.Camera.SetViewportSize(ViewportWidth, ViewportHeight);
 
 		if (PrimaryCameraComponent == nullptr)
 			SetPrimaryCameraComponent(&component);
-	}
-
-	template<>
-	void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
-	{
-		
-	}
-
-	template<>
-	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
-	{
-		
-	}
-
-	template<>
-	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
-	{
-		
-	}
-
-	template<>
-	void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component)
-	{
 	}
 }

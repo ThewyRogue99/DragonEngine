@@ -3,6 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 #include "Engine/Events/Event.h"
+
 #include "entt.hpp"
 
 class b2World;
@@ -10,15 +11,17 @@ class b2World;
 namespace Engine
 {
 	class Entity;
+	class UUID;
 	struct CameraComponent;
 
 	class Scene
 	{
 	public:
-		Scene() = default;
+		Scene();
 		Scene(const Scene&) = default;
 
 		Entity CreateEntity(const CString& name = CString());
+		Entity CreateEntityWithUUID(UUID uuid, const CString& name = CString());
 
 		void DestroyEntity(Entity entity);
 
@@ -48,8 +51,7 @@ namespace Engine
 		friend class SceneHierarchyPanel;
 
 	private:
-		template<typename T>
-		void OnComponentAdded(Entity entity, T& component);
+		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
 
 	protected:
 		entt::registry SceneRegistry;

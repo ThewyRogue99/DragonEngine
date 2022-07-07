@@ -28,6 +28,9 @@
     <Filter Include="src\Engine\Scene">
       <UniqueIdentifier>{AF1338A9-9B0C-57FB-C43E-3C80B0963607}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Engine\Types">
+      <UniqueIdentifier>{366A56A9-2263-75FB-4B95-5A8037ED5407}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Engine\Utils">
       <UniqueIdentifier>{F2A765A9-DEA0-84FB-07D3-6980F32A6407}</UniqueIdentifier>
     </Filter>
@@ -94,6 +97,9 @@
       <Filter>src\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Core\Timer.h">
+      <Filter>src\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Core\UUID.h">
       <Filter>src\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Core\Window.h">
@@ -176,6 +182,9 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Scene\ScriptableEntity.h">
       <Filter>src\Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Types\Types.h">
+      <Filter>src\Engine\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Utils\PlatformUtils.h">
       <Filter>src\Engine\Utils</Filter>
@@ -1467,7 +1476,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Types\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1480,6 +1488,9 @@
       <Filter>src\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Core\Log.cpp">
+      <Filter>src\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Core\UUID.cpp">
       <Filter>src\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Debug\Instrumentor.cpp">
@@ -1539,6 +1550,9 @@
     <ClCompile Include="src\Engine\Scene\SceneSerializer.cpp">
       <Filter>src\Engine\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Types\Types.cpp">
+      <Filter>src\Engine\Types</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1584,6 +1598,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Types\Types.cpp" />
   </ItemGroup>
 </Project>

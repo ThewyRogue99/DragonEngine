@@ -153,6 +153,7 @@
     <ClInclude Include="src\Engine\Core\LayerStack.h" />
     <ClInclude Include="src\Engine\Core\Log.h" />
     <ClInclude Include="src\Engine\Core\Timer.h" />
+    <ClInclude Include="src\Engine\Core\UUID.h" />
     <ClInclude Include="src\Engine\Core\Window.h" />
     <ClInclude Include="src\Engine\Debug\Instrumentor.h" />
     <ClInclude Include="src\Engine\Events\ApplicationEvent.h" />
@@ -617,6 +618,7 @@
     <ClCompile Include="src\Engine\Core\Layer.cpp" />
     <ClCompile Include="src\Engine\Core\LayerStack.cpp" />
     <ClCompile Include="src\Engine\Core\Log.cpp" />
+    <ClCompile Include="src\Engine\Core\UUID.cpp" />
     <ClCompile Include="src\Engine\Debug\Instrumentor.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Engine\ImGui\ImGuiLayer.cpp" />

@@ -5,6 +5,8 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Log.h"
 
+#include "Components.h"
+
 #include "entt.hpp"
 
 namespace Engine
@@ -21,8 +23,6 @@ namespace Engine
 			DE_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 
 			T& component = CurrentScene->SceneRegistry.emplace<T>(EntityHandle, std::forward<Args>(args)...);
-
-			CurrentScene->OnComponentAdded<T>(*this, component);
 
 			return component;
 		}
@@ -62,6 +62,8 @@ namespace Engine
 		{
 			return !(*this == other);
 		}
+
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
 
 		friend class Scene;
 

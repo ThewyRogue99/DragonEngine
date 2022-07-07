@@ -135,25 +135,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scene\EditorScene.h" />
-    <ClInclude Include="src\Panels\PanelManager.h" />
     <ClInclude Include="src\EditorLayer.h" />
     <ClInclude Include="src\Panels\ContentBrowserPanel.h" />
     <ClInclude Include="src\Panels\EditorPanel.h" />
+    <ClInclude Include="src\Panels\PanelManager.h" />
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
-    <ClInclude Include="src\Panels\ViewportPanel.h" />
     <ClInclude Include="src\Panels\ToolbarPanel.h" />
+    <ClInclude Include="src\Panels\ViewportPanel.h" />
+    <ClInclude Include="src\Scene\EditorScene.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Scene\EditorScene.cpp" />
-    <ClCompile Include="src\Panels\PanelManager.cpp" />
     <ClCompile Include="src\EditorApp.cpp" />
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\Panels\ContentBrowserPanel.cpp" />
     <ClCompile Include="src\Panels\EditorPanel.cpp" />
+    <ClCompile Include="src\Panels\PanelManager.cpp" />
     <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp" />
-    <ClCompile Include="src\Panels\ViewportPanel.cpp" />
     <ClCompile Include="src\Panels\ToolbarPanel.cpp" />
+    <ClCompile Include="src\Panels\ViewportPanel.cpp" />
+    <ClCompile Include="src\Scene\EditorScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

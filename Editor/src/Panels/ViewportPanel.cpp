@@ -143,6 +143,8 @@ namespace Engine
 		else
 			bIsViewportHovered = false;
 
+		ActiveScene->SetShouldBlockEvents(!bIsViewportHovered);
+
 		m_FrameBuffer->Unbind();
 	}
 
@@ -157,6 +159,7 @@ namespace Engine
 	{
 		EventDispatcher d(event);
 		d.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(OnMouseButtonPressedEvent));
+		d.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressedEvent));
 
 		ActiveScene->OnEvent(event);
 	}
@@ -180,6 +183,36 @@ namespace Engine
 			{
 				if (bIsViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(KeyInput::Key_LeftAlt))
 					AddData(TEXT("SelectedEntity"), &HoveredEntity, sizeof(HoveredEntity));
+
+				return true;
+			}
+			default:
+				return false;
+		}
+	}
+
+	bool ViewportPanel::OnKeyPressedEvent(KeyPressedEvent& event)
+	{
+		switch (event.GetKey())
+		{
+			case KeyInput::Key_Q:
+			{
+				if(bIsViewportFocused)
+					GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+
+				return true;
+			}
+			case KeyInput::Key_W:
+			{
+				if (bIsViewportFocused)
+					GizmoType = ImGuizmo::OPERATION::ROTATE;
+
+				return true;
+			}
+			case KeyInput::Key_E:
+			{
+				if (bIsViewportFocused)
+					GizmoType = ImGuizmo::OPERATION::SCALE;
 
 				return true;
 			}
