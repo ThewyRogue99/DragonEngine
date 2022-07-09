@@ -59,7 +59,8 @@
 
 #define BIT(x) (1 << x)
 
-#define BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...);}
+#define BIND_CLASS_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+#define BIND_EVENT_FN(fn) BIND_CLASS_FN(fn)
 
 #ifndef TEXT
 	#define TEXT(x) L##x

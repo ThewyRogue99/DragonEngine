@@ -13,7 +13,7 @@ namespace Engine
 {
 	ViewportPanel::ViewportPanel() : EditorPanel("Viewport")
 	{
-
+		
 	}
 
 	void ViewportPanel::OnCreate()

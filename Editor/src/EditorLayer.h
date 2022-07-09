@@ -4,6 +4,7 @@
 #include "Engine/Core/Layer.h"
 #include "Panels/PanelManager.h"
 #include "Scene/EditorScene.h"
+#include "Engine/Scene/SceneManager.h"
 
 #include <imgui/imgui.h>
 

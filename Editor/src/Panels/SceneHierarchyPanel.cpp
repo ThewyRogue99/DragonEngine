@@ -56,8 +56,6 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnData(const CString& Name, void* Data, size_t size)
 	{
-		EditorPanel::OnData(Name, Data, size);
-
 		if (Name == TEXT("Scene"))
 		{
 			memcpy(&Context, Data, size);

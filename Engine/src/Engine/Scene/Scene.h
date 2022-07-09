@@ -17,7 +17,7 @@ namespace Engine
 	class Scene
 	{
 	public:
-		Scene();
+		Scene(const CString& Name = TEXT("Scene"));
 		Scene(const Scene&) = default;
 
 		Entity CreateEntity(const CString& name = CString());
@@ -50,10 +50,15 @@ namespace Engine
 		friend class SceneSerializer;
 		friend class SceneHierarchyPanel;
 
+		inline const CString& GetName() const { return SceneName; }
+		inline void SetName(const CString& Name) { SceneName = Name; }
+
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
 
 	protected:
+		CString SceneName;
+
 		entt::registry SceneRegistry;
 
 		b2World* m_PhysicsWorld = nullptr;

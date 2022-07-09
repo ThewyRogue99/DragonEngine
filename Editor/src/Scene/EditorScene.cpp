@@ -5,7 +5,7 @@
 
 namespace Engine
 {
-	EditorScene::EditorScene()
+	EditorScene::EditorScene(const CString& Name) : Scene(Name)
 	{
 		editorCamera = EditorCamera(60.f, 16 / 9, 0.1f, 1000.f);
 	}

@@ -33,7 +33,7 @@ namespace Engine
 		return b2_staticBody;
 	}
 
-	Scene::Scene()
+	Scene::Scene(const CString& Name) : SceneName(Name)
 	{
 		SceneRegistry.on_construct<CameraComponent>().connect<&Scene::OnCameraComponentAdded>(this);
 	}

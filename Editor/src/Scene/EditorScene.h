@@ -9,7 +9,7 @@ namespace Engine
 	class EditorScene : public Scene
 	{
 	public:
-		EditorScene();
+		EditorScene(const CString& Name = TEXT("Editor Scene"));
 		EditorScene(const EditorScene&) = default;
 
 		virtual void OnUpdate(float DeltaTime) override;
