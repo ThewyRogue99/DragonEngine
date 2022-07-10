@@ -9,6 +9,8 @@
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Components.h"
 
+#include "Engine/Scene/SceneSerializer.h"
+
 #include "Engine/Scene/SceneManager.h"
 
 namespace Engine
@@ -76,14 +78,22 @@ namespace Engine
 
 		if (ImGui::BeginDragDropTarget())
 		{
-			// Highlight when dragged to viewport
-			ImGui::GetForegroundDrawList()->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 0, 255));
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
 
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			// Highlight when dragged to viewport
+			if(payload && payload->IsPreview())
+				ImGui::GetForegroundDrawList()->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 0, 255));
+
+			if (payload && payload->IsDelivery())
 			{
 				const wchar_t* path = (const wchar_t*)payload->Data;
 
-				//OpenScene(path);
+				Ref<EditorScene> NewScene = CreateRef<EditorScene>(TEXT("Editor Scene"));
+
+				SceneSerializer s(NewScene);
+				s.Deserialize(path);
+
+				SceneManager::AddScene(NewScene, true);
 			}
 
 			ImGui::EndDragDropTarget();
