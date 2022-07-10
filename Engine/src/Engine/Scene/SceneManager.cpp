@@ -7,7 +7,13 @@
 
 namespace Engine
 {
-	Ref<Scene> SceneManager::CreateScene(const CString& Name)
+	SceneManager::CallbackManager SceneManager::OnSetActiveSceneManager = SceneManager::CallbackManager();
+
+	std::vector<Ref<Scene>> SceneManager::SceneList = { };
+
+	Ref<Scene> SceneManager::ActiveScene = nullptr;
+
+	Ref<Scene> SceneManager::CreateScene(const CString& Name, bool Replace)
 	{
 		Ref<Scene> cpy = GetSceneByName(Name);
 
@@ -19,12 +25,20 @@ namespace Engine
 
 			return NewScene;
 		}
+		else if (Replace)
+		{
+			Ref<Scene> NewScene = CreateRef<Scene>(Name);
+
+			ReplaceScene(Name, NewScene);
+
+			return NewScene;
+		}
 
 		DE_CORE_WARN("Scene with the given name already exists");
 		return nullptr;
 	}
 
-	bool SceneManager::AddScene(Ref<Scene> SceneRef)
+	bool SceneManager::AddScene(Ref<Scene> SceneRef, bool Replace)
 	{
 		Ref<Scene> cpy = GetSceneByName(SceneRef->GetName());
 
@@ -33,6 +47,10 @@ namespace Engine
 			SceneList.push_back(SceneRef);
 
 			return true;
+		}
+		else if (Replace)
+		{
+			return ReplaceScene(SceneRef->GetName(), SceneRef);
 		}
 
 		DE_CORE_WARN("Scene with the given name already exists");
@@ -57,7 +75,29 @@ namespace Engine
 		return nullptr;
 	}
 
-	void SceneManager::SetActiveScene(Ref<Scene> SceneRef)
+	bool SceneManager::ReplaceScene(const CString& ReplaceName, Ref<Scene> SceneRef)
+	{
+		auto it = std::find_if(SceneList.begin(), SceneList.end(), [ReplaceName, SceneRef](Ref<Scene>& scene)
+		{
+			return scene->GetName() == ReplaceName;
+		});
+
+		if (it != SceneList.end())
+		{
+			Ref<Scene> copyRef = *it;
+			*it = SceneRef;
+
+			if (IsActiveScene(copyRef))
+				SetActiveScene(*it);
+
+			return true;
+		}
+
+		DE_CORE_WARN("Scene with the given name doesn't exist");
+		return false;
+	}
+
+	bool SceneManager::SetActiveScene(Ref<Scene> SceneRef)
 	{
 		Ref<Scene> cpy = GetSceneByName(SceneRef->GetName());
 
@@ -66,12 +106,15 @@ namespace Engine
 			ActiveScene = SceneRef;
 
 			OnSetActiveSceneManager.Run(ActiveScene);
+
+			return true;
 		}
 
 		DE_CORE_WARN("Given Scene is not in SceneManager");
+		return false;
 	}
 
-	void SceneManager::SetActiveScene(const CString& Name)
+	bool SceneManager::SetActiveScene(const CString& Name)
 	{
 		Ref<Scene> NewActiveScene = GetSceneByName(Name);
 
@@ -80,9 +123,24 @@ namespace Engine
 			ActiveScene = NewActiveScene;
 
 			OnSetActiveSceneManager.Run(ActiveScene);
+
+			return true;
 		}
 
 		DE_CORE_WARN("Scene with the given name doesn't exist");
+		return false;
+	}
+
+	bool SceneManager::IsActiveScene(Ref<Scene> SceneRef)
+	{
+		return SceneRef == ActiveScene;
+	}
+
+	bool SceneManager::IsActiveScene(const CString& Name)
+	{
+		Ref<Scene> ref = GetSceneByName(Name);
+
+		return ActiveScene == ref;
 	}
 
 	void SceneManager::CallbackManager::AddCallback(const CallbackType& callback)

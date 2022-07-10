@@ -9,24 +9,27 @@ namespace Engine
 	class SceneManager
 	{
 	public:
-		static Ref<Scene> CreateScene(const CString& Name);
+		static Ref<Scene> CreateScene(const CString& Name, bool Replace = false);
 
-		static bool AddScene(Ref<Scene> SceneRef);
+		static bool AddScene(Ref<Scene> SceneRef, bool Replace = false);
 
 		static Ref<Scene> GetActiveScene();
 
 		static Ref<Scene> GetSceneByName(const CString& Name);
 
-		static void SetActiveScene(Ref<Scene> SceneRef);
-		static void SetActiveScene(const CString& Name);
+		static bool ReplaceScene(const CString& ReplaceName, Ref<Scene> SceneRef);
 
-		class CallbackManager;
+		static bool SetActiveScene(Ref<Scene> SceneRef);
+		static bool SetActiveScene(const CString& Name);
 
-		inline static const CallbackManager& OnSetActiveScene() { return OnSetActiveSceneManager; }
+		static bool IsActiveScene(Ref<Scene> SceneRef);
+		static bool IsActiveScene(const CString& Name);
 
 		class CallbackManager
 		{
 		public:
+			CallbackManager() = default;
+
 			using CallbackType = std::function<void(Ref<Scene>)>;
 
 			void AddCallback(const CallbackType& callback);
@@ -37,8 +40,10 @@ namespace Engine
 			void Run(Ref<Scene> NewScene);
 
 		private:
-			std::vector<CallbackType> CallbackList;
+			std::vector<CallbackType> CallbackList = { };
 		};
+
+		inline static CallbackManager& OnSetActiveScene() { return OnSetActiveSceneManager; }
 
 	private:
 		static CallbackManager OnSetActiveSceneManager;

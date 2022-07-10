@@ -33,6 +33,8 @@ namespace Engine
 		void SaveScene();
 		void SaveScene(const CString& path);
 
+		void OnActiveSceneChange(Ref<Scene> scene);
+
 	private:
 		Ref<EditorScene> ActiveScene;
 

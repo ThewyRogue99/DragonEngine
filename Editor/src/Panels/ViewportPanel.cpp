@@ -9,6 +9,8 @@
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Components.h"
 
+#include "Engine/Scene/SceneManager.h"
+
 namespace Engine
 {
 	ViewportPanel::ViewportPanel() : EditorPanel("Viewport")
@@ -34,6 +36,10 @@ namespace Engine
 		m_FrameBuffer = Framebuffer::Create(Specs);
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f, 0.f });
+
+		ActiveScene = std::static_pointer_cast<EditorScene>(SceneManager::GetActiveScene());
+
+		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(ViewportPanel::OnSetActiveScene));
 	}
 
 	void ViewportPanel::OnUpdate(float DeltaTime)
@@ -48,7 +54,7 @@ namespace Engine
 			if (pixelData == -1)
 				HoveredEntity = { };
 			else
-				HoveredEntity = { (entt::entity)pixelData, ActiveScene };
+				HoveredEntity = { (entt::entity)pixelData, ActiveScene.get() };
 		}
 	}
 
@@ -164,15 +170,12 @@ namespace Engine
 		ActiveScene->OnEvent(event);
 	}
 
-	void ViewportPanel::OnData(const CString& Name, void* Data, size_t size)
+	void ViewportPanel::OnSetActiveScene(Ref<Scene> NewScene)
 	{
-		if (Name == TEXT("Scene"))
-		{
-			memcpy(&ActiveScene, Data, size);
+		ActiveScene = std::static_pointer_cast<EditorScene>(NewScene);
 
-			ImVec2 size = GetSize();
-			ActiveScene->OnViewportResize((uint32_t)size.x, (uint32_t)size.y);
-		}
+		ImVec2 size = GetSize();
+		ActiveScene->OnViewportResize((uint32_t)size.x, (uint32_t)size.y);
 	}
 
 	bool ViewportPanel::OnMouseButtonPressedEvent(MouseButtonPressedEvent& event)

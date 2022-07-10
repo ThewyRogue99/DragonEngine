@@ -12,6 +12,8 @@ namespace Engine
 	public:
 		SceneHierarchyPanel();
 
+		virtual void OnCreate() override;
+
 		virtual void OnRender(float DeltaTime) override;
 
 		Entity GetSelectedEntity() const { return SelectedEntity; }
@@ -25,8 +27,10 @@ namespace Engine
 
 		void DrawComponents(Entity entity);
 
+		void OnSetActiveScene(Ref<Scene> NewScene);
+
 	private:
-		EditorScene* Context = nullptr;
+		Ref<EditorScene> Context = nullptr;
 
 		Entity SelectedEntity = { };
 	};

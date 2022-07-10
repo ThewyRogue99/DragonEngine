@@ -17,12 +17,12 @@ namespace Engine
 
 		virtual void OnRender(float DeltaTime) override;
 
-	protected:
-		virtual void OnData(const CString& Name, void* Data, size_t size) override;
+	private:
+		void OnSetActiveScene(Ref<Scene> NewScene);
 
 	private:
-		Ref<Texture2D> PlayIcon, StopIcon;
+		Ref<Texture2D> PlayIcon = nullptr, StopIcon = nullptr;
 
-		EditorScene* ActiveScene;
+		Ref<EditorScene> ActiveScene = nullptr;
 	};
 }

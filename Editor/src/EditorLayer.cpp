@@ -18,12 +18,18 @@ namespace Engine
 {
 	EditorLayer::EditorLayer() : Layer(TEXT("Editor Layer"))
 	{
-		
+
 	}
 
 	void EditorLayer::OnAttach()
 	{
-		ActiveScene = CreateRef<EditorScene>();
+		Ref<EditorScene> scene = CreateRef<EditorScene>(TEXT("Editor Scene"));
+
+		if (SceneManager::AddScene(scene))
+		{
+			if(SceneManager::SetActiveScene(scene))
+				ActiveScene = scene;
+		}
 
 		auto commandLineArgs = Application::Get().GetCommandLineArgs();
 		if (commandLineArgs.Count > 1)
@@ -43,8 +49,7 @@ namespace Engine
 			new ToolbarPanel()
 		});
 
-		Scene* ptr = ActiveScene.get();
-		PManager.AddData(TEXT("Scene"), &ptr, sizeof(ptr));
+		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(EditorLayer::OnActiveSceneChange));
 	}
 
 	void EditorLayer::OnDetach()
@@ -155,10 +160,10 @@ namespace Engine
 
 	void EditorLayer::NewScene()
 	{
-		ActiveScene = CreateRef<EditorScene>();
+		Ref<EditorScene> ref = CreateRef<EditorScene>(TEXT("Editor Scene"));
 
-		Scene* ptr = ActiveScene.get();
-		PManager.AddData(TEXT("Scene"), &ptr, sizeof(ptr));
+		if (SceneManager::AddScene(ref, true))
+			ActiveScene = ref;
 	}
 
 	void EditorLayer::OpenScene()
@@ -189,5 +194,10 @@ namespace Engine
 	{
 		SceneSerializer s(ActiveScene);
 		s.Serialize(path);
+	}
+
+	void EditorLayer::OnActiveSceneChange(Ref<Scene> scene)
+	{
+		ActiveScene = std::static_pointer_cast<EditorScene>(scene);
 	}
 }

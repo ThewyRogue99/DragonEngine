@@ -29,15 +29,14 @@ namespace Engine
 
 		virtual void OnEvent(Event& event) override;
 
-	protected:
-		virtual void OnData(const CString& Name, void* Data, size_t size);
-
 	private:
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
 		bool OnKeyPressedEvent(KeyPressedEvent& event);
 
+		void OnSetActiveScene(Ref<Scene> NewScene);
+
 	private:
-		EditorScene* ActiveScene = nullptr;
+		Ref<EditorScene> ActiveScene = nullptr;
 		Ref<Framebuffer> m_FrameBuffer = nullptr;
 
 		Entity HoveredEntity = { };

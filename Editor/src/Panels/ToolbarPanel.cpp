@@ -1,5 +1,7 @@
 #include "ToolbarPanel.h"
 
+#include "Engine/Scene/SceneManager.h"
+
 namespace Engine
 {
 	ToolbarPanel::ToolbarPanel() : EditorPanel("##toolbar")
@@ -24,6 +26,10 @@ namespace Engine
 			ImGuiWindowFlags_NoScrollbar |
 			ImGuiWindowFlags_NoScrollWithMouse
 		);
+
+		ActiveScene = std::static_pointer_cast<EditorScene>(SceneManager::GetActiveScene());
+
+		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(ToolbarPanel::OnSetActiveScene));
 	}
 
 	void ToolbarPanel::OnRender(float DeltaTime)
@@ -46,9 +52,8 @@ namespace Engine
 		}
 	}
 
-	void ToolbarPanel::OnData(const CString& Name, void* Data, size_t size)
+	void ToolbarPanel::OnSetActiveScene(Ref<Scene> NewScene)
 	{
-		if (Name == TEXT("Scene"))
-			memcpy(&ActiveScene, Data, size);
+		ActiveScene = std::static_pointer_cast<EditorScene>(NewScene);
 	}
 }

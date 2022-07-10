@@ -3,6 +3,8 @@
 
 #include "Engine/Scene/Components.h"
 
+#include "Engine/Scene/SceneManager.h"
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
@@ -13,13 +15,20 @@ namespace Engine
 
 	}
 
+	void SceneHierarchyPanel::OnCreate()
+	{
+		Context = std::static_pointer_cast<EditorScene>(SceneManager::GetActiveScene());
+
+		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnSetActiveScene));
+	}
+
 	void SceneHierarchyPanel::OnRender(float DeltaTime)
 	{
 		EditorPanel::OnRender(DeltaTime);
 
 		Context->SceneRegistry.each([&](auto entityID)
 		{
-			DrawEntityNode({ entityID, Context });
+			DrawEntityNode({ entityID, Context.get() });
 		});
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
@@ -56,11 +65,7 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnData(const CString& Name, void* Data, size_t size)
 	{
-		if (Name == TEXT("Scene"))
-		{
-			memcpy(&Context, Data, size);
-		}
-		else if(Name == TEXT("SelectedEntity"))
+		if(Name == TEXT("SelectedEntity"))
 		{
 			Entity entity = *static_cast<Entity*>(Data);
 
@@ -417,5 +422,10 @@ namespace Engine
 			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
 		});
+	}
+
+	void SceneHierarchyPanel::OnSetActiveScene(Ref<Scene> NewScene)
+	{
+		Context = std::static_pointer_cast<EditorScene>(NewScene);
 	}
 }
