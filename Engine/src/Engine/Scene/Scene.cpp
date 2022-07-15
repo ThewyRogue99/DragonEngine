@@ -3,7 +3,6 @@
 
 #include "Components.h"
 
-#include "Entity.h"
 #include "Engine/Renderer/Renderer2D.h"
 
 #include "box2d/b2_world.h"
@@ -87,6 +86,20 @@ namespace Engine
 
 	void Scene::OnSceneStart()
 	{
+		{
+			auto& group = SceneRegistry.group<CameraComponent>(entt::get<TransformComponent>);
+			for (auto entity : group)
+			{
+				auto& camera = SceneRegistry.get<CameraComponent>(entity);
+
+				if (camera.Primary)
+				{
+					MainCamera.CameraPtr = &(camera.Camera);
+					MainCamera.EntityHandle = { entity, this };
+				}
+			}
+		}
+
 		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
 
 		auto view = SceneRegistry.view<Rigidbody2DComponent>();
@@ -125,6 +138,9 @@ namespace Engine
 
 	void Scene::OnSceneStop()
 	{
+		MainCamera.CameraPtr = nullptr;
+		MainCamera.EntityHandle = Entity();
+
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
 	}
@@ -170,24 +186,11 @@ namespace Engine
 			}
 		}
 
-		glm::mat4 cameraTransform;
+		if (MainCamera.CameraPtr)
 		{
-			auto view = SceneRegistry.view<TransformComponent, CameraComponent>();
-			for (auto entity : view)
-			{
-				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+			glm::mat4 CameraTransform = MainCamera.EntityHandle.GetComponent<TransformComponent>().GetTransformMat4();
 
-				if (camera.Primary)
-				{
-					cameraTransform = transform.GetTransformMat4();
-					break;
-				}
-			}
-		}
-
-		if (PrimaryCameraComponent)
-		{
-			Renderer2D::BeginScene(PrimaryCameraComponent->Camera, cameraTransform);
+			Renderer2D::BeginScene(*MainCamera.CameraPtr, CameraTransform);
 
 			auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : view)
@@ -228,16 +231,7 @@ namespace Engine
 
 		return { };
 	}
-	void Scene::SetPrimaryCameraComponent(CameraComponent* camera)
-	{
-		if (camera)
-			camera->Primary = true;
 
-		if (PrimaryCameraComponent)
-			PrimaryCameraComponent->Primary = false;
-
-		PrimaryCameraComponent = camera;
-	}
 	void Scene::SetSceneState(SceneState state)
 	{
 		if (CurrentSceneState == state)
@@ -265,6 +259,10 @@ namespace Engine
 			CopyEntity(CopyScene, entity);
 		});
 
+		CopyScene->SceneName = SceneName;
+		CopyScene->ViewportHeight = ViewportHeight;
+		CopyScene->ViewportWidth = ViewportWidth;
+
 		return CopyScene;
 	}
 
@@ -274,9 +272,6 @@ namespace Engine
 
 		if (ViewportWidth > 0 && ViewportHeight > 0)
 			component.Camera.SetViewportSize(ViewportWidth, ViewportHeight);
-
-		if (PrimaryCameraComponent == nullptr)
-			SetPrimaryCameraComponent(&component);
 	}
 
 	void Scene::CopyEntity(Ref<Scene> TargetScene, entt::entity entity)

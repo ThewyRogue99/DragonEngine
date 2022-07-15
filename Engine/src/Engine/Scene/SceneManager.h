@@ -9,21 +9,21 @@ namespace Engine
 	class SceneManager
 	{
 	public:
-		static Ref<Scene> CreateScene(const CString& Name, bool Replace = false);
-
-		static bool AddScene(Ref<Scene> SceneRef, bool Replace = false);
+		static bool AddScene(const CString& Tag, Ref<Scene> SceneRef, bool Replace = false);
 
 		static Ref<Scene> GetActiveScene();
 
-		static Ref<Scene> GetSceneByName(const CString& Name);
+		static Ref<Scene> GetScene(const CString& Tag);
 
-		static bool ReplaceScene(const CString& ReplaceName, Ref<Scene> SceneRef);
+		static bool ReplaceScene(const CString& Tag, Ref<Scene> SceneRef);
 
-		static bool SetActiveScene(Ref<Scene> SceneRef);
-		static bool SetActiveScene(const CString& Name);
+		static bool RemoveScene(const CString& Tag);
 
-		static bool IsActiveScene(Ref<Scene> SceneRef);
-		static bool IsActiveScene(const CString& Name);
+		static bool SetActiveScene(const CString& Tag);
+
+		static bool IsActiveScene(const CString& Tag);
+
+		static void RemoveActiveScene();
 
 		class CallbackManager
 		{
@@ -46,9 +46,15 @@ namespace Engine
 		inline static CallbackManager& OnSetActiveScene() { return OnSetActiveSceneManager; }
 
 	private:
+		struct SceneData
+		{
+			CString Tag = CString();
+			Ref<Scene> SceneRef = nullptr;
+		};
+
 		static CallbackManager OnSetActiveSceneManager;
 
-		static std::vector<Ref<Scene>> SceneList;
+		static std::vector<SceneData> SceneList;
 
 		static Ref<Scene> ActiveScene;
 	};

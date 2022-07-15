@@ -88,12 +88,12 @@ namespace Engine
 			{
 				const wchar_t* path = (const wchar_t*)payload->Data;
 
-				Ref<EditorScene> NewScene = CreateRef<EditorScene>(TEXT("Editor Scene"));
+				Ref<EditorScene> NewScene = CreateRef<EditorScene>();
 
 				SceneSerializer s(NewScene);
 				s.Deserialize(path);
 
-				SceneManager::AddScene(NewScene, true);
+				SceneManager::AddScene(TEXT("Editor Scene"), NewScene, true);
 			}
 
 			ImGui::EndDragDropTarget();

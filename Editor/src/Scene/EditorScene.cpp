@@ -8,34 +8,29 @@ namespace Engine
 	EditorScene::EditorScene(const CString& Name) : Scene(Name)
 	{
 		editorCamera = EditorCamera(60.f, 16 / 9, 0.1f, 1000.f);
+
+		CurrentSceneState = SceneState::Edit;
 	}
 
 	void EditorScene::OnUpdate(float DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
 
-		switch (CurrentSceneState)
+		if(CurrentSceneState == SceneState::Edit)
 		{
-			case SceneState::Edit:
+			editorCamera.OnUpdate(DeltaTime);
+
+			Renderer2D::BeginScene(editorCamera, editorCamera.GetTransform());
+
+			auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+			for (auto entity : view)
 			{
-				editorCamera.OnUpdate(DeltaTime);
+				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				Renderer2D::BeginScene(editorCamera, editorCamera.GetTransform());
+				Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
+			}
 
-				auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-				for (auto entity : view)
-				{
-					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-
-					Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
-				}
-
-				Renderer2D::EndScene();
-			} break;
-			case Engine::Scene::SceneState::Play:
-			{
-				Scene::OnUpdate(DeltaTime);
-			} break;
+			Renderer2D::EndScene();
 		}
 	}
 

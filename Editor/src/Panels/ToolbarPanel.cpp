@@ -46,9 +46,19 @@ namespace Engine
 		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), 0))
 		{
 			if (CurrentSceneState == Scene::SceneState::Edit)
+			{
+				Ref<Scene> CopyScene = ActiveScene->Copy();
+
+				SceneManager::AddScene(TEXT("Copy Scene"), CopyScene, true);
+				SceneManager::SetActiveScene(TEXT("Copy Scene"));
+
 				ActiveScene->SetSceneState(Scene::SceneState::Play);
+			}
 			else if (CurrentSceneState == Scene::SceneState::Play)
-				ActiveScene->SetSceneState(Scene::SceneState::Edit);
+			{
+				SceneManager::SetActiveScene(TEXT("Editor Scene"));
+				SceneManager::RemoveScene(TEXT("Copy Scene"));
+			}
 		}
 	}
 

@@ -5,7 +5,7 @@
 #include "Engine/Events/Event.h"
 #include "Engine/Renderer/Camera.h"
 
-#include "entt.hpp"
+#include "Entity.h"
 
 class b2World;
 
@@ -36,7 +36,6 @@ namespace Engine
 		virtual void OnViewportResize(uint32_t width, uint32_t height);
 
 		Entity GetPrimaryCameraEntity();
-		void SetPrimaryCameraComponent(CameraComponent* camera);
 		enum class SceneState
 		{
 			Edit = 0, Play, Stop
@@ -71,9 +70,15 @@ namespace Engine
 
 		b2World* m_PhysicsWorld = nullptr;
 
-		CameraComponent* PrimaryCameraComponent = nullptr;
+		struct CameraProps
+		{
+			Camera* CameraPtr = nullptr;
+			Entity EntityHandle = Entity();
+		};
 
-		SceneState CurrentSceneState = SceneState::Edit;
+		CameraProps MainCamera;
+
+		SceneState CurrentSceneState = SceneState::Stop;
 
 		uint32_t ViewportWidth = 0, ViewportHeight = 0;
 	};

@@ -23,11 +23,11 @@ namespace Engine
 
 	void EditorLayer::OnAttach()
 	{
-		Ref<EditorScene> scene = CreateRef<EditorScene>(TEXT("Editor Scene"));
+		Ref<EditorScene> scene = CreateRef<EditorScene>();
 
-		if (SceneManager::AddScene(scene))
+		if (SceneManager::AddScene(TEXT("Editor Scene"), scene))
 		{
-			if(SceneManager::SetActiveScene(scene))
+			if(SceneManager::SetActiveScene(TEXT("Editor Scene")))
 				ActiveScene = scene;
 		}
 
@@ -160,9 +160,9 @@ namespace Engine
 
 	void EditorLayer::NewScene()
 	{
-		Ref<EditorScene> ref = CreateRef<EditorScene>(TEXT("Editor Scene"));
+		Ref<EditorScene> ref = CreateRef<EditorScene>();
 
-		if (SceneManager::AddScene(ref, true))
+		if (SceneManager::AddScene(TEXT("Editor Scene"), ref, true))
 			ActiveScene = ref;
 	}
 

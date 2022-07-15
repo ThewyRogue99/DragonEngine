@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Scene.h"
-
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Log.h"
 
@@ -11,6 +9,8 @@
 
 namespace Engine
 {
+	class Scene;
+
 	class Entity
 	{
 	public:

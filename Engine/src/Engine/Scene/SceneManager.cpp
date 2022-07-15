@@ -9,51 +9,26 @@ namespace Engine
 {
 	SceneManager::CallbackManager SceneManager::OnSetActiveSceneManager = SceneManager::CallbackManager();
 
-	std::vector<Ref<Scene>> SceneManager::SceneList = { };
+	std::vector<SceneManager::SceneData> SceneManager::SceneList = { };
 
 	Ref<Scene> SceneManager::ActiveScene = nullptr;
 
-	Ref<Scene> SceneManager::CreateScene(const CString& Name, bool Replace)
+	bool SceneManager::AddScene(const CString& Tag, Ref<Scene> SceneRef, bool Replace)
 	{
-		Ref<Scene> cpy = GetSceneByName(Name);
+		Ref<Scene> cpy = GetScene(Tag);
 
 		if (!cpy)
 		{
-			Ref<Scene> NewScene = CreateRef<Scene>(Name);
-
-			SceneList.push_back(NewScene);
-
-			return NewScene;
-		}
-		else if (Replace)
-		{
-			Ref<Scene> NewScene = CreateRef<Scene>(Name);
-
-			ReplaceScene(Name, NewScene);
-
-			return NewScene;
-		}
-
-		DE_CORE_WARN("Scene with the given name already exists");
-		return nullptr;
-	}
-
-	bool SceneManager::AddScene(Ref<Scene> SceneRef, bool Replace)
-	{
-		Ref<Scene> cpy = GetSceneByName(SceneRef->GetName());
-
-		if (!cpy)
-		{
-			SceneList.push_back(SceneRef);
+			SceneList.push_back({ Tag, SceneRef });
 
 			return true;
 		}
 		else if (Replace)
 		{
-			return ReplaceScene(SceneRef->GetName(), SceneRef);
+			return ReplaceScene(Tag, SceneRef);
 		}
 
-		DE_CORE_WARN("Scene with the given name already exists");
+		DE_CORE_WARN("Scene with the given tag already exists");
 		return false;
 	}
 
@@ -62,61 +37,66 @@ namespace Engine
 		return ActiveScene;
 	}
 
-	Ref<Scene> SceneManager::GetSceneByName(const CString& Name)
+	Ref<Scene> SceneManager::GetScene(const CString& Tag)
 	{
-		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Name](Ref<Scene>& scene)
+		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](SceneData& Data)
 		{
-			return scene->GetName() == Name;
+			return Data.Tag == Tag;
 		});
 
 		if (it != SceneList.end())
-			return *it;
+			return (*it).SceneRef;
 
 		return nullptr;
 	}
 
-	bool SceneManager::ReplaceScene(const CString& ReplaceName, Ref<Scene> SceneRef)
+	bool SceneManager::ReplaceScene(const CString& Tag, Ref<Scene> SceneRef)
 	{
-		auto it = std::find_if(SceneList.begin(), SceneList.end(), [ReplaceName, SceneRef](Ref<Scene>& scene)
+		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](SceneData& Data)
 		{
-			return scene->GetName() == ReplaceName;
+			return Data.Tag == Tag;
 		});
 
 		if (it != SceneList.end())
 		{
-			Ref<Scene> copyRef = *it;
-			*it = SceneRef;
+			bool isActive = IsActiveScene((*it).Tag);
 
-			if (IsActiveScene(copyRef))
-				SetActiveScene(*it);
+			Ref<Scene> copyRef = (*it).SceneRef;
+			(*it).SceneRef = SceneRef;
+
+			if (isActive)
+				SetActiveScene((*it).Tag);
 
 			return true;
 		}
 
-		DE_CORE_WARN("Scene with the given name doesn't exist");
+		DE_CORE_WARN("Scene with the given tag doesn't exist");
 		return false;
 	}
 
-	bool SceneManager::SetActiveScene(Ref<Scene> SceneRef)
+	bool SceneManager::RemoveScene(const CString& Tag)
 	{
-		Ref<Scene> cpy = GetSceneByName(SceneRef->GetName());
-
-		if (cpy && (cpy == SceneRef))
+		auto it = std::remove_if(SceneList.begin(), SceneList.end(), [Tag](SceneData& Data)
 		{
-			ActiveScene = SceneRef;
+			return Data.Tag == Tag;
+		});
 
-			OnSetActiveSceneManager.Run(ActiveScene);
+		if (it != SceneList.end())
+		{
+			if (IsActiveScene((*it).Tag))
+				RemoveActiveScene();
 
+			SceneList.erase(it);
 			return true;
 		}
 
-		DE_CORE_WARN("Given Scene is not in SceneManager");
+		DE_CORE_WARN("Scene with the given tag doesn't exist");
 		return false;
 	}
 
-	bool SceneManager::SetActiveScene(const CString& Name)
+	bool SceneManager::SetActiveScene(const CString& Tag)
 	{
-		Ref<Scene> NewActiveScene = GetSceneByName(Name);
+		Ref<Scene> NewActiveScene = GetScene(Tag);
 
 		if (NewActiveScene)
 		{
@@ -127,20 +107,25 @@ namespace Engine
 			return true;
 		}
 
-		DE_CORE_WARN("Scene with the given name doesn't exist");
+		DE_CORE_WARN("Scene with the given tag doesn't exist");
 		return false;
 	}
 
-	bool SceneManager::IsActiveScene(Ref<Scene> SceneRef)
+	bool SceneManager::IsActiveScene(const CString& Tag)
 	{
-		return SceneRef == ActiveScene;
-	}
-
-	bool SceneManager::IsActiveScene(const CString& Name)
-	{
-		Ref<Scene> ref = GetSceneByName(Name);
+		Ref<Scene> ref = GetScene(Tag);
 
 		return ActiveScene == ref;
+	}
+
+	void SceneManager::RemoveActiveScene()
+	{
+		if (ActiveScene)
+		{
+			ActiveScene = nullptr;
+
+			OnSetActiveSceneManager.Run(ActiveScene);
+		}
 	}
 
 	void SceneManager::CallbackManager::AddCallback(const CallbackType& callback)

@@ -1,6 +1,7 @@
 #include "depch.h"
 #include "Entity.h"
 
+#include "Scene.h"
 #include "Components.h"
 
 namespace Engine
