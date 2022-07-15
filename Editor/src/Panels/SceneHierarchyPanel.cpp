@@ -26,6 +26,9 @@ namespace Engine
 	{
 		EditorPanel::OnRender(DeltaTime);
 
+		ImGuiDockNode* Node = ImGui::DockBuilderGetNode(1002935122);
+		Node->LocalFlags |= ImGuiDockNodeFlags_NoWindowMenuButton | ImGuiDockNodeFlags_NoCloseButton;
+
 		Context->SceneRegistry.each([&](auto entityID)
 		{
 			DrawEntityNode({ entityID, Context.get() });

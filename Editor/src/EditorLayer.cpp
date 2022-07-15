@@ -115,8 +115,6 @@ namespace Engine
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
 
-		style.WindowMinSize.x = minWinSizeX;
-
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("Editor"))
@@ -149,6 +147,8 @@ namespace Engine
 		auto stats = Engine::Renderer2D::GetStats();
 
 		PManager.Render(DeltaTime);
+
+		style.WindowMinSize.x = minWinSizeX;
 
 		ImGui::End();
 	}

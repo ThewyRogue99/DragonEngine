@@ -2,7 +2,7 @@
 
 #include "Engine/Scene/Scene.h"
 #include "Engine/Events/Event.h"
-#include "Engine/Renderer/EditorCamera.h"
+#include "EditorCamera.h"
 
 namespace Engine
 {

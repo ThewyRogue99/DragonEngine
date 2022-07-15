@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Camera.h"
+#include "Engine/Renderer/Camera.h"
 
 #include "Engine/Events/MouseEvent.h"
 #include <glm/glm.hpp>
@@ -21,6 +21,8 @@ namespace Engine
 		inline void SetDistance(float distance) { m_Distance = distance; }
 
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
+
+		glm::mat4 GetTransform();
 
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return Projection * m_ViewMatrix; }
@@ -51,7 +53,7 @@ namespace Engine
 	private:
 		float m_FOV = 45.0f, m_AspectRatio = 1.778f, m_NearClip = 0.1f, m_FarClip = 1000.0f;
 
-		glm::mat4 m_ViewMatrix;
+		glm::mat4 m_ViewMatrix = glm::mat4(1.f);
 		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_FocalPoint = { 0.0f, 0.0f, 0.0f };
 

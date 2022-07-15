@@ -14,7 +14,7 @@ namespace Engine
 
 	}
 
-	UUID::UUID(uint64_t uuid) 
+	UUID::UUID(uint64_t uuid) : m_UUID(uuid)
 	{
 
 	}

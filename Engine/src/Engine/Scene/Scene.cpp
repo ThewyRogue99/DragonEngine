@@ -66,6 +66,20 @@ namespace Engine
 		return entity;
 	}
 
+	Entity Scene::GetEntityWithUUID(UUID uuid)
+	{
+		auto& view = SceneRegistry.view<IDComponent>();
+		for (auto entity : view)
+		{
+			UUID id = SceneRegistry.get<IDComponent>(entity).ID;
+
+			if (id == uuid)
+				return { entity, this };
+		}
+
+		return Entity();
+	}
+
 	void Scene::DestroyEntity(Entity entity)
 	{
 		SceneRegistry.destroy(entity.EntityHandle);
@@ -214,7 +228,6 @@ namespace Engine
 
 		return { };
 	}
-
 	void Scene::SetPrimaryCameraComponent(CameraComponent* camera)
 	{
 		if (camera)
@@ -225,7 +238,6 @@ namespace Engine
 
 		PrimaryCameraComponent = camera;
 	}
-
 	void Scene::SetSceneState(SceneState state)
 	{
 		if (CurrentSceneState == state)
@@ -244,6 +256,18 @@ namespace Engine
 
 	}
 
+	Ref<Scene> Scene::Copy()
+	{
+		Ref<Scene> CopyScene = CreateRef<Scene>(SceneName);
+
+		SceneRegistry.each([this, CopyScene](const entt::entity entity)
+		{
+			CopyEntity(CopyScene, entity);
+		});
+
+		return CopyScene;
+	}
+
 	void Scene::OnCameraComponentAdded(entt::registry& registry, entt::entity entity)
 	{
 		auto& component = registry.get<CameraComponent>(entity);
@@ -253,5 +277,35 @@ namespace Engine
 
 		if (PrimaryCameraComponent == nullptr)
 			SetPrimaryCameraComponent(&component);
+	}
+
+	void Scene::CopyEntity(Ref<Scene> TargetScene, entt::entity entity)
+	{
+		UUID id = SceneRegistry.get<IDComponent>(entity).ID;
+		CString& tag = SceneRegistry.get<TagComponent>(entity).Tag;
+
+		Entity targetEntity = TargetScene->GetEntityWithUUID(id);
+
+		if (!targetEntity.IsValid())
+			targetEntity = TargetScene->CreateEntityWithUUID(id, tag);
+
+		// Copy all components
+		CopyComponent<TransformComponent>(TargetScene, targetEntity.EntityHandle, entity);
+		CopyComponent<SpriteRendererComponent>(TargetScene, targetEntity.EntityHandle, entity);
+		CopyComponent<CameraComponent>(TargetScene, targetEntity.EntityHandle, entity);
+		CopyComponent<NativeScriptComponent>(TargetScene, targetEntity.EntityHandle, entity);
+		CopyComponent<Rigidbody2DComponent>(TargetScene, targetEntity.EntityHandle, entity);
+		CopyComponent<BoxCollider2DComponent>(TargetScene, targetEntity.EntityHandle, entity);
+	}
+
+	template<typename Component>
+	void Scene::CopyComponent(Ref<Scene> TargetScene, entt::entity TargetEntity, entt::entity SourceEntity)
+	{
+		if (SceneRegistry.all_of<Component>(SourceEntity))
+		{
+			Component& sourceComponent = SceneRegistry.get<Component>(SourceEntity);
+
+			TargetScene->SceneRegistry.emplace_or_replace<Component>(TargetEntity, sourceComponent);
+		}
 	}
 }

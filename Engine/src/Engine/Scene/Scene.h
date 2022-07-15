@@ -3,6 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 #include "Engine/Events/Event.h"
+#include "Engine/Renderer/Camera.h"
 
 #include "entt.hpp"
 
@@ -23,6 +24,8 @@ namespace Engine
 		Entity CreateEntity(const CString& name = CString());
 		Entity CreateEntityWithUUID(UUID uuid, const CString& name = CString());
 
+		Entity GetEntityWithUUID(UUID uuid);
+
 		void DestroyEntity(Entity entity);
 
 		void OnSceneStart();
@@ -33,9 +36,7 @@ namespace Engine
 		virtual void OnViewportResize(uint32_t width, uint32_t height);
 
 		Entity GetPrimaryCameraEntity();
-
 		void SetPrimaryCameraComponent(CameraComponent* camera);
-
 		enum class SceneState
 		{
 			Edit = 0, Play, Stop
@@ -53,8 +54,15 @@ namespace Engine
 		inline const CString& GetName() const { return SceneName; }
 		inline void SetName(const CString& Name) { SceneName = Name; }
 
+		Ref<Scene> Copy();
+
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
+
+		void CopyEntity(Ref<Scene> TargetScene, entt::entity entity);
+
+		template<typename Component>
+		void CopyComponent(Ref<Scene> TargetScene, entt::entity TargetEntity, entt::entity SourceEntity);
 
 	protected:
 		CString SceneName;

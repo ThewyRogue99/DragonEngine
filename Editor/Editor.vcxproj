@@ -142,6 +142,7 @@
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Panels\ToolbarPanel.h" />
     <ClInclude Include="src\Panels\ViewportPanel.h" />
+    <ClInclude Include="src\Scene\EditorCamera.h" />
     <ClInclude Include="src\Scene\EditorScene.h" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +154,7 @@
     <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\Panels\ToolbarPanel.cpp" />
     <ClCompile Include="src\Panels\ViewportPanel.cpp" />
+    <ClCompile Include="src\Scene\EditorCamera.cpp" />
     <ClCompile Include="src\Scene\EditorScene.cpp" />
   </ItemGroup>
   <ItemGroup>

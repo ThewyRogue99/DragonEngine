@@ -142,19 +142,6 @@ namespace Engine
 		Data.TextureSlotIndex = 1;
 	}
 
-	void Renderer2D::BeginScene(const EditorCamera& camera)
-	{
-		DE_PROFILE_FUNCTION();
-
-		Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
-		Data.CameraUniformBuffer->SetData(&Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
-
-		Data.QuadIndexCount = 0;
-		Data.QuadVertexBufferPtr = Data.QuadVertexBufferBase;
-
-		Data.TextureSlotIndex = 1;
-	}
-
 	void Renderer2D::EndScene()
 	{
 		DE_PROFILE_FUNCTION();

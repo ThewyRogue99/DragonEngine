@@ -31,6 +31,7 @@
     <ClInclude Include="src\Scene\EditorScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scene\EditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApp.cpp" />
@@ -56,5 +57,6 @@
     <ClCompile Include="src\Scene\EditorScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\EditorCamera.cpp" />
   </ItemGroup>
 </Project>

@@ -20,7 +20,7 @@ namespace Engine
 			{
 				editorCamera.OnUpdate(DeltaTime);
 
-				Renderer2D::BeginScene(editorCamera);
+				Renderer2D::BeginScene(editorCamera, editorCamera.GetTransform());
 
 				auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 				for (auto entity : view)
