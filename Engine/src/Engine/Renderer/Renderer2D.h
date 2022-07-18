@@ -17,8 +17,11 @@ namespace Engine
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(const Camera& camera, const glm::mat4 transform);
+		static void BeginScene(const Camera& camera, const glm::mat4& transform);
 		static void EndScene();
+
+		static void StartBatch();
+		static void NextBatch();
 		static void Flush();
 
 		static void DrawQuad(
@@ -30,17 +33,23 @@ namespace Engine
 		static void DrawQuad(
 			const glm::vec3& position,
 			const glm::vec2& size,
-			const Ref<Texture2D> texture
+			const Ref<Texture2D>& texture,
+			float tilingFactor,
+			const glm::vec4& tintColor
 		);
 
 		static void DrawQuad(
 			const glm::mat4& transform,
-			const glm::vec4& color
+			const glm::vec4& color,
+			int entityID = -1
 		);
 
 		static void DrawQuad(
 			const glm::mat4& transform,
-			const Ref<Texture2D> texture
+			const Ref<Texture2D>& texture,
+			float tilingFactor,
+			const glm::vec4& tintColor,
+			int entityID = -1
 		);
 
 		static void DrawQuadSprite(
@@ -51,16 +60,26 @@ namespace Engine
 
 		static void DrawRotatedQuad(
 			const glm::vec3& position,
-			float Rotation,
 			const glm::vec2& size,
+			float rotation,
 			const glm::vec4& color
 		);
 
 		static void DrawRotatedQuad(
 			const glm::vec3& position,
-			float Rotation,
 			const glm::vec2& size,
-			const Ref<Texture2D> texture
+			float rotation,
+			const Ref<Texture2D>& texture,
+			float tilingFactor,
+			const glm::vec4& tintColor
+		);
+
+		static void DrawCircle(
+			const glm::mat4& transform,
+			const glm::vec4& color,
+			float thickness = 1.f,
+			float fade = 0.005f,
+			int entityID = -1
 		);
 
 		static void ResetStats();

@@ -22,12 +22,30 @@ namespace Engine
 
 			Renderer2D::BeginScene(editorCamera, editorCamera.GetTransform());
 
-			auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-			for (auto entity : view)
 			{
-				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+				auto view = SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
+					Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
+				}
+			}
+
+			{
+				auto view = SceneRegistry.view<TransformComponent, CircleRendererComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+
+					Renderer2D::DrawCircle(
+						transform.GetTransformMat4(),
+						circle.Color,
+						circle.Thickness,
+						circle.Fade,
+						(int)entity
+					);
+				}
 			}
 
 			Renderer2D::EndScene();

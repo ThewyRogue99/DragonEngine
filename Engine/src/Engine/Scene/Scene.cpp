@@ -94,8 +94,8 @@ namespace Engine
 
 				if (camera.Primary)
 				{
-					MainCamera.CameraPtr = &(camera.Camera);
-					MainCamera.EntityHandle = { entity, this };
+					PrimaryCamera.CameraPtr = &(camera.Camera);
+					PrimaryCamera.EntityHandle = { entity, this };
 				}
 			}
 		}
@@ -138,8 +138,8 @@ namespace Engine
 
 	void Scene::OnSceneStop()
 	{
-		MainCamera.CameraPtr = nullptr;
-		MainCamera.EntityHandle = Entity();
+		PrimaryCamera.CameraPtr = nullptr;
+		PrimaryCamera.EntityHandle = Entity();
 
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
@@ -186,18 +186,36 @@ namespace Engine
 			}
 		}
 
-		if (MainCamera.CameraPtr)
+		if (PrimaryCamera.CameraPtr)
 		{
-			glm::mat4 CameraTransform = MainCamera.EntityHandle.GetComponent<TransformComponent>().GetTransformMat4();
+			glm::mat4 CameraTransform = PrimaryCamera.EntityHandle.GetComponent<TransformComponent>().GetTransformMat4();
 
-			Renderer2D::BeginScene(*MainCamera.CameraPtr, CameraTransform);
+			Renderer2D::BeginScene(*PrimaryCamera.CameraPtr, CameraTransform);
 
-			auto view = SceneRegistry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-			for (auto entity : view)
 			{
-				auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+				auto view = SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
+					Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
+				}
+			}
+
+			{
+				auto view = SceneRegistry.view<TransformComponent, CircleRendererComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+
+					Renderer2D::DrawCircle(
+						transform.GetTransformMat4(),
+						circle.Color,
+						circle.Thickness,
+						circle.Fade,
+						(int)entity
+					);
+				}
 			}
 
 			Renderer2D::EndScene();
@@ -217,19 +235,6 @@ namespace Engine
 			if (!cameraComponent.FixedAspectRatio)
 				cameraComponent.Camera.SetViewportSize(width, height);
 		}
-	}
-
-	Entity Scene::GetPrimaryCameraEntity()
-	{
-		auto view = SceneRegistry.view<CameraComponent>();
-		for (auto entity : view)
-		{
-			const auto& camera = view.get<CameraComponent>(entity);
-			if (camera.Primary)
-				return Entity(entity, this);
-		}
-
-		return { };
 	}
 
 	void Scene::SetSceneState(SceneState state)
@@ -287,6 +292,7 @@ namespace Engine
 		// Copy all components
 		CopyComponent<TransformComponent>(TargetScene, targetEntity.EntityHandle, entity);
 		CopyComponent<SpriteRendererComponent>(TargetScene, targetEntity.EntityHandle, entity);
+		CopyComponent<CircleRendererComponent>(TargetScene, targetEntity.EntityHandle, entity);
 		CopyComponent<CameraComponent>(TargetScene, targetEntity.EntityHandle, entity);
 		CopyComponent<NativeScriptComponent>(TargetScene, targetEntity.EntityHandle, entity);
 		CopyComponent<Rigidbody2DComponent>(TargetScene, targetEntity.EntityHandle, entity);

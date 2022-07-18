@@ -283,6 +283,15 @@ namespace Engine
 				}
 			}
 
+			if (!SelectedEntity.HasComponent<CircleRendererComponent>())
+			{
+				if (ImGui::MenuItem("Circle Renderer"))
+				{
+					SelectedEntity.AddComponent<CircleRendererComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
 			if (!SelectedEntity.HasComponent<Rigidbody2DComponent>())
 			{
 				if (ImGui::MenuItem("Rigidbody 2D"))
@@ -306,14 +315,14 @@ namespace Engine
 
 		ImGui::PopItemWidth();
 
-		DrawComponent<TransformComponent>("Transform Component", entity, [](TransformComponent& component)
+		DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
 		{
 			DrawVec3Control("Position", component.Position);
 			DrawVec3Control("Rotation", component.Rotation);
-			DrawVec3Control("Scale", component.Scale);
+			DrawVec3Control("Scale", component.Scale, 1.f);
 		});
 
-		DrawComponent<SpriteRendererComponent>("Sprite Renderer Component", entity, [](SpriteRendererComponent& component)
+		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 
@@ -332,7 +341,14 @@ namespace Engine
 			}
 		});
 
-		DrawComponent<CameraComponent>("Camera Component", entity, [](CameraComponent& component)
+		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](CircleRendererComponent& component)
+		{
+			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+			ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.f, 1.f);
+			ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.f, 1.f);
+		});
+
+		DrawComponent<CameraComponent>("Camera", entity, [](CameraComponent& component)
 		{
 			auto& camera = component.Camera;
 

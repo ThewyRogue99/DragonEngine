@@ -65,6 +65,17 @@ namespace Engine
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
 	};
 
+	struct CircleRendererComponent
+	{
+		glm::vec4 Color = glm::vec4(1.f);
+		float Radius = 0.5f;
+		float Thickness = 1.f;
+		float Fade = 0.005f;
+
+		CircleRendererComponent() = default;
+		CircleRendererComponent(const CircleRendererComponent&) = default;
+	};
+
 	struct CameraComponent
 	{
 		SceneCamera Camera;

@@ -35,7 +35,6 @@ namespace Engine
 
 		virtual void OnViewportResize(uint32_t width, uint32_t height);
 
-		Entity GetPrimaryCameraEntity();
 		enum class SceneState
 		{
 			Edit = 0, Play, Stop
@@ -55,6 +54,14 @@ namespace Engine
 
 		Ref<Scene> Copy();
 
+		struct CameraProps
+		{
+			Camera* CameraPtr = nullptr;
+			Entity EntityHandle = Entity();
+		};
+
+		inline CameraProps& GetPrimaryCameraProps() { return PrimaryCamera; }
+
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
 
@@ -70,13 +77,7 @@ namespace Engine
 
 		b2World* m_PhysicsWorld = nullptr;
 
-		struct CameraProps
-		{
-			Camera* CameraPtr = nullptr;
-			Entity EntityHandle = Entity();
-		};
-
-		CameraProps MainCamera;
+		CameraProps PrimaryCamera;
 
 		SceneState CurrentSceneState = SceneState::Stop;
 
