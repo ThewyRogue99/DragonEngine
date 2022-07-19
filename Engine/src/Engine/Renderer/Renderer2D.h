@@ -82,6 +82,26 @@ namespace Engine
 			int entityID = -1
 		);
 
+		static void DrawLine(
+			const glm::vec3& p0,
+			glm::vec3& p1,
+			const glm::vec4& color
+		);
+
+		static void DrawRect(
+			const glm::vec3& position,
+			const glm::vec2& size,
+			const glm::vec4& color
+		);
+
+		static void DrawRect(
+			const glm::mat4& transform,
+			const glm::vec4& color
+		);
+
+		static void SetLineWidth(float Width);
+		static float GetLineWidth();
+
 		static void ResetStats();
 
 	public:
@@ -101,15 +121,5 @@ namespace Engine
 		{
 			float TilingFactor = 1.f;
 		};
-
-		static void DrawQuadWithTransform(
-			const glm::mat4& transform,
-			Ref<Texture2D> texture = nullptr,
-			const glm::vec4& color = glm::vec4(1.f),
-			int EntityID = -1,
-			RenderProperties properties = RenderProperties()
-		);
-
-		static void FlushAndReset();
 	};
 }
