@@ -9,6 +9,7 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 #include <glm/glm.hpp>
 
@@ -113,9 +114,9 @@ namespace Engine
 			bodyDef.type = Rigidbody2DTypeToBox2DBody(rb2d.Type);
 			bodyDef.position.Set(transform.Position.x, transform.Position.y);
 			bodyDef.angle = glm::radians(transform.Rotation.z);
+			bodyDef.fixedRotation = rb2d.FixedRotation;
 
 			b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
-			body->SetFixedRotation(rb2d.FixedRotation);
 			rb2d.RuntimeBody = body;
 
 			if (entity.HasComponent<BoxCollider2DComponent>())
@@ -131,6 +132,23 @@ namespace Engine
 				fixtureDef.friction = bc2d.Friction;
 				fixtureDef.restitution = bc2d.Restitution;
 				fixtureDef.restitutionThreshold = bc2d.RestitutionThreshold;
+				body->CreateFixture(&fixtureDef);
+			}
+
+			if (entity.HasComponent<CircleCollider2DComponent>())
+			{
+				auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+
+				b2CircleShape circleShape;
+				circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
+				circleShape.m_radius = cc2d.Radius;
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &circleShape;
+				fixtureDef.density = cc2d.Density;
+				fixtureDef.friction = cc2d.Friction;
+				fixtureDef.restitution = cc2d.Restitution;
+				fixtureDef.restitutionThreshold = cc2d.RestitutionThreshold;
 				body->CreateFixture(&fixtureDef);
 			}
 		}
@@ -297,6 +315,7 @@ namespace Engine
 		CopyComponent<NativeScriptComponent>(TargetScene, targetEntity.EntityHandle, entity);
 		CopyComponent<Rigidbody2DComponent>(TargetScene, targetEntity.EntityHandle, entity);
 		CopyComponent<BoxCollider2DComponent>(TargetScene, targetEntity.EntityHandle, entity);
+		CopyComponent<CircleCollider2DComponent>(TargetScene, targetEntity.EntityHandle, entity);
 	}
 
 	template<typename Component>
