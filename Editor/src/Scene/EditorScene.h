@@ -18,6 +18,14 @@ namespace Engine
 
 		virtual void OnViewportResize(uint32_t width, uint32_t height) override;
 
+		virtual void OnSceneBegin() override;
+		virtual void OnSceneEnd() override;
+
+		Ref<EditorScene> CopyEditorScene();
+
+		void BeginSimulation() { bShouldSimulate = true; }
+		void EndSimulation() { bShouldSimulate = false; }
+
 		inline const EditorCamera& GetEditorCamera() const { return editorCamera; }
 
 		inline void SetShouldBlockEvents(bool state) { bShouldBlockEvents = state; }
@@ -25,6 +33,7 @@ namespace Engine
 	private:
 		EditorCamera editorCamera;
 
+		bool bShouldSimulate = false;
 		bool bShouldBlockEvents = false;
 	};
 }

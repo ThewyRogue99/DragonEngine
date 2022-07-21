@@ -13,6 +13,7 @@ namespace Engine
 	{
 		PlayIcon = Texture2D::Create(TEXT("Resource/Icon/PlayButton.png"));
 		StopIcon = Texture2D::Create(TEXT("Resource/Icon/StopButton.png"));
+		SimulateIcon = Texture2D::Create(TEXT("Resource/Icon/SimulateButton.png"));
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 2.f));
 		SetPanelStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0.f, 0.f));
@@ -34,31 +35,88 @@ namespace Engine
 
 	void ToolbarPanel::OnRender(float DeltaTime)
 	{
-		ImVec2 windowSize = ImGui::GetWindowSize();
-		float buttonSize = windowSize.y - 6.f;
+		float buttonSize = ImGui::GetWindowHeight() - 4.0f;
 
-		Scene::SceneState CurrentSceneState = ActiveScene->GetSceneState();
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - ((buttonSize * 2.f) * 0.5f));
 
-		Ref<Texture2D> icon = (CurrentSceneState == Scene::SceneState::Edit) ? PlayIcon : StopIcon;
-
-		ImGui::SetCursorPos(ImVec2((windowSize.x * 0.5f) - (buttonSize * 0.5f), (windowSize.y * 0.5f) - (buttonSize * 0.5f)));
-
-		if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0.f, 0.f), ImVec2(1.f, 1.f), 0))
+		// Play Button
 		{
-			if (CurrentSceneState == Scene::SceneState::Edit)
-			{
-				Ref<Scene> CopyScene = ActiveScene->Copy();
+			bool bShouldDisable = ActiveSceneState == SceneState::Simulate;
 
-				SceneManager::AddScene(TEXT("Copy Scene"), CopyScene, true);
-				SceneManager::SetActiveScene(TEXT("Copy Scene"));
+			Ref<Texture2D> icon = (ActiveSceneState == SceneState::Edit || bShouldDisable) ? PlayIcon : StopIcon;
 
-				ActiveScene->SetSceneState(Scene::SceneState::Play);
-			}
-			else if (CurrentSceneState == Scene::SceneState::Play)
+			if (bShouldDisable)
+				ImGui::BeginDisabled();
+
+			if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0))
 			{
-				SceneManager::SetActiveScene(TEXT("Editor Scene"));
-				SceneManager::RemoveScene(TEXT("Copy Scene"));
+				switch (ActiveSceneState)
+				{
+					case SceneState::Edit:
+					{
+						Ref<Scene> CopyScene = ActiveScene->Copy();
+
+						SceneManager::AddScene(TEXT("Copy Scene"), CopyScene, true);
+						SceneManager::SetActiveScene(TEXT("Copy Scene"));
+
+						ActiveSceneState = SceneState::Play;
+					} break;
+					case SceneState::Play:
+					{
+						SceneManager::SetActiveScene(TEXT("Editor Scene"));
+						SceneManager::RemoveScene(TEXT("Copy Scene"));
+
+						ActiveSceneState = SceneState::Edit;
+					} break;
+					default: break;
+				}
 			}
+
+			if (bShouldDisable)
+				ImGui::EndDisabled();
+		}
+
+		ImGui::SameLine();
+
+		// Simulation Button
+		{
+			bool bShouldDisable = ActiveSceneState == SceneState::Play;
+
+			Ref<Texture2D> icon = (ActiveSceneState == SceneState::Edit || bShouldDisable) ? SimulateIcon : StopIcon;
+
+			if (bShouldDisable)
+				ImGui::BeginDisabled();
+
+			if (ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0))
+			{
+				switch (ActiveSceneState)
+				{
+					case SceneState::Edit:
+					{
+						Ref<EditorScene> CopyScene = ActiveScene->CopyEditorScene();
+
+						CopyScene->BeginSimulation();
+
+						SceneManager::AddScene(TEXT("Copy Scene"), CopyScene, true);
+						SceneManager::SetActiveScene(TEXT("Copy Scene"));
+
+						ActiveSceneState = SceneState::Simulate;
+					} break;
+					case SceneState::Simulate:
+					{
+						ActiveScene->EndSimulation();
+
+						SceneManager::SetActiveScene(TEXT("Editor Scene"));
+						SceneManager::RemoveScene(TEXT("Copy Scene"));
+
+						ActiveSceneState = SceneState::Edit;
+					} break;
+					default: break;
+				}
+			}
+
+			if (bShouldDisable)
+				ImGui::EndDisabled();
 		}
 	}
 

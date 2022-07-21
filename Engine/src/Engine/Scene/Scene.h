@@ -28,20 +28,9 @@ namespace Engine
 
 		void DestroyEntity(Entity entity);
 
-		void OnSceneStart();
-		void OnSceneStop();
-
 		virtual void OnUpdate(float DeltaTime);
 
 		virtual void OnViewportResize(uint32_t width, uint32_t height);
-
-		enum class SceneState
-		{
-			Edit = 0, Play, Stop
-		};
-
-		void SetSceneState(SceneState state);
-		inline const SceneState GetSceneState() const { return CurrentSceneState; }
 
 		virtual void OnEvent(Event& event);
 
@@ -57,10 +46,25 @@ namespace Engine
 		struct CameraProps
 		{
 			Camera* CameraPtr = nullptr;
+			glm::mat4 Transform = glm::mat4(1.f);
+
+			// Set On Runtime Only
 			Entity EntityHandle = Entity();
 		};
 
 		inline CameraProps& GetPrimaryCameraProps() { return PrimaryCamera; }
+
+		virtual void OnSceneBegin();
+		virtual void OnSceneEnd();
+
+	protected:
+		void Render(float DeltaTime);
+
+		void OnPhysics2DStart();
+		void OnPhysics2DUpdate(float DeltaTime);
+		void OnPhysics2DEnd();
+
+		void CopyToRef(Ref<Scene>& SceneRef);
 
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
@@ -78,8 +82,6 @@ namespace Engine
 		b2World* m_PhysicsWorld = nullptr;
 
 		CameraProps PrimaryCamera;
-
-		SceneState CurrentSceneState = SceneState::Stop;
 
 		uint32_t ViewportWidth = 0, ViewportHeight = 0;
 	};

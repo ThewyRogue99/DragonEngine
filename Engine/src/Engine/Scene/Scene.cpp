@@ -85,22 +85,112 @@ namespace Engine
 		SceneRegistry.destroy(entity.EntityHandle);
 	}
 
-	void Scene::OnSceneStart()
+	void Scene::OnUpdate(float DeltaTime)
 	{
-		{
-			auto& group = SceneRegistry.group<CameraComponent>(entt::get<TransformComponent>);
-			for (auto entity : group)
-			{
-				auto& camera = SceneRegistry.get<CameraComponent>(entity);
+		DE_PROFILE_FUNCTION();
 
-				if (camera.Primary)
+		// Update Scripts
+		{
+			SceneRegistry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
+			{
+				if (!nsc.Instance)
 				{
-					PrimaryCamera.CameraPtr = &(camera.Camera);
-					PrimaryCamera.EntityHandle = { entity, this };
+					nsc.Instance = nsc.InstantiateScript();
+					nsc.Instance->entity = Entity(entity, this);
+					nsc.Instance->OnCreate();
 				}
-			}
+
+				nsc.Instance->OnUpdate(DeltaTime);
+			});
 		}
 
+		if(PrimaryCamera.EntityHandle.IsValid() && PrimaryCamera.EntityHandle.HasComponent<TransformComponent>())
+			PrimaryCamera.Transform = PrimaryCamera.EntityHandle.GetComponent<TransformComponent>().GetTransformMat4();
+
+		OnPhysics2DUpdate(DeltaTime);
+
+		Render(DeltaTime);
+	}
+
+	void Scene::OnViewportResize(uint32_t width, uint32_t height)
+	{
+		ViewportWidth = width;
+		ViewportHeight = height;
+
+		auto view = SceneRegistry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			auto& cameraComponent = view.get<CameraComponent>(entity);
+
+			if (!cameraComponent.FixedAspectRatio)
+				cameraComponent.Camera.SetViewportSize(width, height);
+		}
+	}
+
+	void Scene::OnEvent(Event& event)
+	{
+
+	}
+
+	void Scene::CopyToRef(Ref<Scene>& SceneRef)
+	{
+		SceneRegistry.each([this, SceneRef](const entt::entity entity)
+		{
+			CopyEntity(SceneRef, entity);
+		});
+
+		SceneRef->SceneName = SceneName;
+		SceneRef->ViewportHeight = ViewportHeight;
+		SceneRef->ViewportWidth = ViewportWidth;
+	}
+
+	Ref<Scene> Scene::Copy()
+	{
+		Ref<Scene> CopyScene = CreateRef<Scene>(SceneName);
+
+		CopyToRef(CopyScene);
+
+		return CopyScene;
+	}
+
+	void Scene::Render(float DeltaTime)
+	{
+		if (PrimaryCamera.CameraPtr)
+		{
+			Renderer2D::BeginScene(*PrimaryCamera.CameraPtr, PrimaryCamera.Transform);
+
+			{
+				auto view = SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+
+					Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
+				}
+			}
+
+			{
+				auto view = SceneRegistry.view<TransformComponent, CircleRendererComponent>();
+				for (auto entity : view)
+				{
+					auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+
+					Renderer2D::DrawCircle(
+						transform.GetTransformMat4(),
+						circle.Color,
+						circle.Thickness,
+						circle.Fade,
+						(int)entity
+					);
+				}
+			}
+
+			Renderer2D::EndScene();
+		}
+	}
+
+	void Scene::OnPhysics2DStart()
+	{
 		m_PhysicsWorld = new b2World({ 0.0f, -9.8f });
 
 		auto view = SceneRegistry.view<Rigidbody2DComponent>();
@@ -154,139 +244,59 @@ namespace Engine
 		}
 	}
 
-	void Scene::OnSceneStop()
+	void Scene::OnPhysics2DUpdate(float DeltaTime)
 	{
-		PrimaryCamera.CameraPtr = nullptr;
-		PrimaryCamera.EntityHandle = Entity();
+		const int32_t velocityIterations = 6;
+		const int32_t positionIterations = 2;
+		m_PhysicsWorld->Step(DeltaTime, velocityIterations, positionIterations);
 
+		// Retrieve transform from Box2D
+		auto view = SceneRegistry.view<Rigidbody2DComponent>();
+		for (auto e : view)
+		{
+			Entity entity = Entity(e, this);
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+			b2Body* body = (b2Body*)rb2d.RuntimeBody;
+			const auto& position = body->GetPosition();
+			transform.Position.x = position.x;
+			transform.Position.y = position.y;
+			transform.Rotation.z = glm::degrees(body->GetAngle());
+		}
+	}
+
+	void Scene::OnPhysics2DEnd()
+	{
 		delete m_PhysicsWorld;
 		m_PhysicsWorld = nullptr;
 	}
 
-	void Scene::OnUpdate(float DeltaTime)
+	void Scene::OnSceneBegin()
 	{
-		DE_PROFILE_FUNCTION();
-
-		// Update Scripts
-		{
-			SceneRegistry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
-			{
-				if (!nsc.Instance)
-				{
-					nsc.Instance = nsc.InstantiateScript();
-					nsc.Instance->entity = Entity(entity, this);
-					nsc.Instance->OnCreate();
-				}
-
-				nsc.Instance->OnUpdate(DeltaTime);
-			});
-		}
-
-		// Physics
-		{
-			const int32_t velocityIterations = 6;
-			const int32_t positionIterations = 2;
-			m_PhysicsWorld->Step(DeltaTime, velocityIterations, positionIterations);
-
-			// Retrieve transform from Box2D
-			auto view = SceneRegistry.view<Rigidbody2DComponent>();
-			for (auto e : view)
-			{
-				Entity entity = Entity(e, this);
-				auto& transform = entity.GetComponent<TransformComponent>();
-				auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
-
-				b2Body* body = (b2Body*)rb2d.RuntimeBody;
-				const auto& position = body->GetPosition();
-				transform.Position.x = position.x;
-				transform.Position.y = position.y;
-				transform.Rotation.z = glm::degrees(body->GetAngle());
-			}
-		}
-
-		if (PrimaryCamera.CameraPtr)
-		{
-			glm::mat4 CameraTransform = PrimaryCamera.EntityHandle.GetComponent<TransformComponent>().GetTransformMat4();
-
-			Renderer2D::BeginScene(*PrimaryCamera.CameraPtr, CameraTransform);
-
-			{
-				auto view = SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
-				for (auto entity : view)
-				{
-					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-
-					Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
-				}
-			}
-
-			{
-				auto view = SceneRegistry.view<TransformComponent, CircleRendererComponent>();
-				for (auto entity : view)
-				{
-					auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-
-					Renderer2D::DrawCircle(
-						transform.GetTransformMat4(),
-						circle.Color,
-						circle.Thickness,
-						circle.Fade,
-						(int)entity
-					);
-				}
-			}
-
-			Renderer2D::EndScene();
-		}
-	}
-
-	void Scene::OnViewportResize(uint32_t width, uint32_t height)
-	{
-		ViewportWidth = width;
-		ViewportHeight = height;
-
-		auto view = SceneRegistry.view<CameraComponent>();
+		auto& view = SceneRegistry.view<CameraComponent, TransformComponent>();
 		for (auto entity : view)
 		{
-			auto& cameraComponent = view.get<CameraComponent>(entity);
+			auto& [camera, transform] = SceneRegistry.get<CameraComponent, TransformComponent>(entity);
 
-			if (!cameraComponent.FixedAspectRatio)
-				cameraComponent.Camera.SetViewportSize(width, height);
+			if (camera.Primary)
+			{
+				PrimaryCamera.CameraPtr = &(camera.Camera);
+				PrimaryCamera.EntityHandle = Entity(entity, this);
+				PrimaryCamera.Transform = transform.GetTransformMat4();
+			}
 		}
+
+		OnPhysics2DStart();
 	}
 
-	void Scene::SetSceneState(SceneState state)
+	void Scene::OnSceneEnd()
 	{
-		if (CurrentSceneState == state)
-			return;
+		PrimaryCamera.CameraPtr = nullptr;
+		PrimaryCamera.EntityHandle = Entity();
+		PrimaryCamera.Transform = glm::mat4(1.f);
 
-		CurrentSceneState = state;
-
-		if (state == SceneState::Play)
-			OnSceneStart();
-		else if (state == SceneState::Stop)
-			OnSceneStop();
-	}
-
-	void Scene::OnEvent(Event& event)
-	{
-
-	}
-
-	Ref<Scene> Scene::Copy()
-	{
-		Ref<Scene> CopyScene = CreateRef<Scene>(SceneName);
-
-		SceneRegistry.each([this, CopyScene](const entt::entity entity)
-		{
-			CopyEntity(CopyScene, entity);
-		});
-
-		CopyScene->SceneName = SceneName;
-		CopyScene->ViewportHeight = ViewportHeight;
-		CopyScene->ViewportWidth = ViewportWidth;
-
-		return CopyScene;
+		OnPhysics2DEnd();
 	}
 
 	void Scene::OnCameraComponentAdded(entt::registry& registry, entt::entity entity)

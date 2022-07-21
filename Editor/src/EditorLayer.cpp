@@ -198,6 +198,10 @@ namespace Engine
 
 	void EditorLayer::OnActiveSceneChange(Ref<Scene> scene)
 	{
+		ActiveScene->OnSceneEnd();
+
 		ActiveScene = std::static_pointer_cast<EditorScene>(scene);
+
+		ActiveScene->OnSceneBegin();
 	}
 }

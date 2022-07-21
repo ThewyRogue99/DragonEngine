@@ -8,48 +8,20 @@ namespace Engine
 	EditorScene::EditorScene(const CString& Name) : Scene(Name)
 	{
 		editorCamera = EditorCamera(60.f, 16 / 9, 0.1f, 1000.f);
-
-		CurrentSceneState = SceneState::Edit;
 	}
 
 	void EditorScene::OnUpdate(float DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
 
-		if(CurrentSceneState == SceneState::Edit)
-		{
-			editorCamera.OnUpdate(DeltaTime);
+		editorCamera.OnUpdate(DeltaTime);
 
-			Renderer2D::BeginScene(editorCamera, editorCamera.GetTransform());
+		PrimaryCamera.Transform = editorCamera.GetTransform();
 
-			{
-				auto view = SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
-				for (auto entity : view)
-				{
-					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+		if (bShouldSimulate)
+			OnPhysics2DUpdate(DeltaTime);
 
-					Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
-				}
-			}
-
-			{
-				auto view = SceneRegistry.view<TransformComponent, CircleRendererComponent>();
-				for (auto entity : view)
-				{
-					auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-
-					Renderer2D::DrawCircle(
-						transform.GetTransformMat4(),
-						circle.Color,
-						circle.Thickness,
-						circle.Fade,
-						(int)entity
-					);
-				}
-			}
-
-			Renderer2D::EndScene();
-		}
+		Render(DeltaTime);
 	}
 
 	void EditorScene::OnEvent(Event& event)
@@ -63,5 +35,33 @@ namespace Engine
 		Scene::OnViewportResize(width, height);
 
 		editorCamera.SetViewportSize(width, height);
+	}
+
+	void EditorScene::OnSceneBegin()
+	{
+		PrimaryCamera.CameraPtr = &editorCamera;
+		PrimaryCamera.EntityHandle = Entity();
+		PrimaryCamera.Transform = editorCamera.GetTransform();
+
+		if (bShouldSimulate)
+			OnPhysics2DStart();
+	}
+
+	void EditorScene::OnSceneEnd()
+	{
+		if (bShouldSimulate)
+			OnPhysics2DEnd();
+	}
+
+	Ref<EditorScene> EditorScene::CopyEditorScene()
+	{
+		Ref<EditorScene> CopyScene = CreateRef<EditorScene>();
+
+		CopyToRef(std::static_pointer_cast<Scene>(CopyScene));
+
+		CopyScene->editorCamera = editorCamera;
+		CopyScene->bShouldBlockEvents = bShouldBlockEvents;
+
+		return CopyScene;
 	}
 }

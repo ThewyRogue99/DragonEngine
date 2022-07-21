@@ -21,7 +21,14 @@ namespace Engine
 		void OnSetActiveScene(Ref<Scene> NewScene);
 
 	private:
-		Ref<Texture2D> PlayIcon = nullptr, StopIcon = nullptr;
+		enum SceneState
+		{
+			Play, Edit, Simulate
+		};
+
+		SceneState ActiveSceneState = SceneState::Edit;
+
+		Ref<Texture2D> PlayIcon = nullptr, StopIcon = nullptr, SimulateIcon = nullptr;
 
 		Ref<EditorScene> ActiveScene = nullptr;
 	};
