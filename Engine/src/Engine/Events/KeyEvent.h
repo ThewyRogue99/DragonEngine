@@ -21,16 +21,16 @@ namespace Engine
 	class ENGINE_API KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(KeyInput Key, int RepeatCount)
-			: KeyEvent(Key), RepeatCount(RepeatCount) { }
+		KeyPressedEvent(KeyInput Key, bool IsRepeat = false)
+			: KeyEvent(Key), bIsRepeat(IsRepeat) { }
 
-		inline int GetRepeatCount() const { return RepeatCount; }
+		inline bool IsRepeat() const { return bIsRepeat; }
 
 		virtual CString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("KeyPressedEvent: [ Key Code: ")
-				<< (int)Key << TEXT(", Repeats: ") << RepeatCount << TEXT(" ]");
+				<< (int)Key << (bIsRepeat ? TEXT(" ] (Repeat)") : TEXT(" ]"));
 
 			return ss.str();
 		}
@@ -38,7 +38,7 @@ namespace Engine
 		EVENT_CLASS_TYPE(KeyPressed)
 
 	private:
-		int RepeatCount;
+		bool bIsRepeat;
 	};
 
 	class ENGINE_API KeyReleasedEvent : public KeyEvent

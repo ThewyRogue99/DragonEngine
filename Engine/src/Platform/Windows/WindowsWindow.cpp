@@ -83,89 +83,89 @@ namespace Engine
 		SetVSync(true);
 
 		glfwSetWindowSizeCallback(NativeWindow, [](GLFWwindow* window, int width, int height)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-				data.Width = width;
-				data.Height = height;
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			data.Width = width;
+			data.Height = height;
 
-				WindowResizeEvent e(width, height);
-				data.EventCallback(e);
-			});
+			WindowResizeEvent e(width, height);
+			data.EventCallback(e);
+		});
 
 		glfwSetWindowCloseCallback(NativeWindow, [](GLFWwindow* window)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				WindowCloseEvent e = WindowCloseEvent();
-				data.EventCallback(e);
-			});
+			WindowCloseEvent e = WindowCloseEvent();
+			data.EventCallback(e);
+		});
 
 		glfwSetCharCallback(NativeWindow, [](GLFWwindow* window, unsigned int Character)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				KeyTypedEvent e(Character);
-				data.EventCallback(e);
-			});
+			KeyTypedEvent e(Character);
+			data.EventCallback(e);
+		});
 
 		glfwSetKeyCallback(NativeWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				switch (action)
-				{
-				case GLFW_PRESS:
-				{
-					KeyPressedEvent e(static_cast<KeyInput>(key), 0);
-					data.EventCallback(e);
-				} break;
-				case GLFW_RELEASE:
-				{
-					KeyReleasedEvent e(static_cast<KeyInput>(key));
-					data.EventCallback(e);
-				} break;
-				case GLFW_REPEAT:
-				{
-					KeyPressedEvent e(static_cast<KeyInput>(key), 1);
-					data.EventCallback(e);
-				} break;
-				}
-			});
+			switch (action)
+			{
+			case GLFW_PRESS:
+			{
+				KeyPressedEvent e(static_cast<KeyInput>(key));
+				data.EventCallback(e);
+			} break;
+			case GLFW_RELEASE:
+			{
+				KeyReleasedEvent e(static_cast<KeyInput>(key));
+				data.EventCallback(e);
+			} break;
+			case GLFW_REPEAT:
+			{
+				KeyPressedEvent e(static_cast<KeyInput>(key), true);
+				data.EventCallback(e);
+			} break;
+			}
+		});
 
 		glfwSetMouseButtonCallback(NativeWindow, [](GLFWwindow* window, int button, int action, int mods)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				switch (action)
-				{
-				case GLFW_PRESS:
-				{
-					MouseButtonPressedEvent e(static_cast<MouseButtonInput>(button));
-					data.EventCallback(e);
-				} break;
-				case GLFW_RELEASE:
-				{
-					MouseButtonReleasedEvent e(static_cast<MouseButtonInput>(button));
-					data.EventCallback(e);
-				} break;
-				}
-			});
+			switch (action)
+			{
+			case GLFW_PRESS:
+			{
+				MouseButtonPressedEvent e(static_cast<MouseButtonInput>(button));
+				data.EventCallback(e);
+			} break;
+			case GLFW_RELEASE:
+			{
+				MouseButtonReleasedEvent e(static_cast<MouseButtonInput>(button));
+				data.EventCallback(e);
+			} break;
+			}
+		});
 
 		glfwSetScrollCallback(NativeWindow, [](GLFWwindow* window, double xoffset, double yoffset)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				MouseScrolledEvent e((float)xoffset, (float)yoffset);
-				data.EventCallback(e);
-			});
+			MouseScrolledEvent e((float)xoffset, (float)yoffset);
+			data.EventCallback(e);
+		});
 
 		glfwSetCursorPosCallback(NativeWindow, [](GLFWwindow* window, double x, double y)
-			{
-				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		{
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-				MouseMovedEvent e((float)x, (float)y);
-				data.EventCallback(e);
-			});
+			MouseMovedEvent e((float)x, (float)y);
+			data.EventCallback(e);
+		});
 	}
 
 	void WindowsWindow::ShutDown()

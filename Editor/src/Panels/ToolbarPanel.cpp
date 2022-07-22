@@ -37,7 +37,7 @@ namespace Engine
 	{
 		float buttonSize = ImGui::GetWindowHeight() - 4.0f;
 
-		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - ((buttonSize * 2.f) * 0.5f));
+		ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x * 0.5f) - ((buttonSize * 2.f + 10.f) * 0.5f));
 
 		// Play Button
 		{
@@ -76,7 +76,7 @@ namespace Engine
 				ImGui::EndDisabled();
 		}
 
-		ImGui::SameLine();
+		ImGui::SameLine(0.f, 10.f);
 
 		// Simulation Button
 		{

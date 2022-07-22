@@ -93,6 +93,6 @@ namespace Engine
 
 	bool OpenGLTexture2D::operator==(Texture2D& texture)
 	{
-		return TextureID == ((OpenGLTexture2D&)texture).TextureID;
+		return TextureID == texture.GetRendererID();
 	}
 }

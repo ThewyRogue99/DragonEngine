@@ -70,7 +70,7 @@ namespace Engine
 
 			if (ImGui::BeginDragDropSource())
 			{
-				std::wstring itemPath = (AssetPath / relativePath);
+				CString itemPath = (AssetPath / relativePath);
 
 				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), (itemPath.size() + 1) * sizeof(wchar_t));
 
