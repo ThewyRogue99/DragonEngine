@@ -69,10 +69,13 @@ namespace Engine
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
 
-		void CopyEntity(Ref<Scene> TargetScene, entt::entity entity);
+		void CopyEntity(Ref<Scene> TargetScene, Entity entity);
 
-		template<typename Component>
-		void CopyComponent(Ref<Scene> TargetScene, entt::entity TargetEntity, entt::entity SourceEntity);
+		template<typename... Component>
+		void CopyComponent(Entity TargetEntity, Entity SourceEntity);
+
+		template<typename... Component>
+		void CopyComponent(ComponentGroup<Component...>, Entity TargetEntity, Entity SourceEntity);
 
 	protected:
 		CString SceneName;

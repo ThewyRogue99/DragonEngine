@@ -136,7 +136,7 @@ namespace Engine
 	{
 		SceneRegistry.each([this, SceneRef](const entt::entity entity)
 		{
-			CopyEntity(SceneRef, entity);
+			CopyEntity(SceneRef, { entity, this });
 		});
 
 		SceneRef->SceneName = SceneName;
@@ -159,6 +159,7 @@ namespace Engine
 		{
 			Renderer2D::BeginScene(*PrimaryCamera.CameraPtr, PrimaryCamera.Transform);
 
+			// Sprite Rendering
 			{
 				auto view = SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
 				for (auto entity : view)
@@ -169,6 +170,7 @@ namespace Engine
 				}
 			}
 
+			// Circle Rendering
 			{
 				auto view = SceneRegistry.view<TransformComponent, CircleRendererComponent>();
 				for (auto entity : view)
@@ -307,10 +309,10 @@ namespace Engine
 			component.Camera.SetViewportSize(ViewportWidth, ViewportHeight);
 	}
 
-	void Scene::CopyEntity(Ref<Scene> TargetScene, entt::entity entity)
+	void Scene::CopyEntity(Ref<Scene> TargetScene, Entity entity)
 	{
-		UUID id = SceneRegistry.get<IDComponent>(entity).ID;
-		CString& tag = SceneRegistry.get<TagComponent>(entity).Tag;
+		UUID id = entity.GetComponent<IDComponent>().ID;
+		CString& tag = entity.GetComponent<TagComponent>().Tag;
 
 		Entity targetEntity = TargetScene->GetEntityWithUUID(id);
 
@@ -318,24 +320,26 @@ namespace Engine
 			targetEntity = TargetScene->CreateEntityWithUUID(id, tag);
 
 		// Copy all components
-		CopyComponent<TransformComponent>(TargetScene, targetEntity.EntityHandle, entity);
-		CopyComponent<SpriteRendererComponent>(TargetScene, targetEntity.EntityHandle, entity);
-		CopyComponent<CircleRendererComponent>(TargetScene, targetEntity.EntityHandle, entity);
-		CopyComponent<CameraComponent>(TargetScene, targetEntity.EntityHandle, entity);
-		CopyComponent<NativeScriptComponent>(TargetScene, targetEntity.EntityHandle, entity);
-		CopyComponent<Rigidbody2DComponent>(TargetScene, targetEntity.EntityHandle, entity);
-		CopyComponent<BoxCollider2DComponent>(TargetScene, targetEntity.EntityHandle, entity);
-		CopyComponent<CircleCollider2DComponent>(TargetScene, targetEntity.EntityHandle, entity);
+		CopyComponent(AllComponents(), targetEntity, entity);
 	}
 
-	template<typename Component>
-	void Scene::CopyComponent(Ref<Scene> TargetScene, entt::entity TargetEntity, entt::entity SourceEntity)
+	template<typename... Component>
+	void Scene::CopyComponent(Entity TargetEntity, Entity SourceEntity)
 	{
-		if (SceneRegistry.all_of<Component>(SourceEntity))
+		([&]()
 		{
-			Component& sourceComponent = SceneRegistry.get<Component>(SourceEntity);
+			if (SourceEntity.HasComponent<Component>())
+			{
+				Component& sourceComponent = SourceEntity.GetComponent<Component>();
 
-			TargetScene->SceneRegistry.emplace_or_replace<Component>(TargetEntity, sourceComponent);
-		}
+				TargetEntity.AddOrReplaceComponent<Component>(sourceComponent);
+			}
+		}(), ...);
+	}
+
+	template<typename... Component>
+	void Scene::CopyComponent(ComponentGroup<Component...>, Entity TargetEntity, Entity SourceEntity)
+	{
+		CopyComponent<Component...>(TargetEntity, SourceEntity);
 	}
 }

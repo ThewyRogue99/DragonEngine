@@ -27,6 +27,14 @@ namespace Engine
 			return component;
 		}
 
+		template<typename T, typename... Args>
+		T& AddOrReplaceComponent(Args&&... args)
+		{
+			T& component = CurrentScene->SceneRegistry.emplace_or_replace<T>(EntityHandle, std::forward<Args>(args)...);
+
+			return component;
+		}
+
 		template<typename T>
 		inline T& GetComponent()
 		{
