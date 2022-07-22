@@ -12,6 +12,8 @@ namespace Engine
 		EditorScene(const CString& Name = TEXT("Editor Scene"));
 		EditorScene(const EditorScene&) = default;
 
+		~EditorScene();
+
 		virtual void OnUpdate(float DeltaTime) override;
 
 		virtual void OnEvent(Event& event) override;
@@ -26,12 +28,12 @@ namespace Engine
 		void BeginSimulation() { bShouldSimulate = true; }
 		void EndSimulation() { bShouldSimulate = false; }
 
-		inline const EditorCamera& GetEditorCamera() const { return editorCamera; }
+		inline EditorCamera* GetEditorCamera() const { return editorCamera; }
 
 		inline void SetShouldBlockEvents(bool state) { bShouldBlockEvents = state; }
 
 	private:
-		EditorCamera editorCamera;
+		EditorCamera* editorCamera = nullptr;
 
 		bool bShouldSimulate = false;
 		bool bShouldBlockEvents = false;

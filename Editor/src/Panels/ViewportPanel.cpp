@@ -118,10 +118,10 @@ namespace Engine
 				secondBound.y - firstBound.y
 			);
 
-			EditorCamera editorCamera = ActiveScene->GetEditorCamera();
+			EditorCamera* editorCamera = ActiveScene->GetEditorCamera();
 
-			const glm::mat4& cameraProjection = editorCamera.GetProjection();
-			glm::mat4 cameraView = editorCamera.GetViewMatrix();
+			const glm::mat4& cameraProjection = editorCamera->GetProjection();
+			glm::mat4 cameraView = editorCamera->GetViewMatrix();
 
 			auto& tc = selectedEntity->GetComponent<TransformComponent>();
 			glm::mat4 transform = tc.GetTransformMat4();
