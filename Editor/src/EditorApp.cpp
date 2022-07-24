@@ -8,7 +8,7 @@ namespace Engine
 	class EngineEditor : public Application
 	{
 	public:
-		EngineEditor(ApplicationCommandLineArgs args) : Application("Dragon Engine Editor", args)
+		EngineEditor(const ApplicationSpecification& Specs) : Application(Specs)
 		{
 			PushLayer(new EditorLayer());
 		}
@@ -16,6 +16,10 @@ namespace Engine
 
 	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
-		return new EngineEditor(args);
+		ApplicationSpecification Specs;
+		Specs.Name = TEXT("Dragon Engine");
+		Specs.CommandLineArgs = args;
+
+		return new EngineEditor(Specs);
 	}
 }

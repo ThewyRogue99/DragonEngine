@@ -22,10 +22,17 @@ namespace Engine
 		}
 	};
 
+	struct ApplicationSpecification
+	{
+		CString Name = TEXT("Dragon Engine App");
+		CString WorkingDirectory = CString();
+		ApplicationCommandLineArgs CommandLineArgs = ApplicationCommandLineArgs();
+	};
+
 	class Application
 	{
 	public:
-		Application(const std::string& name = "Dragon Engine App", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
+		Application(const ApplicationSpecification& Specs);
 
 		virtual ~Application();
 
@@ -41,7 +48,7 @@ namespace Engine
 		inline static Application& Get() { return *Instance; }
 		inline Window& GetWindow() { return *AppWindow; }
 
-		ApplicationCommandLineArgs GetCommandLineArgs() const { return CommandLineArgs; }
+		const ApplicationSpecification& GetSpecification() const { return AppSpecification; }
 
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
@@ -59,7 +66,7 @@ namespace Engine
 
 		bool bIsMinimized = false;
 
-		ApplicationCommandLineArgs CommandLineArgs;
+		ApplicationSpecification AppSpecification;
 
 		static Application* Instance;
 	};

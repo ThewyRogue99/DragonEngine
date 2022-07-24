@@ -4,18 +4,25 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Platform/Platform.h"
 
+#include <filesystem>
+
 namespace Engine
 {
 	Application* Application::Instance = nullptr;
 
-	Application::Application(const std::string& name, ApplicationCommandLineArgs args) : CommandLineArgs(args)
+	Application::Application(const ApplicationSpecification& Specs) : AppSpecification(Specs)
 	{
 		DE_PROFILE_FUNCTION();
 
 		DE_CORE_ASSERT(!Instance, "Application already exists");
 		Instance = this;
 
-		AppWindow = Scope<Window>(Window::Create(WindowProps(name.c_str())));
+		std::string NameUTF8 = TypeUtils::FromUTF16(AppSpecification.Name.c_str());
+
+		if (!AppSpecification.WorkingDirectory.empty())
+			std::filesystem::current_path(AppSpecification.WorkingDirectory);
+
+		AppWindow = CreateScope<Window>(Window::Create(WindowProps(NameUTF8.c_str())));
 		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
 		{
