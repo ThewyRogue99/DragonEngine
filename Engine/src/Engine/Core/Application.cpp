@@ -22,7 +22,7 @@ namespace Engine
 		if (!AppSpecification.WorkingDirectory.empty())
 			std::filesystem::current_path(AppSpecification.WorkingDirectory);
 
-		AppWindow = CreateScope<Window>(Window::Create(WindowProps(NameUTF8.c_str())));
+		AppWindow = Scope<Window>(Window::Create(WindowProps(NameUTF8.c_str())));
 		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
 		{
