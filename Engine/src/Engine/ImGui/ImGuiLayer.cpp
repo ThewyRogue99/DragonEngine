@@ -247,7 +247,6 @@ namespace Engine
 		style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(lin.x, lin.y, lin.z, 1.00f);
 		style.Colors[ImGuiCol_PlotHistogram] = ch1;
 		style.Colors[ImGuiCol_PlotHistogramHovered] = ch2;
-		style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(clA.x, clA.y, clA.z, 0.43f);
 		style.Colors[ImGuiCol_PopupBg] = ImVec4(clB.x, clB.y, clB.z, 0.9f);
 		style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(clB.x, clB.y, clB.z, 0.73f);
 

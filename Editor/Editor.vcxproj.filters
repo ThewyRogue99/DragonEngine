@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{0C95060D-78A9-2EBE-412B-D21DADFE2AEF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Panels">
       <UniqueIdentifier>{A80D95C9-94AF-BF9F-7D6A-D3F369AB46F0}</UniqueIdentifier>
     </Filter>
@@ -9,7 +12,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Debug\EditorConsole.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
     <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Panels\ConsolePanel.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
     <ClInclude Include="src\Panels\ContentBrowserPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
@@ -28,14 +37,22 @@
     <ClInclude Include="src\Panels\ViewportPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scene\EditorCamera.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
     <ClInclude Include="src\Scene\EditorScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\EditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Debug\EditorConsole.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
     <ClCompile Include="src\EditorApp.cpp" />
     <ClCompile Include="src\EditorLayer.cpp" />
+    <ClCompile Include="src\Panels\ConsolePanel.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
     <ClCompile Include="src\Panels\ContentBrowserPanel.cpp">
       <Filter>Panels</Filter>
     </ClCompile>
@@ -54,9 +71,11 @@
     <ClCompile Include="src\Panels\ViewportPanel.cpp">
       <Filter>Panels</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\EditorCamera.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\Scene\EditorScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\EditorCamera.cpp" />
   </ItemGroup>
 </Project>

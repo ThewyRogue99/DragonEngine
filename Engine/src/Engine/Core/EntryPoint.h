@@ -7,12 +7,10 @@
 
 extern Engine::Application* Engine::CreateApplication(ApplicationCommandLineArgs args);
 
-int main(int argc, char** argv)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	Engine::Log::Init();
-
 	DE_PROFILE_BEGIN_SESSION("Startup", "EngineProfile-Startup.json");
-	auto App = Engine::CreateApplication({ argc, argv });
+	auto App = Engine::CreateApplication({ __argc, __argv });
 	DE_PROFILE_END_SESSION();
 
 	DE_PROFILE_BEGIN_SESSION("Runtime", "EngineProfile-Runtime.json");

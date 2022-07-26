@@ -13,6 +13,7 @@
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/ViewportPanel.h"
 #include "Panels/ToolbarPanel.h"
+#include "Panels/ConsolePanel.h"
 
 namespace Engine
 {
@@ -43,10 +44,11 @@ namespace Engine
 		}
 
 		PManager.AddPanels({
-			new ContentBrowserPanel(),
-			new SceneHierarchyPanel(),
 			new ViewportPanel(),
-			new ToolbarPanel()
+			new SceneHierarchyPanel(),
+			new ToolbarPanel(),
+			new ConsolePanel(),
+			new ContentBrowserPanel()
 		});
 
 		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(EditorLayer::OnActiveSceneChange));
