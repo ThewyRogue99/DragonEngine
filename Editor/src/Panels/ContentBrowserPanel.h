@@ -18,6 +18,9 @@ namespace Engine
 		virtual void OnRender(float DeltaTime) override;
 
 	private:
+		void DrawDirectoryTree(const std::filesystem::path& DirectoryPath);
+
+	private:
 		std::filesystem::path CurrentDirectory;
 
 		static Ref<Texture2D> DirectoryIcon;
