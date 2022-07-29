@@ -34,7 +34,8 @@ project "Engine"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGuizmo}",
-		"%{IncludeDir.Box2D}"
+		"%{IncludeDir.Box2D}",
+		"%{IncludeDir.mono}"
 	}
 
 	links
@@ -44,7 +45,8 @@ project "Engine"
 		"ImGui",
 		"yaml-cpp",
 		"Box2D",
-		"opengl32.lib"
+		"opengl32.lib",
+		"%{Library.mono}"
 	}
 
 	defines

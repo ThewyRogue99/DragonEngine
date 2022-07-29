@@ -34,6 +34,13 @@ IncludeDir["entt"] = "%{wks.location}/Engine/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "%{wks.location}/Engine/vendor/yaml-cpp/include"
 IncludeDir["ImGuizmo"] = "%{wks.location}/Engine/vendor/ImGuizmo"
 IncludeDir["Box2D"] = "%{wks.location}/Engine/vendor/Box2D/include"
+IncludeDir["mono"] = "%{wks.location}/Engine/vendor/mono/include"
+
+LibraryDir = {}
+LibraryDir["mono"] = "%{wks.location}/Engine/vendor/mono/lib"
+
+Library = {}
+Library["mono"] = "%{LibraryDir.mono}/libmono-static-sgen.lib"
 
 group "Dependencies"
 	include "Engine/vendor/GLFW"
