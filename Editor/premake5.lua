@@ -1,5 +1,5 @@
 project "Editor"
-	kind "WindowedApp"
+	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "off"
@@ -20,6 +20,11 @@ project "Editor"
         "%{wks.location}/Engine/vendor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}"
+	}
+	
+	postbuildcommands
+	{
+		("{COPY} %{wks.location}Engine/vendor/mono/lib/mono-2.0-sgen.dll ../bin/%{outputdir}/Editor")
 	}
 
 	links

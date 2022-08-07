@@ -28,6 +28,9 @@
     <Filter Include="src\Engine\Scene">
       <UniqueIdentifier>{AF1338A9-9B0C-57FB-C43E-3C80B0963607}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Engine\Scripting">
+      <UniqueIdentifier>{94147CC7-80A3-0591-29C2-198C15301637}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Engine\Types">
       <UniqueIdentifier>{366A56A9-2263-75FB-4B95-5A8037ED5407}</UniqueIdentifier>
     </Filter>
@@ -185,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Scene\ScriptableEntity.h">
       <Filter>src\Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Scripting\ScriptEngine.h">
+      <Filter>src\Engine\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Types\Types.h">
       <Filter>src\Engine\Types</Filter>
@@ -1479,7 +1485,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Scripting\ScriptEngine.h" />
+    <ClInclude Include="src\Engine\Scripting\ScriptInternals.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1554,6 +1560,9 @@
     <ClCompile Include="src\Engine\Scene\SceneSerializer.cpp">
       <Filter>src\Engine\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Scripting\ScriptEngine.cpp">
+      <Filter>src\Engine\Scripting</Filter>
+    </ClCompile>
     <ClCompile Include="src\Engine\Types\Types.cpp">
       <Filter>src\Engine\Types</Filter>
     </ClCompile>
@@ -1602,6 +1611,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Scripting\ScriptEngine.cpp" />
+    <ClCompile Include="src\Engine\Scripting\ScriptInternals.cpp" />
   </ItemGroup>
 </Project>

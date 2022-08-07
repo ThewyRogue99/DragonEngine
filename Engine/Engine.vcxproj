@@ -90,7 +90,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\libmono-static-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -115,7 +115,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\libmono-static-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -140,7 +140,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\libmono-static-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -183,6 +183,7 @@
     <ClInclude Include="src\Engine\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Engine\Scene\ScriptableEntity.h" />
     <ClInclude Include="src\Engine\Scripting\ScriptEngine.h" />
+    <ClInclude Include="src\Engine\Scripting\ScriptInternals.h" />
     <ClInclude Include="src\Engine\Types\Types.h" />
     <ClInclude Include="src\Engine\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
@@ -641,6 +642,7 @@
     <ClCompile Include="src\Engine\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Engine\Scene\SceneSerializer.cpp" />
     <ClCompile Include="src\Engine\Scripting\ScriptEngine.cpp" />
+    <ClCompile Include="src\Engine\Scripting\ScriptInternals.cpp" />
     <ClCompile Include="src\Engine\Types\Types.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />

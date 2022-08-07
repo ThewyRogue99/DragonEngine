@@ -4,6 +4,8 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Platform/Platform.h"
 
+#include "Engine/Scripting/ScriptEngine.h"
+
 #include <filesystem>
 
 namespace Engine
@@ -25,22 +27,17 @@ namespace Engine
 		AppWindow = Scope<Window>(Window::Create(WindowProps(NameUTF8.c_str())));
 		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
-		{
-			DE_PROFILE_SCOPE("Renderer Init");
+		Renderer::Init();
+		ScriptEngine::Init();
 
-			Renderer::Init();
-		}
-
-		{
-			DE_PROFILE_SCOPE("UI Layer Attach");
-			AppImGuiLayer = new ImGuiLayer();
-			PushOverlay(AppImGuiLayer);
-		}
+		DE_PROFILE_SCOPE("UI Layer Attach");
+		AppImGuiLayer = new ImGuiLayer();
+		PushOverlay(AppImGuiLayer);
 	}
 
 	Application::~Application()
 	{
-
+		ScriptEngine::Shutdown();
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -94,6 +91,12 @@ namespace Engine
 					for (Layer* layer : layerStack)
 						layer->OnUpdate(DeltaTime);
 				}
+			}
+
+			{
+				DE_PROFILE_SCOPE("Script Update");
+
+				ScriptEngine::Update(DeltaTime);
 			}
 
 			{

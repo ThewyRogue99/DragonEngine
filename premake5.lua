@@ -40,7 +40,7 @@ LibraryDir = {}
 LibraryDir["mono"] = "%{wks.location}/Engine/vendor/mono/lib"
 
 Library = {}
-Library["mono"] = "%{LibraryDir.mono}/libmono-static-sgen.lib"
+Library["mono"] = "%{LibraryDir.mono}/mono-2.0-sgen.lib"
 
 group "Dependencies"
 	include "Engine/vendor/GLFW"
@@ -50,5 +50,11 @@ group "Dependencies"
 	include "Engine/vendor/Box2D"
 group ""
 
-include "Engine"
-include "Editor"
+group "Core"
+	include "Engine"
+	include "DE_ScriptCore"
+group ""
+
+group "Tools"
+	include "Editor"
+group ""
