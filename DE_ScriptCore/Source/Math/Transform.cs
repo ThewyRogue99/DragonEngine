@@ -13,11 +13,11 @@ namespace DragonEngine
 		public Vector3 Right { get => new Quaternion(Rotation) * Vector3.Right; }
 		public Vector3 Forward { get => new Quaternion(Rotation) * Vector3.Forward; }
 
-		public Transform(Vector3 position, Vector3 rotation, Vector3 scale)
+		public Transform(Vector3 Position, Vector3 Rotation, Vector3 Scale)
 		{
-			Position = position;
-			Rotation = rotation;
-			Scale = scale;
+			this.Position = Position;
+			this.Rotation = Rotation;
+			this.Scale = Scale;
 		}
 	}
 }

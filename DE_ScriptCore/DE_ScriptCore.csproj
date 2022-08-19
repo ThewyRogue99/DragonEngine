@@ -59,7 +59,10 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Dist|x64' ">
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Core\Input.cs" />
     <Compile Include="Source\Core\InternalCalls.cs" />
+    <Compile Include="Source\Core\KeyCode.cs" />
+    <Compile Include="Source\Core\Script.cs" />
     <Compile Include="Source\Debug\Debug.cs" />
     <Compile Include="Source\Main.cs" />
     <Compile Include="Source\Math\Interpolate.cs" />
@@ -69,6 +72,8 @@
     <Compile Include="Source\Math\Random.cs" />
     <Compile Include="Source\Math\Transform.cs" />
     <Compile Include="Source\Math\Vector.cs" />
+    <Compile Include="Source\Scene\Components.cs" />
+    <Compile Include="Source\Scene\Entity.cs" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

@@ -45,6 +45,8 @@ namespace Engine
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
+		float GetDeltaTime() const { return DeltaTime; }
+
 		inline static Application& Get() { return *Instance; }
 		inline Window& GetWindow() { return *AppWindow; }
 

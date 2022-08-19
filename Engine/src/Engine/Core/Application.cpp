@@ -94,12 +94,6 @@ namespace Engine
 			}
 
 			{
-				DE_PROFILE_SCOPE("Script Update");
-
-				ScriptEngine::Update(DeltaTime);
-			}
-
-			{
 				DE_PROFILE_SCOPE("UI Render");
 
 				AppImGuiLayer->Begin();

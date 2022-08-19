@@ -5,6 +5,8 @@
 
 #include "Engine/Renderer/Renderer2D.h"
 
+#include "Engine/Scripting/ScriptEngine.h"
+
 #include "box2d/b2_world.h"
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
@@ -12,8 +14,6 @@
 #include "box2d/b2_circle_shape.h"
 
 #include <glm/glm.hpp>
-
-#include "ScriptableEntity.h"
 
 namespace Engine
 {
@@ -89,25 +89,12 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		// Update Scripts
-		{
-			SceneRegistry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
-			{
-				if (!nsc.Instance)
-				{
-					nsc.Instance = nsc.InstantiateScript();
-					nsc.Instance->entity = Entity(entity, this);
-					nsc.Instance->OnCreate();
-				}
-
-				nsc.Instance->OnUpdate(DeltaTime);
-			});
-		}
-
 		if(PrimaryCamera.EntityHandle.IsValid() && PrimaryCamera.EntityHandle.HasComponent<TransformComponent>())
 			PrimaryCamera.Transform = PrimaryCamera.EntityHandle.GetComponent<TransformComponent>().GetTransformMat4();
 
 		OnPhysics2DUpdate(DeltaTime);
+
+		ScriptEngine::Update(DeltaTime);
 
 		Render(DeltaTime);
 	}
@@ -276,17 +263,34 @@ namespace Engine
 
 	void Scene::OnSceneBegin()
 	{
-		auto& view = SceneRegistry.view<CameraComponent, TransformComponent>();
-		for (auto entity : view)
+		// Setup Camera
 		{
-			auto& [camera, transform] = SceneRegistry.get<CameraComponent, TransformComponent>(entity);
-
-			if (camera.Primary)
+			auto& view = SceneRegistry.view<CameraComponent, TransformComponent>();
+			for (auto entity : view)
 			{
-				PrimaryCamera.CameraPtr = &(camera.Camera);
-				PrimaryCamera.EntityHandle = Entity(entity, this);
-				PrimaryCamera.Transform = transform.GetTransformMat4();
+				auto& [camera, transform] = SceneRegistry.get<CameraComponent, TransformComponent>(entity);
+
+				if (camera.Primary)
+				{
+					PrimaryCamera.CameraPtr = &(camera.Camera);
+					PrimaryCamera.EntityHandle = Entity(entity, this);
+					PrimaryCamera.Transform = transform.GetTransformMat4();
+				}
 			}
+		}
+
+		// Setup Scripts
+		{
+			auto& view = SceneRegistry.view<ScriptComponent>();
+			for (auto entity : view)
+			{
+				auto& script = SceneRegistry.get<ScriptComponent>(entity);
+
+				script.ScriptObject = ScriptEngine::NewScript(script.ScriptObject->Namespace, script.ScriptObject->Name);
+				script.ScriptObject->AttachToEntity({ entity, this });
+			}
+
+			ScriptEngine::Run();
 		}
 
 		OnPhysics2DStart();
@@ -294,6 +298,8 @@ namespace Engine
 
 	void Scene::OnSceneEnd()
 	{
+		ScriptEngine::Stop();
+
 		PrimaryCamera.CameraPtr = nullptr;
 		PrimaryCamera.EntityHandle = Entity();
 		PrimaryCamera.Transform = glm::mat4(1.f);

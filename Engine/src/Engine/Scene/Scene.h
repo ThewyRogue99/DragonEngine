@@ -6,6 +6,7 @@
 #include "Engine/Renderer/Camera.h"
 
 #include "Entity.h"
+#include "Components.h"
 
 class b2World;
 

@@ -3,9 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 
-extern "C" {
-	typedef struct _MonoAssembly MonoAssembly;
-}
+#include "Script.h"
 
 namespace Engine
 {
@@ -15,21 +13,18 @@ namespace Engine
 		static void Init();
 		static void Shutdown();
 
-		static bool LoadScript(const char* ScriptName);
+		static void Run();
+		static void Stop();
+
+		static void LoadAllScripts();
+
+		static Script* NewScript(const std::string& ScriptNamespace, const std::string& ScriptName);
 
 		static void Update(float DeltaTime);
 
+		static void* GetCoreAssemblyImage();
+
 	private:
 		static void MonoInit();
-
-		struct FileData
-		{
-			uint8_t* Data = nullptr;
-			size_t size = 0;
-		};
-
-		static MonoAssembly* LoadAssembly(const CString& AssemblyFilePath);
-
-		static FileData GetAssemblyFileBytes(const CString& AssemblyFilePath);
 	};
 }

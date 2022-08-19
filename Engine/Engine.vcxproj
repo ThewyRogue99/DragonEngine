@@ -181,7 +181,7 @@
     <ClInclude Include="src\Engine\Scene\SceneCamera.h" />
     <ClInclude Include="src\Engine\Scene\SceneManager.h" />
     <ClInclude Include="src\Engine\Scene\SceneSerializer.h" />
-    <ClInclude Include="src\Engine\Scene\ScriptableEntity.h" />
+    <ClInclude Include="src\Engine\Scripting\Script.h" />
     <ClInclude Include="src\Engine\Scripting\ScriptEngine.h" />
     <ClInclude Include="src\Engine\Scripting\ScriptInternals.h" />
     <ClInclude Include="src\Engine\Types\Types.h" />
@@ -641,6 +641,7 @@
     <ClCompile Include="src\Engine\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\Engine\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Engine\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Engine\Scripting\Script.cpp" />
     <ClCompile Include="src\Engine\Scripting\ScriptEngine.cpp" />
     <ClCompile Include="src\Engine\Scripting\ScriptInternals.cpp" />
     <ClCompile Include="src\Engine\Types\Types.cpp" />

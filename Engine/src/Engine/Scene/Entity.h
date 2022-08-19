@@ -3,13 +3,12 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Log.h"
 
-#include "Components.h"
-
 #include "entt.hpp"
 
 namespace Engine
 {
 	class Scene;
+	class UUID;
 
 	class Entity
 	{
@@ -71,7 +70,7 @@ namespace Engine
 			return !(*this == other);
 		}
 
-		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+		UUID GetUUID();
 
 		friend class Scene;
 

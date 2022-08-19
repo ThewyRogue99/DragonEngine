@@ -3,6 +3,7 @@
 
 #include "Scene.h"
 #include "Components.h"
+#include "Engine/Core/UUID.h"
 
 namespace Engine
 {
@@ -19,5 +20,10 @@ namespace Engine
 			return false;
 
 		return true;
+	}
+
+	UUID Entity::GetUUID()
+	{
+		return GetComponent<IDComponent>().ID;
 	}
 }

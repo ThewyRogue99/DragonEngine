@@ -7,6 +7,8 @@
 #include "Engine/Math/Math.h"
 #include "Engine/Core/UUID.h"
 
+#include "Engine/Scripting/Script.h"
+
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -44,6 +46,11 @@ namespace Engine
 
 		TransformComponent(const glm::vec3& Position)
 			: Position(Position) { }
+
+		TransformComponent(const glm::mat4& Transform)
+		{
+			Math::DecomposeTransform(Transform, Position, Rotation, Scale);
+		}
 
 		glm::mat4 GetTransformMat4() const
 		{
@@ -86,21 +93,12 @@ namespace Engine
 		CameraComponent(const CameraComponent&) = default;
 	};
 
-	class ScriptableEntity;
-
-	struct NativeScriptComponent
+	struct ScriptComponent
 	{
-		ScriptableEntity* Instance = nullptr;
+		Script* ScriptObject;
 
-		ScriptableEntity* (*InstantiateScript)();
-		void (*DestroyScript)(NativeScriptComponent*);
-
-		template<typename T>
-		void Bind()
-		{
-			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
-			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
-		}
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
 	};
 
 	struct Rigidbody2DComponent
@@ -157,7 +155,7 @@ namespace Engine
 	};
 
 	using AllComponents =
-		ComponentGroup<TransformComponent, SpriteRendererComponent,
-			CircleRendererComponent, CameraComponent, NativeScriptComponent,
+		ComponentGroup<TagComponent, TransformComponent, SpriteRendererComponent,
+			CircleRendererComponent, CameraComponent, ScriptComponent,
 			Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
 }
