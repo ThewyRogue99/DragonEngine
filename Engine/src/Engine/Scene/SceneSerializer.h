@@ -10,7 +10,7 @@ namespace Engine
 	class SceneSerializer
 	{
 	public:
-		SceneSerializer(const Ref<Scene>& scene);
+		SceneSerializer(Scene* scene);
 
 		void Serialize(const CString& filepath);
 		void SerializeRuntime(const CString& filepath);
@@ -19,6 +19,6 @@ namespace Engine
 		bool DeserializeRuntime(const CString& filepath);
 
 	private:
-		Ref<Scene> m_Scene;
+		Scene* m_Scene;
 	};
 }

@@ -58,11 +58,11 @@ namespace Engine
 			OnPhysics2DEnd();
 	}
 
-	Ref<EditorScene> EditorScene::CopyEditorScene()
+	EditorScene* EditorScene::CopyEditorScene()
 	{
-		Ref<EditorScene> CopyScene = CreateRef<EditorScene>();
+		EditorScene* CopyScene = new EditorScene();
 
-		CopyToRef(std::static_pointer_cast<Scene>(CopyScene));
+		CopyToRef(CopyScene);
 
 		if (CopyScene->editorCamera)
 			delete CopyScene->editorCamera;

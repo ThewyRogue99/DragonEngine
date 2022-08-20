@@ -11,11 +11,11 @@ namespace Engine
 
 	std::vector<SceneManager::SceneData> SceneManager::SceneList = { };
 
-	Ref<Scene> SceneManager::ActiveScene = nullptr;
+	Scene* SceneManager::ActiveScene = nullptr;
 
-	bool SceneManager::AddScene(const CString& Tag, Ref<Scene> SceneRef, bool Replace)
+	bool SceneManager::AddScene(const CString& Tag, Scene* SceneRef, bool Replace)
 	{
-		Ref<Scene> cpy = GetScene(Tag);
+		Scene* cpy = GetScene(Tag);
 
 		if (!cpy)
 		{
@@ -32,12 +32,12 @@ namespace Engine
 		return false;
 	}
 
-	Ref<Scene> SceneManager::GetActiveScene()
+	Scene* SceneManager::GetActiveScene()
 	{
 		return ActiveScene;
 	}
 
-	Ref<Scene> SceneManager::GetScene(const CString& Tag)
+	Scene* SceneManager::GetScene(const CString& Tag)
 	{
 		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](SceneData& Data)
 		{
@@ -50,7 +50,7 @@ namespace Engine
 		return nullptr;
 	}
 
-	bool SceneManager::ReplaceScene(const CString& Tag, Ref<Scene> SceneRef)
+	bool SceneManager::ReplaceScene(const CString& Tag, Scene* SceneRef)
 	{
 		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](SceneData& Data)
 		{
@@ -59,13 +59,16 @@ namespace Engine
 
 		if (it != SceneList.end())
 		{
-			bool isActive = IsActiveScene((*it).Tag);
+			bool isActive = IsActiveScene(it->Tag);
 
-			Ref<Scene> copyRef = (*it).SceneRef;
-			(*it).SceneRef = SceneRef;
+			Scene* copyRef = it->SceneRef;
+
+			it->SceneRef = SceneRef;
 
 			if (isActive)
-				SetActiveScene((*it).Tag);
+				SetActiveScene(it->Tag);
+
+			delete copyRef;
 
 			return true;
 		}
@@ -86,6 +89,7 @@ namespace Engine
 			if (IsActiveScene((*it).Tag))
 				RemoveActiveScene();
 
+			delete it->SceneRef;
 			SceneList.erase(it);
 			return true;
 		}
@@ -96,7 +100,7 @@ namespace Engine
 
 	bool SceneManager::SetActiveScene(const CString& Tag)
 	{
-		Ref<Scene> NewActiveScene = GetScene(Tag);
+		Scene* NewActiveScene = GetScene(Tag);
 
 		if (NewActiveScene)
 		{
@@ -113,7 +117,7 @@ namespace Engine
 
 	bool SceneManager::IsActiveScene(const CString& Tag)
 	{
-		Ref<Scene> ref = GetScene(Tag);
+		Scene* ref = GetScene(Tag);
 
 		return ActiveScene == ref;
 	}
@@ -133,7 +137,7 @@ namespace Engine
 		CallbackList.push_back(callback);
 	}
 
-	void SceneManager::CallbackManager::Run(Ref<Scene> NewScene)
+	void SceneManager::CallbackManager::Run(Scene* NewScene)
 	{
 		for (auto& callback : CallbackList)
 			callback(NewScene);

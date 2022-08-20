@@ -39,7 +39,7 @@ namespace Engine
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f, 0.f });
 
-		ActiveScene = std::static_pointer_cast<EditorScene>(SceneManager::GetActiveScene());
+		ActiveScene = (EditorScene*)SceneManager::GetActiveScene();
 
 		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(ViewportPanel::OnSetActiveScene));
 	}
@@ -56,7 +56,7 @@ namespace Engine
 			if (pixelData == -1)
 				HoveredEntity = { };
 			else
-				HoveredEntity = { (entt::entity)pixelData, ActiveScene.get() };
+				HoveredEntity = { (entt::entity)pixelData, ActiveScene };
 		}
 	}
 
@@ -88,7 +88,7 @@ namespace Engine
 			{
 				const wchar_t* path = (const wchar_t*)payload->Data;
 
-				Ref<EditorScene> NewScene = CreateRef<EditorScene>();
+				EditorScene* NewScene = new EditorScene();
 
 				SceneSerializer s(NewScene);
 				s.Deserialize(path);
@@ -180,9 +180,9 @@ namespace Engine
 		ActiveScene->OnEvent(event);
 	}
 
-	void ViewportPanel::OnSetActiveScene(Ref<Scene> NewScene)
+	void ViewportPanel::OnSetActiveScene(Scene* NewScene)
 	{
-		ActiveScene = std::static_pointer_cast<EditorScene>(NewScene);
+		ActiveScene = (EditorScene*)NewScene;
 
 		ImVec2 size = GetSize();
 		ActiveScene->OnViewportResize((uint32_t)size.x, (uint32_t)size.y);

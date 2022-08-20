@@ -33,10 +33,10 @@ namespace Engine
 		void SaveScene();
 		void SaveScene(const CString& path);
 
-		void OnActiveSceneChange(Ref<Scene> scene);
+		void OnActiveSceneChange(Scene* scene);
 
 	private:
-		Ref<EditorScene> ActiveScene;
+		EditorScene* ActiveScene;
 
 		// Panels
 		PanelManager PManager;

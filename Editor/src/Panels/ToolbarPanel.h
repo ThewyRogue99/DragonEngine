@@ -18,7 +18,7 @@ namespace Engine
 		virtual void OnRender(float DeltaTime) override;
 
 	private:
-		void OnSetActiveScene(Ref<Scene> NewScene);
+		void OnSetActiveScene(Scene* NewScene);
 
 	private:
 		enum SceneState
@@ -30,6 +30,6 @@ namespace Engine
 
 		Ref<Texture2D> PlayIcon = nullptr, StopIcon = nullptr, SimulateIcon = nullptr;
 
-		Ref<EditorScene> ActiveScene = nullptr;
+		EditorScene* ActiveScene = nullptr;
 	};
 }

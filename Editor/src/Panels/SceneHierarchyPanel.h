@@ -27,10 +27,10 @@ namespace Engine
 
 		void DrawComponents(Entity entity);
 
-		void OnSetActiveScene(Ref<Scene> NewScene);
+		void OnSetActiveScene(Scene* NewScene);
 
 	private:
-		Ref<EditorScene> Context = nullptr;
+		EditorScene* Context = nullptr;
 
 		Entity SelectedEntity = { };
 	};

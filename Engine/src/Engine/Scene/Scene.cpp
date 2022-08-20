@@ -119,7 +119,7 @@ namespace Engine
 
 	}
 
-	void Scene::CopyToRef(Ref<Scene>& SceneRef)
+	void Scene::CopyToRef(Scene* SceneRef)
 	{
 		SceneRegistry.each([this, SceneRef](const entt::entity entity)
 		{
@@ -131,9 +131,9 @@ namespace Engine
 		SceneRef->ViewportWidth = ViewportWidth;
 	}
 
-	Ref<Scene> Scene::Copy()
+	Scene* Scene::Copy()
 	{
-		Ref<Scene> CopyScene = CreateRef<Scene>(SceneName);
+		Scene* CopyScene = new Scene(SceneName);
 
 		CopyToRef(CopyScene);
 
@@ -315,7 +315,7 @@ namespace Engine
 			component.Camera.SetViewportSize(ViewportWidth, ViewportHeight);
 	}
 
-	void Scene::CopyEntity(Ref<Scene> TargetScene, Entity entity)
+	void Scene::CopyEntity(Scene* TargetScene, Entity entity)
 	{
 		UUID id = entity.GetComponent<IDComponent>().ID;
 		CString& tag = entity.GetComponent<TagComponent>().Tag;

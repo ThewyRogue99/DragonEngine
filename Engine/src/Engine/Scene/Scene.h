@@ -42,7 +42,7 @@ namespace Engine
 		inline const CString& GetName() const { return SceneName; }
 		inline void SetName(const CString& Name) { SceneName = Name; }
 
-		Ref<Scene> Copy();
+		Scene* Copy();
 
 		struct CameraProps
 		{
@@ -65,12 +65,12 @@ namespace Engine
 		void OnPhysics2DUpdate(float DeltaTime);
 		void OnPhysics2DEnd();
 
-		void CopyToRef(Ref<Scene>& SceneRef);
+		void CopyToRef(Scene* SceneRef);
 
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
 
-		void CopyEntity(Ref<Scene> TargetScene, Entity entity);
+		void CopyEntity(Scene* TargetScene, Entity entity);
 
 		template<typename... Component>
 		void CopyComponent(Entity TargetEntity, Entity SourceEntity);

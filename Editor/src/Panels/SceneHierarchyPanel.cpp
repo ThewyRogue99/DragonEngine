@@ -17,7 +17,7 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnCreate()
 	{
-		Context = std::static_pointer_cast<EditorScene>(SceneManager::GetActiveScene());
+		Context = (EditorScene*)SceneManager::GetActiveScene();
 
 		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnSetActiveScene));
 	}
@@ -28,7 +28,7 @@ namespace Engine
 
 		Context->SceneRegistry.each([&](auto entityID)
 		{
-			DrawEntityNode({ entityID, Context.get() });
+			DrawEntityNode({ entityID, Context });
 		});
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
@@ -458,8 +458,8 @@ namespace Engine
 		});
 	}
 
-	void SceneHierarchyPanel::OnSetActiveScene(Ref<Scene> NewScene)
+	void SceneHierarchyPanel::OnSetActiveScene(Scene* NewScene)
 	{
-		Context = std::static_pointer_cast<EditorScene>(NewScene);
+		Context = (EditorScene*)NewScene;
 	}
 }

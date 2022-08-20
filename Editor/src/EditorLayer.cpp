@@ -24,7 +24,7 @@ namespace Engine
 
 	void EditorLayer::OnAttach()
 	{
-		Ref<EditorScene> scene = CreateRef<EditorScene>();
+		EditorScene* scene = new EditorScene();
 
 		if (SceneManager::AddScene(TEXT("Editor Scene"), scene))
 		{
@@ -162,7 +162,7 @@ namespace Engine
 
 	void EditorLayer::NewScene()
 	{
-		Ref<EditorScene> ref = CreateRef<EditorScene>();
+		EditorScene* ref = new EditorScene();
 
 		if (SceneManager::AddScene(TEXT("Editor Scene"), ref, true))
 			ActiveScene = ref;
@@ -198,11 +198,11 @@ namespace Engine
 		s.Serialize(path);
 	}
 
-	void EditorLayer::OnActiveSceneChange(Ref<Scene> scene)
+	void EditorLayer::OnActiveSceneChange(Scene* scene)
 	{
 		ActiveScene->OnSceneEnd();
 
-		ActiveScene = std::static_pointer_cast<EditorScene>(scene);
+		ActiveScene = (EditorScene*)scene;
 
 		ActiveScene->OnSceneBegin();
 	}

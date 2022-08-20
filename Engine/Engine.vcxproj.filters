@@ -186,7 +186,13 @@
     <ClInclude Include="src\Engine\Scene\SceneSerializer.h">
       <Filter>src\Engine\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Scripting\Script.h">
+      <Filter>src\Engine\Scripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Scripting\ScriptEngine.h">
+      <Filter>src\Engine\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Scripting\ScriptInternals.h">
       <Filter>src\Engine\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Types\Types.h">
@@ -1482,8 +1488,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Scripting\ScriptInternals.h" />
-    <ClInclude Include="src\Engine\Scripting\Script.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1558,7 +1562,13 @@
     <ClCompile Include="src\Engine\Scene\SceneSerializer.cpp">
       <Filter>src\Engine\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Scripting\Script.cpp">
+      <Filter>src\Engine\Scripting</Filter>
+    </ClCompile>
     <ClCompile Include="src\Engine\Scripting\ScriptEngine.cpp">
+      <Filter>src\Engine\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Scripting\ScriptInternals.cpp">
       <Filter>src\Engine\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Types\Types.cpp">
@@ -1609,7 +1619,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Scripting\ScriptInternals.cpp" />
-    <ClCompile Include="src\Engine\Scripting\Script.cpp" />
   </ItemGroup>
 </Project>

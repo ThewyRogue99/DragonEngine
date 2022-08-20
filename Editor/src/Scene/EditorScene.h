@@ -23,7 +23,7 @@ namespace Engine
 		virtual void OnSceneBegin() override;
 		virtual void OnSceneEnd() override;
 
-		Ref<EditorScene> CopyEditorScene();
+		EditorScene* CopyEditorScene();
 
 		void BeginSimulation() { bShouldSimulate = true; }
 		void EndSimulation() { bShouldSimulate = false; }

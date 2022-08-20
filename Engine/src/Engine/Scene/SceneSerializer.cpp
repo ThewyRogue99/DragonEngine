@@ -130,7 +130,7 @@ namespace Engine
 		return Rigidbody2DComponent::BodyType::Static;
 	}
 
-	SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
+	SceneSerializer::SceneSerializer(Scene* scene)
 		: m_Scene(scene)
 	{
 	}
@@ -275,7 +275,7 @@ namespace Engine
 		m_Scene->SceneRegistry.each([&](auto entityID)
 		{
 			DE_CORE_TRACE("Serializing entity");
-			Entity entity = { entityID, m_Scene.get() };
+			Entity entity = { entityID, m_Scene };
 			if (!entity.IsValid())
 				return;
 

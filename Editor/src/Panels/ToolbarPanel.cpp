@@ -28,7 +28,7 @@ namespace Engine
 			ImGuiWindowFlags_NoScrollWithMouse
 		);
 
-		ActiveScene = std::static_pointer_cast<EditorScene>(SceneManager::GetActiveScene());
+		ActiveScene = (EditorScene*)SceneManager::GetActiveScene();
 
 		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(ToolbarPanel::OnSetActiveScene));
 	}
@@ -54,7 +54,7 @@ namespace Engine
 				{
 					case SceneState::Edit:
 					{
-						Ref<Scene> CopyScene = ActiveScene->Copy();
+						Scene* CopyScene = ActiveScene->Copy();
 
 						SceneManager::AddScene(TEXT("Copy Scene"), CopyScene, true);
 						SceneManager::SetActiveScene(TEXT("Copy Scene"));
@@ -93,7 +93,7 @@ namespace Engine
 				{
 					case SceneState::Edit:
 					{
-						Ref<EditorScene> CopyScene = ActiveScene->CopyEditorScene();
+						EditorScene* CopyScene = ActiveScene->CopyEditorScene();
 
 						CopyScene->BeginSimulation();
 
@@ -120,8 +120,8 @@ namespace Engine
 		}
 	}
 
-	void ToolbarPanel::OnSetActiveScene(Ref<Scene> NewScene)
+	void ToolbarPanel::OnSetActiveScene(Scene* NewScene)
 	{
-		ActiveScene = std::static_pointer_cast<EditorScene>(NewScene);
+		ActiveScene = (EditorScene*)NewScene;
 	}
 }

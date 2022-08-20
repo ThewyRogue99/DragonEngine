@@ -33,10 +33,10 @@ namespace Engine
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
 		bool OnKeyPressedEvent(KeyPressedEvent& event);
 
-		void OnSetActiveScene(Ref<Scene> NewScene);
+		void OnSetActiveScene(Scene* NewScene);
 
 	private:
-		Ref<EditorScene> ActiveScene = nullptr;
+		EditorScene* ActiveScene = nullptr;
 		Ref<Framebuffer> m_FrameBuffer = nullptr;
 
 		Entity HoveredEntity = { };

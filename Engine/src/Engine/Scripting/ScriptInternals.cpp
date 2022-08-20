@@ -56,7 +56,7 @@ namespace Engine
 
 	static Entity GetEntity(UUID id)
 	{
-		Ref<Scene> scene = SceneManager::GetActiveScene();
+		Scene* scene = SceneManager::GetActiveScene();
 		
 		if (scene)
 			return scene->GetEntityWithUUID(id);
