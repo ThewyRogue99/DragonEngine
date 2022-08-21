@@ -141,7 +141,7 @@ namespace Engine
 	static void TagComponent_SetTag(UUID EntityID, MonoString* value)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TagComponent>())
 			{
@@ -151,13 +151,18 @@ namespace Engine
 
 				tagComponent.Tag = str;
 			}
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
+				mono_raise_exception(ex);
+			}
+		}
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
 			mono_raise_exception(ex);
 		}
 
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
 	}
 
 #pragma endregion
@@ -167,171 +172,221 @@ namespace Engine
 	static void TransformComponent_GetTransform(UUID EntityID, TransformComponent* result)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				*result = entity.GetComponent<TransformComponent>();
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_GetPosition(UUID EntityID, glm::vec3* result)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				*result = entity.GetComponent<TransformComponent>().Position;
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_GetRotation(UUID EntityID, glm::vec3* result)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				*result = entity.GetComponent<TransformComponent>().Rotation;
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_GetScale(UUID EntityID, glm::vec3* result)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				*result = entity.GetComponent<TransformComponent>().Scale;
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_GetTransformMatrix(UUID EntityID, glm::mat4* result)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				*result = entity.GetComponent<TransformComponent>().GetTransformMat4();
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_SetTransform(UUID EntityID, TransformComponent* value)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				entity.GetComponent<TransformComponent>() = *value;
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_SetPosition(UUID EntityID, glm::vec3* value)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				entity.GetComponent<TransformComponent>().Position = *value;
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_SetRotation(UUID EntityID, glm::vec3* value)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				entity.GetComponent<TransformComponent>().Rotation = *value;
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_SetScale(UUID EntityID, glm::vec3* value)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				entity.GetComponent<TransformComponent>().Scale = *value;
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 	static void TransformComponent_SetTransformMatrix(UUID EntityID, glm::mat4* value)
 	{
 		auto entity = GetEntity(EntityID);
-		if (entity)
+		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
+			{
 				entity.GetComponent<TransformComponent>() = TransformComponent(*value);
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-			return;
+			}
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
+		else
+		{
+			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
+			mono_raise_exception(ex);
+		}
 	}
 
 #pragma endregion
@@ -351,9 +406,11 @@ namespace Engine
 
 				body->ApplyLinearImpulse(b2Vec2(Impulse->x, Impulse->y), b2Vec2(Point->x, Point->y), Wake);
 			}
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have Rigidbody2DComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
 		else
 		{
@@ -375,9 +432,11 @@ namespace Engine
 
 				body->ApplyLinearImpulseToCenter(b2Vec2(Impulse->x, Impulse->y), Wake);
 			}
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
+			else
+			{
+				MonoException* ex = mono_get_exception_io("Entity doesn't have Rigidbody2DComponent attached.");
+				mono_raise_exception(ex);
+			}
 		}
 		else
 		{
