@@ -5,8 +5,6 @@
 
 #include "Engine/Core/Log.h"
 
-#include <vector>
-
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 
@@ -195,9 +193,6 @@ namespace Engine
 
 				Script* newScript = new Script();
 
-				newScript->Name = ScriptName;
-				newScript->Namespace = ScriptNamespace;
-
 				MonoMethod* vMethod = mono_class_get_method_from_name(scriptBaseClass, "AttachToEntity", 1);
 				newScript->AttachToEntityMethod = mono_object_get_virtual_method(ScriptObject, vMethod);
 
@@ -213,6 +208,29 @@ namespace Engine
 		}
 
 		return nullptr;
+	}
+
+	bool ScriptEngine::ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName)
+	{
+		auto it = std::find_if(ScriptDataList.begin(), ScriptDataList.end(), [ScriptNamespace, ScriptName](const ScriptData& data)
+		{
+			return (data.Name == ScriptName) && (data.NameSpace == ScriptNamespace);
+		});
+
+		return it != ScriptDataList.end();
+	}
+
+	std::vector<std::pair<std::string, std::string>> ScriptEngine::GetScriptData()
+	{
+		size_t size = ScriptDataList.size();
+		std::vector<std::pair<std::string, std::string>> data(size);
+
+		for (size_t i = 0; i < size; i++)
+		{
+			data[i] = { ScriptDataList[i].Name, ScriptDataList[i].NameSpace };
+		}
+
+		return data;
 	}
 
 	void ScriptEngine::Update(float DeltaTime)

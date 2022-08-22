@@ -317,6 +317,15 @@ namespace Engine
 				}
 			}
 
+			if (!SelectedEntity.HasComponent<ScriptComponent>())
+			{
+				if (ImGui::MenuItem("Script"))
+				{
+					SelectedEntity.AddComponent<ScriptComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
 			ImGui::EndPopup();
 		}
 
@@ -457,6 +466,46 @@ namespace Engine
 			ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
+		});
+
+		DrawComponent<ScriptComponent>("Script", entity, [](ScriptComponent& component)
+		{
+			auto ScriptDataList = ScriptEngine::GetScriptData();
+
+			size_t size = ScriptDataList.size();
+			std::vector<std::string> FullScriptNameList(size);
+
+			for (size_t i = 0; i < size; i++)
+			{
+				auto& [Name, Namespace] = ScriptDataList[i];
+
+				FullScriptNameList[i] = (Namespace.empty() ? "" : Namespace + ".") + Name;
+			}
+
+			std::vector<const char*> ScriptNameList(size);
+			for (size_t i = 0; i < size; i++)
+			{
+				ScriptNameList[i] = FullScriptNameList[i].c_str();
+			}
+
+			std::string componentScriptFullName = (component.Namespace.empty() ? "" : component.Namespace + ".") + component.Name;
+			const char* preview = component.Name.empty() ? "Select Script..." : componentScriptFullName.c_str();
+
+			if (ImGui::BeginCombo("Scripts", preview))
+			{
+				for (size_t i = 0; i < size; i++)
+				{
+					bool selected = FullScriptNameList[i] == preview;
+
+					if (ImGui::Selectable(ScriptNameList[i], selected))
+					{
+						component.Name = ScriptDataList[i].first;
+						component.Namespace = ScriptDataList[i].second;
+					}
+				}
+
+				ImGui::EndCombo();
+			}
 		});
 	}
 

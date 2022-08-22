@@ -5,6 +5,8 @@
 
 #include "Script.h"
 
+#include <vector>
+
 namespace Engine
 {
 	class ScriptEngine
@@ -19,6 +21,10 @@ namespace Engine
 		static void LoadAllScripts();
 
 		static Script* NewScript(const std::string& ScriptNamespace, const std::string& ScriptName);
+
+		static bool ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName);
+
+		static std::vector<std::pair<std::string, std::string>> GetScriptData();
 
 		static void Update(float DeltaTime);
 

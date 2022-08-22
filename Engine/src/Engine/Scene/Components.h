@@ -97,6 +97,9 @@ namespace Engine
 	{
 		Script* ScriptObject;
 
+		std::string Name = "";
+		std::string Namespace = "";
+
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;
 	};

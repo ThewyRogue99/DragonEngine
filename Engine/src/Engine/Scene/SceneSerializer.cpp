@@ -4,6 +4,8 @@
 #include "Entity.h"
 #include "Components.h"
 
+#include "Engine/Scripting/ScriptEngine.h"
+
 #include <yaml-cpp/yaml.h>
 #include <glm/glm.hpp>
 
@@ -263,6 +265,18 @@ namespace Engine
 			out << YAML::EndMap;
 		}
 
+		if (entity.HasComponent<ScriptComponent>())
+		{
+			out << YAML::Key << "ScriptComponent";
+			out << YAML::BeginMap;
+
+			auto& scriptComponent = entity.GetComponent<ScriptComponent>();
+			out << YAML::Key << "Name" << YAML::Value << scriptComponent.Name;
+			out << YAML::Key << "Namespace" << YAML::Value << scriptComponent.Namespace;
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -402,6 +416,20 @@ namespace Engine
 					cc2d.Friction = circleCollider2DComponent["Friction"].as<float>();
 					cc2d.Restitution = circleCollider2DComponent["Restitution"].as<float>();
 					cc2d.RestitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
+				}
+
+				auto scriptComponent = entity["ScriptComponent"];
+				if (scriptComponent)
+				{
+					auto& sc = deserializedEntity.AddComponent<ScriptComponent>();
+					std::string Name = scriptComponent["Name"].as<std::string>();
+					std::string Namespace = scriptComponent["Namespace"].as<std::string>();
+
+					if (ScriptEngine::ScriptExists(Namespace, Name))
+					{
+						sc.Name = Name;
+						sc.Namespace = Namespace;
+					}
 				}
 			}
 		}

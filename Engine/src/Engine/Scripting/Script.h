@@ -21,9 +21,6 @@ namespace Engine
 
 		friend class ScriptEngine;
 
-		std::string Name = "";
-		std::string Namespace = "";
-
 	private:
 		Entity AttachedEntity = { };
 

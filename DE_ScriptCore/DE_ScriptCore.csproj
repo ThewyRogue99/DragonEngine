@@ -21,7 +21,8 @@
     <OutputPath>..\bin\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\bin-int\Resources\Scripts\Intermediates\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,7 +34,8 @@
     <OutputPath>..\bin\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\bin-int\Resources\Scripts\Intermediates\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -45,7 +47,8 @@
     <OutputPath>..\bin\Resources\Scripts\</OutputPath>
     <BaseIntermediateOutputPath>..\bin-int\Resources\Scripts\Intermediates\Dist\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -56,12 +59,13 @@
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Dist|x64' ">
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\SquareScript.cs" />
     <Compile Include="Source\Core\Input.cs" />
     <Compile Include="Source\Core\InternalCalls.cs" />
     <Compile Include="Source\Core\KeyCode.cs" />
     <Compile Include="Source\Core\Script.cs" />
     <Compile Include="Source\Debug\Debug.cs" />
-    <Compile Include="Source\Main.cs" />
+    <Compile Include="Source\CircleScript.cs" />
     <Compile Include="Source\Math\Interpolate.cs" />
     <Compile Include="Source\Math\Mathf.cs" />
     <Compile Include="Source\Math\Matrix4.cs" />
