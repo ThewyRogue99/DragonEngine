@@ -52,7 +52,7 @@ namespace Engine
 		return speed;
 	}
 
-	void EditorCamera::OnUpdate(float DeltaTime)
+	void EditorCamera::Update(float DeltaTime)
 	{
 		if (Input::IsKeyPressed(KeyInput::Key_LeftAlt))
 		{
@@ -109,7 +109,7 @@ namespace Engine
 		}
 	}
 
-	glm::mat4 EditorCamera::GetTransform()
+	const glm::mat4& EditorCamera::GetTransform()
 	{
 		glm::quat orientation = GetOrientation();
 

@@ -5,7 +5,6 @@
 #include "Engine/Events/MouseEvent.h"
 #include <glm/glm.hpp>
 
-
 namespace Engine
 {
 	class EditorCamera : public Camera
@@ -14,7 +13,7 @@ namespace Engine
 		EditorCamera() = default;
 		EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
-		void OnUpdate(float DeltaTime);
+		virtual void Update(float DeltaTime) override;
 		void OnEvent(Event& e);
 
 		inline float GetDistance() const { return m_Distance; }
@@ -22,9 +21,9 @@ namespace Engine
 
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
-		glm::mat4 GetTransform();
+		virtual const glm::mat4& GetTransform() override;
 
-		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
+		virtual const glm::mat4& GetViewMatrix() override { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return Projection * m_ViewMatrix; }
 
 		glm::vec3 GetUpDirection() const;
@@ -35,6 +34,7 @@ namespace Engine
 
 		float GetPitch() const { return m_Pitch; }
 		float GetYaw() const { return m_Yaw; }
+
 	private:
 		void UpdateProjection();
 		void UpdateView();
@@ -50,6 +50,7 @@ namespace Engine
 		std::pair<float, float> PanSpeed() const;
 		float RotationSpeed() const;
 		float ZoomSpeed() const;
+
 	private:
 		float m_FOV = 45.0f, m_AspectRatio = 1.778f, m_NearClip = 0.1f, m_FarClip = 1000.0f;
 

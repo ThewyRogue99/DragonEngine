@@ -44,16 +44,7 @@ namespace Engine
 
 		Scene* Copy();
 
-		struct CameraProps
-		{
-			Camera* CameraPtr = nullptr;
-			glm::mat4 Transform = glm::mat4(1.f);
-
-			// Set On Runtime Only
-			Entity EntityHandle = Entity();
-		};
-
-		inline CameraProps& GetPrimaryCameraProps() { return PrimaryCamera; }
+		inline virtual Camera* GetPrimaryCamera() { return PrimaryCamera; }
 
 		virtual void OnSceneBegin();
 		virtual void OnSceneEnd();
@@ -85,7 +76,7 @@ namespace Engine
 
 		b2World* m_PhysicsWorld = nullptr;
 
-		CameraProps PrimaryCamera;
+		Camera* PrimaryCamera;
 
 		uint32_t ViewportWidth = 0, ViewportHeight = 0;
 	};

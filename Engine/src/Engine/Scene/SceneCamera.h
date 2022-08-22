@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "Engine/Scene/Entity.h"
 #include "Engine/Renderer/Camera.h"
 
 namespace Engine
@@ -11,8 +12,14 @@ namespace Engine
 		enum class ProjectionType { Perspective = 0, Orthographic = 1 };
 
 	public:
-		SceneCamera();
+		SceneCamera(Entity entity) : AttachedEntity(entity) { }
 		virtual ~SceneCamera();
+
+		virtual void Update(float DeltaTime) override;
+
+		virtual const glm::mat4& GetTransform() override { return CameraTransform; }
+
+		virtual const glm::mat4& GetViewMatrix() override { return CameraViewMatrix; }
 
 		void SetViewportSize(uint32_t width, uint32_t height);
 
@@ -67,6 +74,8 @@ namespace Engine
 		inline const ProjectionType GetProjectionType() const { return projectionType; }
 		inline void SetProjectionType(ProjectionType type) { projectionType = type; RecalculateProjection(); }
 
+		friend class Scene;
+
 	private:
 		void RecalculateProjection();
 
@@ -82,5 +91,10 @@ namespace Engine
 		float OrthographicFar = 1.f;
 
 		float aspectRatio = 0.f;
+
+		glm::mat4 CameraTransform = glm::mat4(1.f);
+		glm::mat4 CameraViewMatrix = glm::mat4(1.f);
+
+		Entity AttachedEntity = { };
 	};
 }

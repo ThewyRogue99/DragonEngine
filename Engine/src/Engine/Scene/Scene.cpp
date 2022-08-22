@@ -89,8 +89,8 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		if(PrimaryCamera.EntityHandle.IsValid() && PrimaryCamera.EntityHandle.HasComponent<TransformComponent>())
-			PrimaryCamera.Transform = PrimaryCamera.EntityHandle.GetComponent<TransformComponent>().GetTransformMat4();
+		if (PrimaryCamera)
+			PrimaryCamera->Update(DeltaTime);
 
 		OnPhysics2DUpdate(DeltaTime);
 
@@ -142,9 +142,9 @@ namespace Engine
 
 	void Scene::Render(float DeltaTime)
 	{
-		if (PrimaryCamera.CameraPtr)
+		if (PrimaryCamera)
 		{
-			Renderer2D::BeginScene(*PrimaryCamera.CameraPtr, PrimaryCamera.Transform);
+			Renderer2D::BeginScene(*PrimaryCamera, PrimaryCamera->GetTransform());
 
 			// Sprite Rendering
 			{
@@ -272,9 +272,9 @@ namespace Engine
 
 				if (camera.Primary)
 				{
-					PrimaryCamera.CameraPtr = &(camera.Camera);
-					PrimaryCamera.EntityHandle = Entity(entity, this);
-					PrimaryCamera.Transform = transform.GetTransformMat4();
+					camera.Camera.AttachedEntity = Entity(entity, this);
+
+					PrimaryCamera = &(camera.Camera);
 				}
 			}
 		}
@@ -285,9 +285,17 @@ namespace Engine
 			for (auto entity : view)
 			{
 				auto& script = SceneRegistry.get<ScriptComponent>(entity);
+				
+				if (!script.Name.empty())
+				{
+					Script* scriptObject = ScriptEngine::NewScript(script.Namespace, script.Name);
+					if (scriptObject)
+					{
+						scriptObject->AttachToEntity({ entity, this });
 
-				script.ScriptObject = ScriptEngine::NewScript(script.ScriptObject->Namespace, script.ScriptObject->Name);
-				script.ScriptObject->AttachToEntity({ entity, this });
+						script.ScriptObject = scriptObject;
+					}
+				}
 			}
 
 			ScriptEngine::Run();
@@ -300,9 +308,7 @@ namespace Engine
 	{
 		ScriptEngine::Stop();
 
-		PrimaryCamera.CameraPtr = nullptr;
-		PrimaryCamera.EntityHandle = Entity();
-		PrimaryCamera.Transform = glm::mat4(1.f);
+		PrimaryCamera = nullptr;
 
 		OnPhysics2DEnd();
 	}

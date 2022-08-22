@@ -36,7 +36,7 @@ namespace Engine
 		void OnSetActiveScene(Scene* NewScene);
 
 	private:
-		EditorScene* ActiveScene = nullptr;
+		Scene* ActiveScene = nullptr;
 		Ref<Framebuffer> m_FrameBuffer = nullptr;
 
 		Entity HoveredEntity = { };

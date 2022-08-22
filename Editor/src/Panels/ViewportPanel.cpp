@@ -118,10 +118,10 @@ namespace Engine
 				secondBound.y - firstBound.y
 			);
 
-			EditorCamera* editorCamera = ActiveScene->GetEditorCamera();
+			Camera* primaryCamera = ActiveScene->GetPrimaryCamera();
 
-			const glm::mat4& cameraProjection = editorCamera->GetProjection();
-			glm::mat4 cameraView = editorCamera->GetViewMatrix();
+			const glm::mat4& cameraProjection = primaryCamera->GetProjection();
+			glm::mat4 cameraView = primaryCamera->GetViewMatrix();
 
 			auto& tc = selectedEntity->GetComponent<TransformComponent>();
 			glm::mat4 transform = tc.GetTransformMat4();
@@ -159,8 +159,6 @@ namespace Engine
 		else
 			bIsViewportHovered = false;
 
-		ActiveScene->SetShouldBlockEvents(!bIsViewportHovered);
-
 		m_FrameBuffer->Unbind();
 	}
 
@@ -182,7 +180,7 @@ namespace Engine
 
 	void ViewportPanel::OnSetActiveScene(Scene* NewScene)
 	{
-		ActiveScene = (EditorScene*)NewScene;
+		ActiveScene = NewScene;
 
 		ImVec2 size = GetSize();
 		ActiveScene->OnViewportResize((uint32_t)size.x, (uint32_t)size.y);

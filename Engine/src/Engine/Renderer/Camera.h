@@ -13,6 +13,12 @@ namespace Engine
 
 		virtual ~Camera() = default;
 
+		virtual void Update(float DeltaTime) = 0;
+
+		virtual const glm::mat4& GetTransform() = 0;
+
+		virtual const glm::mat4& GetViewMatrix() = 0;
+
 		inline const glm::mat4& GetProjection() const { return Projection; }
 
 	protected:

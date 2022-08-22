@@ -1,16 +1,22 @@
 #include "depch.h"
 #include "SceneCamera.h"
 
+#include "Scene.h"
+
 namespace Engine
 {
-	SceneCamera::SceneCamera()
-	{
-		
-	}
-
 	SceneCamera::~SceneCamera()
 	{
 
+	}
+
+	void SceneCamera::Update(float DeltaTime)
+	{
+		if (AttachedEntity.IsValid() && AttachedEntity.HasComponent<TransformComponent>())
+		{
+			CameraTransform = AttachedEntity.GetComponent<TransformComponent>().GetTransformMat4();
+			CameraViewMatrix = glm::inverse(CameraTransform);
+		}
 	}
 
 	void SceneCamera::SetOrthographic(float size, float nearClip, float farClip)

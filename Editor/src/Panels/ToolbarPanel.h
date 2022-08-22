@@ -30,6 +30,6 @@ namespace Engine
 
 		Ref<Texture2D> PlayIcon = nullptr, StopIcon = nullptr, SimulateIcon = nullptr;
 
-		EditorScene* ActiveScene = nullptr;
+		Scene* ActiveScene = nullptr;
 	};
 }

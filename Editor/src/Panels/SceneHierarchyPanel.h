@@ -30,7 +30,7 @@ namespace Engine
 		void OnSetActiveScene(Scene* NewScene);
 
 	private:
-		EditorScene* Context = nullptr;
+		Scene* Context = nullptr;
 
 		Entity SelectedEntity = { };
 	};

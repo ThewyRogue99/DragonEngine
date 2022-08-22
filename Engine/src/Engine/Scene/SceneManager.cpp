@@ -86,7 +86,7 @@ namespace Engine
 
 		if (it != SceneList.end())
 		{
-			if (IsActiveScene((*it).Tag))
+			if (IsActiveScene(it->Tag))
 				RemoveActiveScene();
 
 			delete it->SceneRef;

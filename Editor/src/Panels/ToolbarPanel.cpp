@@ -28,7 +28,7 @@ namespace Engine
 			ImGuiWindowFlags_NoScrollWithMouse
 		);
 
-		ActiveScene = (EditorScene*)SceneManager::GetActiveScene();
+		ActiveScene = SceneManager::GetActiveScene();
 
 		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(ToolbarPanel::OnSetActiveScene));
 	}
@@ -93,7 +93,7 @@ namespace Engine
 				{
 					case SceneState::Edit:
 					{
-						EditorScene* CopyScene = ActiveScene->CopyEditorScene();
+						EditorScene* CopyScene = ((EditorScene*)ActiveScene)->CopyEditorScene();
 
 						CopyScene->BeginSimulation();
 
@@ -104,7 +104,7 @@ namespace Engine
 					} break;
 					case SceneState::Simulate:
 					{
-						ActiveScene->EndSimulation();
+						((EditorScene*)ActiveScene)->EndSimulation();
 
 						SceneManager::SetActiveScene(TEXT("Editor Scene"));
 						SceneManager::RemoveScene(TEXT("Copy Scene"));

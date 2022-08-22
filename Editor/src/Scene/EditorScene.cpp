@@ -7,7 +7,7 @@ namespace Engine
 {
 	EditorScene::EditorScene(const CString& Name) : Scene(Name)
 	{
-		editorCamera = new EditorCamera(60.f, 16 / 9, 0.1f, 1000.f);
+		PrimaryCamera = new EditorCamera(60.f, 16 / 9, 0.1f, 1000.f);
 	}
 
 	EditorScene::~EditorScene()
@@ -19,9 +19,7 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		editorCamera->OnUpdate(DeltaTime);
-
-		PrimaryCamera.Transform = editorCamera->GetTransform();
+		PrimaryCamera->Update(DeltaTime);
 
 		if (bShouldSimulate)
 			OnPhysics2DUpdate(DeltaTime);
@@ -32,22 +30,18 @@ namespace Engine
 	void EditorScene::OnEvent(Event& event)
 	{
 		if(!bShouldBlockEvents)
-			editorCamera->OnEvent(event);
+			((EditorCamera*)PrimaryCamera)->OnEvent(event);
 	}
 
 	void EditorScene::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		Scene::OnViewportResize(width, height);
 
-		editorCamera->SetViewportSize(width, height);
+		((EditorCamera*)PrimaryCamera)->SetViewportSize(width, height);
 	}
 
 	void EditorScene::OnSceneBegin()
 	{
-		PrimaryCamera.CameraPtr = editorCamera;
-		PrimaryCamera.EntityHandle = Entity();
-		PrimaryCamera.Transform = editorCamera->GetTransform();
-
 		if (bShouldSimulate)
 			OnPhysics2DStart();
 	}
@@ -64,10 +58,10 @@ namespace Engine
 
 		CopyToRef(CopyScene);
 
-		if (CopyScene->editorCamera)
-			delete CopyScene->editorCamera;
+		if (CopyScene->PrimaryCamera)
+			delete CopyScene->PrimaryCamera;
 
-		CopyScene->editorCamera = editorCamera;
+		CopyScene->PrimaryCamera = PrimaryCamera;
 		CopyScene->bShouldBlockEvents = bShouldBlockEvents;
 
 		return CopyScene;

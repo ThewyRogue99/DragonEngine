@@ -3,6 +3,8 @@
 
 #include "Engine/Scene/Components.h"
 
+#include "Engine/Scripting/ScriptEngine.h"
+
 #include "Engine/Scene/SceneManager.h"
 
 #include <imgui/imgui.h>
@@ -17,7 +19,7 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnCreate()
 	{
-		Context = (EditorScene*)SceneManager::GetActiveScene();
+		Context = SceneManager::GetActiveScene();
 
 		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnSetActiveScene));
 	}
@@ -460,6 +462,6 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnSetActiveScene(Scene* NewScene)
 	{
-		Context = (EditorScene*)NewScene;
+		Context = NewScene;
 	}
 }

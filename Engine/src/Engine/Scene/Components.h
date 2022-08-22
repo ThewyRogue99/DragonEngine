@@ -85,7 +85,7 @@ namespace Engine
 
 	struct CameraComponent
 	{
-		SceneCamera Camera;
+		SceneCamera Camera = SceneCamera({ });
 		bool Primary = false;
 		bool FixedAspectRatio = false;
 

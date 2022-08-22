@@ -28,13 +28,9 @@ namespace Engine
 		void BeginSimulation() { bShouldSimulate = true; }
 		void EndSimulation() { bShouldSimulate = false; }
 
-		inline EditorCamera* GetEditorCamera() const { return editorCamera; }
-
 		inline void SetShouldBlockEvents(bool state) { bShouldBlockEvents = state; }
 
 	private:
-		EditorCamera* editorCamera = nullptr;
-
 		bool bShouldSimulate = false;
 		bool bShouldBlockEvents = false;
 	};
