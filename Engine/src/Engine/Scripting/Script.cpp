@@ -32,10 +32,13 @@ namespace Engine
 		{
 			if (entity.HasComponent<IDComponent>())
 			{
-				uint64_t id = entity.GetUUID();
+				std::string id = entity.GetUUID().GetString();
 
-				void* idParam = &id;
-				mono_runtime_invoke(AttachToEntityMethod, ScriptObject, &idParam, nullptr);
+				CString wID = TypeUtils::FromUTF8(id);
+
+				MonoString* str = mono_string_from_utf16((mono_unichar2*)wID.c_str());
+
+				mono_runtime_invoke(AttachToEntityMethod, ScriptObject, (void**)&str, nullptr);
 			}
 		}
 	}

@@ -4,14 +4,14 @@ namespace DragonEngine
 {
     public class Entity
     {
-        protected Entity() { ID = 0; }
+        protected Entity() { }
 
-        internal Entity(ulong id)
+        internal Entity(string id)
         {
             ID = id;
         }
 
-        public readonly ulong ID;
+        public readonly string ID;
         public string Tag => GetComponent<TagComponent>().Tag;
 
         public Transform Transform

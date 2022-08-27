@@ -76,7 +76,7 @@ namespace Engine
 
 		b2World* m_PhysicsWorld = nullptr;
 
-		Camera* PrimaryCamera;
+		Camera* PrimaryCamera = nullptr;
 
 		uint32_t ViewportWidth = 0, ViewportHeight = 0;
 	};

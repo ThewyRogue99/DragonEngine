@@ -140,7 +140,7 @@ namespace Engine
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID(); // TODO: Entity ID goes here
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID().GetString();
 
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -326,7 +326,7 @@ namespace Engine
 		{
 			for (auto entity : entities)
 			{
-				uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+				std::string uuid = entity["Entity"].as<std::string>();
 
 				std::string name;
 				auto tagComponent = entity["TagComponent"];

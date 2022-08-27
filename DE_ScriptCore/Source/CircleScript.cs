@@ -2,6 +2,8 @@
 
 public class CircleScript : Script
 {
+    private float Force = 200f;
+
     public void BeginPlay()
     {
             
@@ -13,19 +15,19 @@ public class CircleScript : Script
 
         if (Input.IsKeyDown(KeyCode.Key_Right))
         {
-            rb2dc.ApplyLinearImpulse(new Vector2(1f, 0f), true);
+            rb2dc.ApplyLinearImpulse(Vector2.Right * (Force * DeltaTime), true);
         }
         if (Input.IsKeyDown(KeyCode.Key_Left))
         {
-            rb2dc.ApplyLinearImpulse(new Vector2(-1f, 0f), true);
+            rb2dc.ApplyLinearImpulse(Vector2.Left * (Force * DeltaTime), true);
         }
         if (Input.IsKeyDown(KeyCode.Key_Up))
         {
-            rb2dc.ApplyLinearImpulse(new Vector2(0f, 1f), true);
+            rb2dc.ApplyLinearImpulse(Vector2.Up * (Force * DeltaTime), true);
         }
         if (Input.IsKeyDown(KeyCode.Key_Down))
         {
-            rb2dc.ApplyLinearImpulse(new Vector2(0f, -1f), true);
+            rb2dc.ApplyLinearImpulse(Vector2.Down * (Force * DeltaTime), true);
         }
     }
 }

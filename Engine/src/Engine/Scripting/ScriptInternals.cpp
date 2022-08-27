@@ -93,9 +93,9 @@ namespace Engine
 
 #pragma region Entity
 
-	static bool Entity_HasComponent(UUID EntityID, MonoReflectionType* ComponentType)
+	static bool Entity_HasComponent(MonoString* EntityID, MonoReflectionType* ComponentType)
 	{
-		Entity entity = GetEntity(EntityID);
+		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
 
 		if (entity.IsValid())
 		{
@@ -114,9 +114,9 @@ namespace Engine
 
 #pragma region TagComponent
 
-	static MonoString* TagComponent_GetTag(UUID EntityID)
+	static MonoString* TagComponent_GetTag(MonoString* EntityID)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TagComponent>())
@@ -138,9 +138,9 @@ namespace Engine
 		return mono_string_from_utf16(L"");
 	}
 
-	static void TagComponent_SetTag(UUID EntityID, MonoString* value)
+	static void TagComponent_SetTag(MonoString* EntityID, MonoString* value)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TagComponent>())
@@ -169,9 +169,9 @@ namespace Engine
 
 #pragma region TransformComponent
 
-	static void TransformComponent_GetTransform(UUID EntityID, TransformComponent* result)
+	static void TransformComponent_GetTransform(MonoString* EntityID, TransformComponent* result)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -191,9 +191,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_GetPosition(UUID EntityID, glm::vec3* result)
+	static void TransformComponent_GetPosition(MonoString* EntityID, glm::vec3* result)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -213,9 +213,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_GetRotation(UUID EntityID, glm::vec3* result)
+	static void TransformComponent_GetRotation(MonoString* EntityID, glm::vec3* result)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -235,9 +235,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_GetScale(UUID EntityID, glm::vec3* result)
+	static void TransformComponent_GetScale(MonoString* EntityID, glm::vec3* result)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -257,9 +257,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_GetTransformMatrix(UUID EntityID, glm::mat4* result)
+	static void TransformComponent_GetTransformMatrix(MonoString* EntityID, glm::mat4* result)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -279,9 +279,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_SetTransform(UUID EntityID, TransformComponent* value)
+	static void TransformComponent_SetTransform(MonoString* EntityID, TransformComponent* value)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -301,9 +301,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_SetPosition(UUID EntityID, glm::vec3* value)
+	static void TransformComponent_SetPosition(MonoString* EntityID, glm::vec3* value)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -323,9 +323,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_SetRotation(UUID EntityID, glm::vec3* value)
+	static void TransformComponent_SetRotation(MonoString* EntityID, glm::vec3* value)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -345,9 +345,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_SetScale(UUID EntityID, glm::vec3* value)
+	static void TransformComponent_SetScale(MonoString* EntityID, glm::vec3* value)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -367,9 +367,9 @@ namespace Engine
 		}
 	}
 
-	static void TransformComponent_SetTransformMatrix(UUID EntityID, glm::mat4* value)
+	static void TransformComponent_SetTransformMatrix(MonoString* EntityID, glm::mat4* value)
 	{
-		auto entity = GetEntity(EntityID);
+		auto entity = GetEntity(mono_string_to_utf8(EntityID));
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
@@ -393,9 +393,9 @@ namespace Engine
 
 #pragma region Rgidbody2DComponent
 
-	static void Rigidbody2DComponent_ApplyLinearImpulse(UUID EntityID, glm::vec2* Impulse, glm::vec2* Point, bool Wake)
+	static void Rigidbody2DComponent_ApplyLinearImpulse(MonoString* EntityID, glm::vec2* Impulse, glm::vec2* Point, bool Wake)
 	{
-		Entity entity = GetEntity(EntityID);
+		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
 
 		if (entity.IsValid())
 		{
@@ -419,9 +419,9 @@ namespace Engine
 		}
 	}
 
-	static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(UUID EntityID, glm::vec2* Impulse, bool Wake)
+	static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(MonoString* EntityID, glm::vec2* Impulse, bool Wake)
 	{
-		Entity entity = GetEntity(EntityID);
+		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
 
 		if (entity.IsValid())
 		{

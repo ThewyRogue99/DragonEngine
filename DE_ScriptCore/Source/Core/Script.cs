@@ -4,7 +4,7 @@
     {
         private Entity entity;
 
-        protected void AttachToEntity(ulong EntityID)
+        protected void AttachToEntity(string EntityID)
         {
             entity = new Entity(EntityID);
         }

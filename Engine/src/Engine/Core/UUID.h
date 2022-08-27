@@ -1,5 +1,5 @@
 #pragma once
-#include <xhash>
+#include <string>
 
 namespace Engine
 {
@@ -7,12 +7,15 @@ namespace Engine
 	{
 	public:
 		UUID();
-		UUID(uint64_t uuid);
-		UUID(const UUID&) = default;
+		UUID(const std::string& str) : ID(str) { }
+		UUID(const char* str) : ID(str) { }
+		UUID(const UUID& id) : ID(id.ID) { }
 
-		operator uint64_t() const { return m_UUID; }
+		const std::string& GetString() const { return ID; }
+
+		bool operator==(const UUID& id) { return id.ID == ID; }
 
 	private:
-		uint64_t m_UUID = 0;
+		std::string ID;
 	};
 }
