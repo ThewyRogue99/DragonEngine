@@ -421,6 +421,8 @@ namespace Engine
 
 				} break;
 			}
+
+			ImGui::Checkbox("Primary", &component.Primary);
 		});
 
 		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component)

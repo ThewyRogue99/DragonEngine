@@ -120,32 +120,35 @@ namespace Engine
 
 			Camera* primaryCamera = ActiveScene->GetPrimaryCamera();
 
-			const glm::mat4& cameraProjection = primaryCamera->GetProjection();
-			glm::mat4 cameraView = primaryCamera->GetViewMatrix();
-
-			auto& tc = selectedEntity->GetComponent<TransformComponent>();
-			glm::mat4 transform = tc.GetTransformMat4();
-
-			if (GizmoType < 0)
-				GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-
-			ImGuizmo::Manipulate(
-				glm::value_ptr(cameraView),
-				glm::value_ptr(cameraProjection),
-				(ImGuizmo::OPERATION)GizmoType,
-				GizmoType == ImGuizmo::OPERATION::SCALE ? ImGuizmo::LOCAL : ImGuizmo::WORLD,
-				glm::value_ptr(transform)
-			);
-
-			if (ImGuizmo::IsUsing())
+			if (primaryCamera)
 			{
-				glm::vec3 position, rotation, scale;
-				Math::DecomposeTransform(transform, position, rotation, scale);
+				const glm::mat4& cameraProjection = primaryCamera->GetProjection();
+				glm::mat4 cameraView = primaryCamera->GetViewMatrix();
 
-				glm::vec3 deltaRotation = rotation - tc.Rotation;
-				tc.Position = position;
-				tc.Rotation += deltaRotation;
-				tc.Scale = scale;
+				auto& tc = selectedEntity->GetComponent<TransformComponent>();
+				glm::mat4 transform = tc.GetTransformMat4();
+
+				if (GizmoType < 0)
+					GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+
+				ImGuizmo::Manipulate(
+					glm::value_ptr(cameraView),
+					glm::value_ptr(cameraProjection),
+					(ImGuizmo::OPERATION)GizmoType,
+					GizmoType == ImGuizmo::OPERATION::SCALE ? ImGuizmo::LOCAL : ImGuizmo::WORLD,
+					glm::value_ptr(transform)
+				);
+
+				if (ImGuizmo::IsUsing())
+				{
+					glm::vec3 position, rotation, scale;
+					Math::DecomposeTransform(transform, position, rotation, scale);
+
+					glm::vec3 deltaRotation = rotation - tc.Rotation;
+					tc.Position = position;
+					tc.Rotation += deltaRotation;
+					tc.Scale = scale;
+				}
 			}
 		}
 
