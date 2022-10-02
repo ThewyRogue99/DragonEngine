@@ -183,7 +183,7 @@
     <ClInclude Include="src\Engine\Scene\SceneManager.h">
       <Filter>src\Engine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Scene\SceneSerializer.h">
+    <ClInclude Include="src\Engine\Asset\Serializer\SceneSerializer.h">
       <Filter>src\Engine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Scripting\Script.h">
@@ -1488,6 +1488,11 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Asset\Asset.h" />
+    <ClInclude Include="src\Engine\Asset\AssetMetadata.h" />
+    <ClInclude Include="src\Engine\Asset\AssetUtils.h" />
+    <ClInclude Include="src\Engine\Asset\AssetManager.h" />
+    <ClInclude Include="src\Engine\Asset\Serializer\Serializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1559,7 +1564,7 @@
     <ClCompile Include="src\Engine\Scene\SceneManager.cpp">
       <Filter>src\Engine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Scene\SceneSerializer.cpp">
+    <ClCompile Include="src\Engine\Asset\Serializer\SceneSerializer.cpp">
       <Filter>src\Engine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Scripting\Script.cpp">
@@ -1619,5 +1624,11 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Asset\Asset.cpp" />
+    <ClCompile Include="src\Engine\Asset\AssetMetadata.cpp" />
+    <ClCompile Include="src\Engine\Asset\AssetUtils.cpp" />
+    <ClCompile Include="src\Engine\Asset\AssetManager.cpp" />
+    <ClCompile Include="src\Engine\Asset\Serializer\Serializer.cpp" />
+    <ClCompile Include="src\Engine\Scene\Components.cpp" />
   </ItemGroup>
 </Project>

@@ -9,9 +9,9 @@
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Components.h"
 
-#include "Engine/Scene/SceneSerializer.h"
-
 #include "Engine/Scene/SceneManager.h"
+#include "Engine/Asset/Serializer/SceneSerializer.h"
+#include "Engine/Asset/AssetManager.h"
 
 namespace Engine
 {
@@ -86,14 +86,15 @@ namespace Engine
 
 			if (payload && payload->IsDelivery())
 			{
-				const wchar_t* path = (const wchar_t*)payload->Data;
+				std::string id = (const char*)payload->Data;
 
 				EditorScene* NewScene = new EditorScene();
 
-				SceneSerializer s(NewScene);
-				s.Deserialize(path);
+				Asset asset = AssetManager::LoadAsset(id);
 
-				SceneManager::AddScene(TEXT("Editor Scene"), NewScene, true);
+				SceneSerializer::Deserialize(NewScene, *asset.GetData());
+
+				SceneManager::AddScene(NewScene->GetName(), NewScene, true);
 			}
 
 			ImGui::EndDragDropTarget();

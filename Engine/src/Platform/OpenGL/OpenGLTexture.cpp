@@ -1,12 +1,10 @@
 #include "depch.h"
 #include "OpenGLTexture.h"
 
+#include "Engine/Types/Types.h"
+
 #include <glad/glad.h>
 #include <stb_image.h>
-
-#pragma warning(push, 0)
-#include <codecvt>
-#pragma warning(pop, 0)
 
 namespace Engine
 {
@@ -29,9 +27,7 @@ namespace Engine
 	{
 		stbi_set_flip_vertically_on_load(true);
 
-#pragma warning(push, 0)
-		std::string path_str = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(path);
-#pragma warning(pop, 0)
+		std::string path_str = TypeUtils::FromUTF16(path);
 
 		int width, height, channels;
 		unsigned char* data = stbi_load(path_str.c_str(), &width, &height, &channels, 0);

@@ -4,7 +4,6 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Renderer/Renderer2D.h"
 
-#include "Engine/Scene/SceneSerializer.h"
 #include "Engine/Utils/PlatformUtils.h"
 
 #include "ImGuizmo/ImGuizmo.h"
@@ -32,16 +31,19 @@ namespace Engine
 				ActiveScene = scene;
 		}
 
-		auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
-		if (commandLineArgs.Count > 1)
-		{
-			auto sceneFilePath = commandLineArgs[1];
+		// TODO: Implement Scene Serialize
+		/*
+			auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
+			if (commandLineArgs.Count > 1)
+			{
+				auto sceneFilePath = commandLineArgs[1];
 
-			CString path_wstring = TypeUtils::FromUTF8(sceneFilePath);
+				CString path_wstring = TypeUtils::FromUTF8(sceneFilePath);
 
-			SceneSerializer serializer(ActiveScene);
-			serializer.Deserialize(path_wstring);
-		}
+				SceneSerializer serializer(ActiveScene);
+				serializer.Deserialize(path_wstring);
+			}
+		*/
 
 		PManager.AddPanels({
 			new ViewportPanel(),
@@ -180,8 +182,11 @@ namespace Engine
 	{
 		NewScene();
 
-		SceneSerializer s(ActiveScene);
-		s.Deserialize(path);
+		// TODO: Implement Scene Serialize
+		/*
+			SceneSerializer s(ActiveScene);
+			s.Deserialize(path);
+		*/
 	}
 
 	void EditorLayer::SaveScene()
@@ -194,8 +199,11 @@ namespace Engine
 
 	void EditorLayer::SaveScene(const CString& path)
 	{
-		SceneSerializer s(ActiveScene);
-		s.Serialize(path);
+		// TODO: Implement Scene Serialize
+		/*
+			SceneSerializer s(ActiveScene);
+			s.Serialize(path);
+		*/
 	}
 
 	void EditorLayer::OnActiveSceneChange(Scene* scene)

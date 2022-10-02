@@ -1,21 +1,17 @@
 #pragma once
 
-#include "Engine/Core/Core.h"
+#include "Entity.h"
+
 #include "Engine/Types/Types.h"
 #include "Engine/Events/Event.h"
 #include "Engine/Renderer/Camera.h"
 
-#include "Entity.h"
 #include "Components.h"
 
 class b2World;
 
 namespace Engine
 {
-	class Entity;
-	class UUID;
-	struct CameraComponent;
-
 	class Scene
 	{
 	public:

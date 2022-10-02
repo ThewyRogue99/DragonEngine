@@ -37,10 +37,8 @@
 	#ifdef ENGINE_DYNAMIC_LINK
 		#ifdef __ENGINE__
 			#define ENGINE_API __declspec(dllexport)
-		#elif defined(__SANDBOX__)
-			#define ENGINE_API __declspec(dllimport)
 		#else
-			#define ENGINE_API
+			#define ENGINE_API __declspec(dllimport)
 		#endif
 	#else
 		#define ENGINE_API
@@ -63,7 +61,7 @@
 #define BIND_EVENT_FN(fn) BIND_CLASS_FN(fn)
 
 #ifndef TEXT
-	#define TEXT(x) L##x
+#define TEXT(quote) L##quote
 #endif
 
 namespace Engine

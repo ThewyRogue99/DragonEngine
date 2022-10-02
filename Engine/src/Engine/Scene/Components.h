@@ -13,19 +13,47 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
+#define COMPONENT_CLASS_BODY() \
+public: \
+	friend class SceneSerializer; \
+\
+protected: \
+	virtual void OnSerialize(AssetMetadata& Metadata) override; \
+\
+	virtual void OnDeserialize(AssetMetadata& Metadata) override;
+
+#define COMPONENT_CLASS(T, ...) class T : public Component \
+{ \
+protected: \
+	static const char* GetStaticTypeName() { return #T; } \
+__VA_ARGS__ \
+}
+
 namespace Engine
 {
-	struct IDComponent
+	class AssetMetadata;
+
+	class Component
 	{
+	protected:
+		virtual void OnSerialize(AssetMetadata& Metadata) = 0;
+
+		virtual void OnDeserialize(AssetMetadata& Metadata) = 0;
+	};
+
+	COMPONENT_CLASS(IDComponent,
+	public:
 		UUID ID;
 
 		IDComponent() = default;
 		IDComponent(const IDComponent&) = default;
 		IDComponent(const UUID& id) : ID(id) { }
-	};
 
-	struct TagComponent
-	{
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(TagComponent,
+	public:
 		CString Tag;
 		
 		TagComponent() = default;
@@ -33,10 +61,12 @@ namespace Engine
 
 		TagComponent(const CString& tag)
 			: Tag(tag) { }
-	};
 
-	struct TransformComponent
-	{
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(TransformComponent,
+	public:
 		glm::vec3 Position = glm::vec3(0.f);
 		glm::vec3 Rotation = glm::vec3(0.f);
 		glm::vec3 Scale = glm::vec3(1.f);
@@ -60,20 +90,24 @@ namespace Engine
 				* rotation
 				* glm::scale(glm::mat4(1.0f), Scale);
 		}
-	};
 
-	struct SpriteRendererComponent
-	{
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(SpriteRendererComponent,
+	public:
 		glm::vec4 Color = glm::vec4(1.f);
 		Ref<Texture2D> Texture = nullptr;
 		float TilingFactor = 1.f;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
-	};
 
-	struct CircleRendererComponent
-	{
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(CircleRendererComponent,
+	public:
 		glm::vec4 Color = glm::vec4(1.f);
 		float Radius = 0.5f;
 		float Thickness = 1.f;
@@ -81,20 +115,24 @@ namespace Engine
 
 		CircleRendererComponent() = default;
 		CircleRendererComponent(const CircleRendererComponent&) = default;
-	};
 
-	struct CameraComponent
-	{
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(CameraComponent,
+	public:
 		SceneCamera Camera = SceneCamera({ });
 		bool Primary = false;
 		bool FixedAspectRatio = false;
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
-	};
 
-	struct ScriptComponent
-	{
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(ScriptComponent,
+	public:
 		Script* ScriptObject;
 
 		std::string Name = "";
@@ -102,10 +140,12 @@ namespace Engine
 
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;
-	};
 
-	struct Rigidbody2DComponent
-	{
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(Rigidbody2DComponent,
+	public:
 		enum class BodyType { Static = 0, Dynamic, Kinematic };
 		BodyType Type = BodyType::Static;
 		bool FixedRotation = false;
@@ -115,12 +155,14 @@ namespace Engine
 
 		Rigidbody2DComponent() = default;
 		Rigidbody2DComponent(const Rigidbody2DComponent&) = default;
-	};
 
-	struct BoxCollider2DComponent
-	{
-		glm::vec2 Offset = { 0.0f, 0.0f };
-		glm::vec2 Size = { 0.5f, 0.5f };
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(BoxCollider2DComponent,
+	public:
+		glm::vec2 Offset = glm::vec2(0.0f, 0.0f);
+		glm::vec2 Size = glm::vec2(0.5f, 0.5f);
 
 		float Density = 1.0f;
 		float Friction = 0.4f;
@@ -132,11 +174,13 @@ namespace Engine
 
 		BoxCollider2DComponent() = default;
 		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
-	};
 
-	struct CircleCollider2DComponent
-	{
-		glm::vec2 Offset = { 0.0f, 0.0f };
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(CircleCollider2DComponent,
+	public:
+		glm::vec2 Offset = glm::vec2(0.0f, 0.0f);
 		float Radius = 0.5f;
 
 		float Density = 1.0f;
@@ -149,7 +193,9 @@ namespace Engine
 
 		CircleCollider2DComponent() = default;
 		CircleCollider2DComponent(const CircleCollider2DComponent&) = default;
-	};
+
+		COMPONENT_CLASS_BODY()
+	);
 
 	template<typename... Component>
 	struct ComponentGroup

@@ -3,12 +3,13 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Log.h"
 
+#include "Engine/Core/UUID.h"
+
 #include "entt.hpp"
 
 namespace Engine
 {
 	class Scene;
-	class UUID;
 
 	class Entity
 	{

@@ -60,7 +60,7 @@ namespace Engine
 			FileData data = GetAssemblyFileBytes(AssemblyFilePath);
 
 			MonoImageOpenStatus status;
-			MonoImage* image = mono_image_open_from_data_full((char*)data.Data, data.size, true, &status, false);
+			MonoImage* image = mono_image_open_from_data_full((char*)data.Data, (uint32_t)data.size, true, &status, false);
 
 			std::string path_str = TypeUtils::FromUTF16(AssemblyFilePath);
 

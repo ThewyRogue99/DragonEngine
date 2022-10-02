@@ -5,7 +5,10 @@
 
 namespace Engine
 {
-	using CString = std::wstring;
+	template<typename T>
+	using StringBase = std::basic_string<T, std::char_traits<T>, std::allocator<T>>;
+
+	using CString = StringBase<wchar_t>;
 
 	namespace TypeUtils
 	{
