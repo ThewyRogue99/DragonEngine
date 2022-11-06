@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
 #include "Event.h"
 #include "Engine/Core/Input.h"
 

@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "ContentBrowserPanel.h"
 
+#pragma warning(disable : 4312)
+
 #include "Engine/Utils/PlatformUtils.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/SceneManager.h"
@@ -88,7 +90,7 @@ namespace Engine
 
 				std::string name = TypeUtils::FromUTF16(it.GetName());
 
-				if (ImGui::TreeNodeEx((void*)idx, flags, name.c_str()))
+				if (ImGui::TreeNodeEx(&idx, flags, name.c_str()))
 				{
 					DrawDirectoryTree(PathName);
 

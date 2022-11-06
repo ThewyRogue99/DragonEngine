@@ -17,7 +17,7 @@ namespace Engine
 
 		virtual void Update(float DeltaTime) override;
 
-		virtual const glm::mat4& GetTransform() override { return CameraTransform; }
+		virtual const glm::mat4 GetTransform() override { return CameraTransform; }
 
 		virtual const glm::mat4& GetViewMatrix() override { return CameraViewMatrix; }
 

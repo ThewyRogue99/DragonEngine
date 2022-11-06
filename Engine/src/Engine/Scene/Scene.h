@@ -2,6 +2,7 @@
 
 #include "Entity.h"
 
+#include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 #include "Engine/Events/Event.h"
 #include "Engine/Renderer/Camera.h"

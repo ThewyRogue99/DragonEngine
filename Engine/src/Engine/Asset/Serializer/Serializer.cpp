@@ -21,7 +21,7 @@ namespace Engine
 		bool SerializeTexture(AssetMetadata& metadata, std::istream& stream)
 		{
 			stream.seekg(0, std::ios::end);
-			int buffSize = stream.tellg();
+			size_t buffSize = stream.tellg();
 			stream.seekg(std::ios::beg);
 
 			if (buffSize > 0)
@@ -33,7 +33,7 @@ namespace Engine
 				stream.read((char*)buff, buffSize);
 
 				int width, height, channels;
-				unsigned char* data = stbi_load_from_memory(buff, buffSize, &width, &height, &channels, 0);
+				unsigned char* data = stbi_load_from_memory(buff, (int)buffSize, &width, &height, &channels, 0);
 
 				if (data)
 				{

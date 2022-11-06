@@ -37,7 +37,7 @@ namespace Engine
 	{
 		Scene::OnViewportResize(width, height);
 
-		((EditorCamera*)PrimaryCamera)->SetViewportSize(width, height);
+		((EditorCamera*)PrimaryCamera)->SetViewportSize((float)width, (float)height);
 	}
 
 	void EditorScene::OnSceneBegin()

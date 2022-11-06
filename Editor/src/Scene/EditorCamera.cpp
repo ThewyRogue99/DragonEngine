@@ -109,7 +109,7 @@ namespace Engine
 		}
 	}
 
-	const glm::mat4& EditorCamera::GetTransform()
+	const glm::mat4 EditorCamera::GetTransform()
 	{
 		glm::quat orientation = GetOrientation();
 

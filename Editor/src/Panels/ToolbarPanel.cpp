@@ -2,6 +2,8 @@
 
 #include "Engine/Scene/SceneManager.h"
 
+#pragma warning(disable : 4312)
+
 namespace Engine
 {
 	ToolbarPanel::ToolbarPanel() : EditorPanel("##toolbar")

@@ -13,6 +13,8 @@
 #include "Engine/Asset/Serializer/SceneSerializer.h"
 #include "Engine/Asset/AssetManager.h"
 
+#pragma warning(disable : 4312)
+
 namespace Engine
 {
 	ViewportPanel::ViewportPanel() : EditorPanel("Viewport")
@@ -51,7 +53,7 @@ namespace Engine
 
 		if (MouseX >= 0 && MouseY >= 0 && MouseX < (int)ViewportSize.x && MouseY < (int)ViewportSize.y)
 		{
-			int pixelData = m_FrameBuffer->ReadPixel(1, MouseX, MouseY);
+			int pixelData = m_FrameBuffer->ReadPixel(1, (int)MouseX, (int)MouseY);
 
 			if (pixelData == -1)
 				HoveredEntity = { };

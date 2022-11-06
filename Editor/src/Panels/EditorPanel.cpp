@@ -3,6 +3,8 @@
 
 #include "PanelManager.h"
 
+#pragma warning(disable : 4244)
+
 namespace Engine
 {
 	EditorPanel::EditorPanel(const std::string& Name, uint32_t Width, uint32_t Height)
@@ -134,7 +136,7 @@ namespace Engine
 
 		ImGui::End();
 
-		ImGui::PopStyleVar(PanelStyles.size());
-		ImGui::PopStyleColor(PanelColors.size());
+		ImGui::PopStyleVar((int)PanelStyles.size());
+		ImGui::PopStyleColor((int)PanelColors.size());
 	}
 }

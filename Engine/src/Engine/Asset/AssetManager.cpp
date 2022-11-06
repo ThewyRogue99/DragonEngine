@@ -100,7 +100,7 @@ namespace Engine
 		if (!(Type == AssetType::Folder))
 			return (*_it).first;
 		else
-			return "";
+			throw std::out_of_range("Entry is not a Directory!");
 	}
 
 	const DirectoryEntry& AssetIterator::operator*() const

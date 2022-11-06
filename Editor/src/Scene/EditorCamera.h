@@ -21,7 +21,7 @@ namespace Engine
 
 		inline void SetViewportSize(float width, float height) { m_ViewportWidth = width; m_ViewportHeight = height; UpdateProjection(); }
 
-		virtual const glm::mat4& GetTransform() override;
+		virtual const glm::mat4 GetTransform() override;
 
 		virtual const glm::mat4& GetViewMatrix() override { return m_ViewMatrix; }
 		glm::mat4 GetViewProjection() const { return Projection * m_ViewMatrix; }

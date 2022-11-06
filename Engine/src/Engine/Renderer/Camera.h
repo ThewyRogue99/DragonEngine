@@ -15,7 +15,7 @@ namespace Engine
 
 		virtual void Update(float DeltaTime) = 0;
 
-		virtual const glm::mat4& GetTransform() = 0;
+		virtual const glm::mat4 GetTransform() = 0;
 
 		virtual const glm::mat4& GetViewMatrix() = 0;
 

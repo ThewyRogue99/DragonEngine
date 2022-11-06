@@ -96,6 +96,8 @@ namespace Engine
             return COL_ERROR;
         case Engine::LogLevel::Info:
             return COL_INFO;
+        default:
+            return COL_LOG;
         }
     }
 

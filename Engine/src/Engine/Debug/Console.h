@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4996)
 
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
