@@ -68,7 +68,7 @@ namespace Engine
 
 	Entity Scene::GetEntityWithUUID(UUID uuid)
 	{
-		auto& view = SceneRegistry.view<IDComponent>();
+		auto view = SceneRegistry.view<IDComponent>();
 		for (auto entity : view)
 		{
 			UUID id = SceneRegistry.get<IDComponent>(entity).ID;
@@ -265,10 +265,10 @@ namespace Engine
 	{
 		// Setup Camera
 		{
-			auto& view = SceneRegistry.view<CameraComponent, TransformComponent>();
+			auto view = SceneRegistry.view<CameraComponent, TransformComponent>();
 			for (auto entity : view)
 			{
-				auto& [camera, transform] = SceneRegistry.get<CameraComponent, TransformComponent>(entity);
+				auto [camera, transform] = SceneRegistry.get<CameraComponent, TransformComponent>(entity);
 
 				if (camera.Primary)
 				{
@@ -281,7 +281,7 @@ namespace Engine
 
 		// Setup Scripts
 		{
-			auto& view = SceneRegistry.view<ScriptComponent>();
+			auto view = SceneRegistry.view<ScriptComponent>();
 			for (auto entity : view)
 			{
 				auto& script = SceneRegistry.get<ScriptComponent>(entity);

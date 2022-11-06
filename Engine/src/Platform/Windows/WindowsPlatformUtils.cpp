@@ -1,4 +1,5 @@
 #include "depch.h"
+#include <Windows.h>
 
 #include "Engine/Utils/PlatformUtils.h"
 #include "Engine/Core/Application.h"
@@ -8,8 +9,6 @@
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
-
-#include <windows.h>
 
 namespace Engine
 {

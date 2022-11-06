@@ -33,6 +33,8 @@ namespace Engine
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
 		bool OnKeyPressedEvent(KeyPressedEvent& event);
 
+		virtual void OnData(const CString& Name, void* Data, size_t size) override;
+
 		void OnSetActiveScene(Scene* NewScene);
 
 	private:
@@ -40,6 +42,7 @@ namespace Engine
 		Ref<Framebuffer> m_FrameBuffer = nullptr;
 
 		Entity HoveredEntity = { };
+		Entity SelectedEntity = { };
 
 		int GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 

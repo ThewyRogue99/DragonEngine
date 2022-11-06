@@ -116,7 +116,7 @@ if (KeyName == #ComponentName) \
 
 			deserializedEntity = scene->CreateEntityWithUUID(idc.ID, tagc.Tag);
 
-			DE_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", idc.ID.GetString(), TypeUtils::FromUTF16(tagc.Tag));
+			DE_CORE_INFO("Deserialized entity with ID = {0}, name = {1}", idc.ID.GetString(), TypeUtils::FromUTF16(tagc.Tag));
 
 			// Get Transform
 			AssetMetadata& tdata = in.GetField<AssetMetadata>(TransformComponent::GetStaticTypeName());

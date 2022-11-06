@@ -26,10 +26,10 @@ namespace Engine
 	{
 		([]()
 		{
-			std::string_view typeName = typeid(Component).name();
+			std::string typeName = typeid(Component).name();
 			size_t pos = typeName.find_last_of(':');
-			std::string_view structName = typeName.substr(pos + 1);
-			std::string managedTypename = fmt::format("DragonEngine.{}", structName);
+			std::string structName = typeName.substr(pos + 1);
+			std::string managedTypename = "DragonEngine." + structName;
 			char* cstr = (char*)managedTypename.c_str();
 
 			MonoType* managedType = mono_reflection_type_from_name(cstr, (MonoImage*)ScriptEngine::GetCoreAssemblyImage());
@@ -129,13 +129,13 @@ namespace Engine
 			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
 			mono_raise_exception(ex);
 
-			return mono_string_from_utf16(L"");
+			return mono_string_from_utf16((mono_unichar2*)L"");
 		}
 
 		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
 		mono_raise_exception(ex);
 
-		return mono_string_from_utf16(L"");
+		return mono_string_from_utf16((mono_unichar2*)L"");
 	}
 
 	static void TagComponent_SetTag(MonoString* EntityID, MonoString* value)

@@ -145,9 +145,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Asset\Asset.h" />
+    <ClInclude Include="src\Engine\Asset\AssetManager.h" />
     <ClInclude Include="src\Engine\Asset\AssetMetadata.h" />
     <ClInclude Include="src\Engine\Asset\AssetUtils.h" />
-    <ClInclude Include="src\Engine\Asset\AssetManager.h" />
+    <ClInclude Include="src\Engine\Asset\Serializer\SceneSerializer.h" />
     <ClInclude Include="src\Engine\Asset\Serializer\Serializer.h" />
     <ClInclude Include="src\Engine\Core\Application.h" />
     <ClInclude Include="src\Engine\Core\Core.h" />
@@ -185,7 +186,6 @@
     <ClInclude Include="src\Engine\Scene\Scene.h" />
     <ClInclude Include="src\Engine\Scene\SceneCamera.h" />
     <ClInclude Include="src\Engine\Scene\SceneManager.h" />
-    <ClInclude Include="src\Engine\Asset\Serializer\SceneSerializer.h" />
     <ClInclude Include="src\Engine\Scripting\Script.h" />
     <ClInclude Include="src\Engine\Scripting\ScriptEngine.h" />
     <ClInclude Include="src\Engine\Scripting\ScriptInternals.h" />
@@ -623,9 +623,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Asset\Asset.cpp" />
+    <ClCompile Include="src\Engine\Asset\AssetManager.cpp" />
     <ClCompile Include="src\Engine\Asset\AssetMetadata.cpp" />
     <ClCompile Include="src\Engine\Asset\AssetUtils.cpp" />
-    <ClCompile Include="src\Engine\Asset\AssetManager.cpp" />
+    <ClCompile Include="src\Engine\Asset\Serializer\SceneSerializer.cpp" />
     <ClCompile Include="src\Engine\Asset\Serializer\Serializer.cpp" />
     <ClCompile Include="src\Engine\Core\Application.cpp" />
     <ClCompile Include="src\Engine\Core\Layer.cpp" />
@@ -651,7 +652,6 @@
     <ClCompile Include="src\Engine\Scene\Scene.cpp" />
     <ClCompile Include="src\Engine\Scene\SceneCamera.cpp" />
     <ClCompile Include="src\Engine\Scene\SceneManager.cpp" />
-    <ClCompile Include="src\Engine\Asset\Serializer\SceneSerializer.cpp" />
     <ClCompile Include="src\Engine\Scripting\Script.cpp" />
     <ClCompile Include="src\Engine\Scripting\ScriptEngine.cpp" />
     <ClCompile Include="src\Engine\Scripting\ScriptInternals.cpp" />

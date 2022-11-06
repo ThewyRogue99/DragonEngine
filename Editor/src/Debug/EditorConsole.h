@@ -5,31 +5,25 @@
 
 #include "Engine/Core/Log.h"
 
-#include <sstream>
-
 namespace Engine
 {
 	class EditorConsole : public Console
 	{
 	public:
-		EditorConsole(const CString& AppName = TEXT("App")) : Console(AppName) { }
+		EditorConsole() : Console() { }
 
 		virtual void OnAttach();
 
 		virtual void OnDetach();
 
-		std::string GetString() { return ConsoleStream.str(); }
-
 	protected:
-		virtual Ref<spdlog::logger> GetCoreLogger();
+		virtual Ref<CoreLogger> GetCoreLogger() override;
 
-		virtual Ref<spdlog::logger> GetClientLogger();
+		virtual Ref<ClientLogger> GetClientLogger() override;
 
 	private:
-		std::ostringstream ConsoleStream;
+		Ref<CoreLogger> m_CoreLogger = nullptr;
 
-		Ref<spdlog::logger> CoreLogger = nullptr;
-
-		Ref<spdlog::logger> ClientLogger = nullptr;
+		Ref<ClientLogger> m_ClientLogger = nullptr;
 	};
 }

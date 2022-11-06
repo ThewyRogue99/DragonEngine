@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Scene.h"
 
+#include "Engine/Scene/Scene.h"
+
 #include "Components.h"
 
 namespace Engine
@@ -23,5 +25,10 @@ namespace Engine
 	UUID Entity::GetUUID()
 	{
 		return GetComponent<IDComponent>().ID;
+	}
+
+	entt::registry& Entity::GetSceneRegistry()
+	{
+		return CurrentScene->SceneRegistry;
 	}
 }

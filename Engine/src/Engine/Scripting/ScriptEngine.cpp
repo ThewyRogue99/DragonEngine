@@ -67,14 +67,14 @@ namespace Engine
 			if (status != MONO_IMAGE_OK)
 			{
 				const char* errorMessage = mono_image_strerror(status);
-				DE_CORE_CRITICAL(errorMessage);
+				DE_CORE_ERROR(errorMessage);
 
 				delete[] data.Data;
 				return nullptr;
 			}
 			else if (!image)
 			{
-				DE_CORE_CRITICAL("Failed to load assmebly in path: {0}", path_str.c_str());
+				DE_CORE_ERROR("Failed to load assmebly in path: {0}", path_str.c_str());
 
 				delete[] data.Data;
 				return nullptr;
@@ -256,7 +256,7 @@ namespace Engine
 
 		DE_CORE_ASSERT(RootDomain, "Failed to initialize JIT");
 
-		AppDomain = mono_domain_create_appdomain("DEScript_AppDomain", nullptr);
+		AppDomain = mono_domain_create_appdomain((char*)"DEScript_AppDomain", nullptr);
 		DE_CORE_ASSERT(AppDomain, "Failed to create an app domain");
 
 		mono_domain_set(AppDomain, true);

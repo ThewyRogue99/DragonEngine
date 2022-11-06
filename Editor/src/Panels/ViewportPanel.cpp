@@ -101,9 +101,7 @@ namespace Engine
 		}
 
 		//Gizmos
-		Entity* selectedEntity = (Entity*)GetData(TEXT("SelectedEntity"));
-
-		if (selectedEntity && selectedEntity->IsValid())
+		if (SelectedEntity.IsValid())
 		{
 			ImGuizmo::SetOrthographic(false);
 
@@ -126,7 +124,7 @@ namespace Engine
 				const glm::mat4& cameraProjection = primaryCamera->GetProjection();
 				glm::mat4 cameraView = primaryCamera->GetViewMatrix();
 
-				auto& tc = selectedEntity->GetComponent<TransformComponent>();
+				auto& tc = SelectedEntity.GetComponent<TransformComponent>();
 				glm::mat4 transform = tc.GetTransformMat4();
 
 				if (GizmoType < 0)
@@ -233,6 +231,14 @@ namespace Engine
 			}
 			default:
 				return false;
+		}
+	}
+
+	void ViewportPanel::OnData(const CString& Name, void* Data, size_t size)
+	{
+		if (Name == L"SelectedEntity")
+		{
+			SelectedEntity = *(Entity*)Data;
 		}
 	}
 }

@@ -62,6 +62,7 @@
     <Compile Include="Source\Core\KeyCode.cs" />
     <Compile Include="Source\Core\Script.cs" />
     <Compile Include="Source\Debug\Debug.cs" />
+    <Compile Include="Source\Main.cs" />
     <Compile Include="Source\Math\Interpolate.cs" />
     <Compile Include="Source\Math\Mathf.cs" />
     <Compile Include="Source\Math\Matrix4.cs" />

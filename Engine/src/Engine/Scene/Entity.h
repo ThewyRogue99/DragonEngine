@@ -18,11 +18,11 @@ namespace Engine
 		Entity(entt::entity handle, Scene* scene);
 
 		template<typename T, typename... Args>
-		inline T& AddComponent(Args&&... args)
+		T& AddComponent(Args&&... args)
 		{
 			DE_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 
-			T& component = CurrentScene->SceneRegistry.emplace<T>(EntityHandle, std::forward<Args>(args)...);
+			T& component = GetSceneRegistry().emplace<T>(EntityHandle, std::forward<Args>(args)...);
 
 			return component;
 		}
@@ -30,23 +30,23 @@ namespace Engine
 		template<typename T, typename... Args>
 		T& AddOrReplaceComponent(Args&&... args)
 		{
-			T& component = CurrentScene->SceneRegistry.emplace_or_replace<T>(EntityHandle, std::forward<Args>(args)...);
+			T& component = GetSceneRegistry().emplace_or_replace<T>(EntityHandle, std::forward<Args>(args)...);
 
 			return component;
 		}
 
 		template<typename T>
-		inline T& GetComponent()
+		T& GetComponent()
 		{
 			DE_CORE_ASSERT(HasComponent<T>(), "Entity doesn't have component!");
 
-			return CurrentScene->SceneRegistry.get<T>(EntityHandle);
+			return GetSceneRegistry().get<T>(EntityHandle);
 		}
 
 		template<typename T>
-		inline bool HasComponent()
+		bool HasComponent()
 		{
-			return CurrentScene->SceneRegistry.all_of<T>(EntityHandle);
+			return GetSceneRegistry().all_of<T>(EntityHandle);
 		}
 
 		template<typename T>
@@ -54,7 +54,7 @@ namespace Engine
 		{
 			DE_CORE_ASSERT(HasComponent<T>(), "Entity doesn't have a component!");
 
-			CurrentScene->SceneRegistry.remove<T>(EntityHandle);
+			GetSceneRegistry().remove<T>(EntityHandle);
 		}
 
 		bool IsValid();
@@ -74,6 +74,9 @@ namespace Engine
 		UUID GetUUID();
 
 		friend class Scene;
+
+	private:
+		entt::registry& GetSceneRegistry();
 
 	private:
 		entt::entity EntityHandle = entt::null;

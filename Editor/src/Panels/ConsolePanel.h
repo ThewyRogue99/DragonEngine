@@ -2,16 +2,50 @@
 
 #include "EditorPanel.h"
 
+#include "Engine/Core/Log.h"
+#include <array>
+
 namespace Engine
 {
-	class ConsolePanel : public EditorPanel
-	{
-	public:
-		ConsolePanel();
+    class ConsolePanel : public EditorPanel
+    {
+    public:
+        ConsolePanel();
 
-		virtual void OnRender(float DeltaTime) override;
+        virtual void OnRender(float DeltaTime) override;
 
-	private:
-		char buffer[2048] = { };
-	};
+    private:
+        std::string Buffer;
+
+        bool bShouldAutoScroll = true;
+
+        ImGuiTextFilter m_TextFilter;
+
+        const Console::LogListType* LogList = nullptr;
+
+        enum COLOR_PALETTE
+        {
+            COL_COMMAND = 0,    // Color for command logs
+            COL_LOG,            // Color for in-command logs
+            COL_WARNING,        // Color for warnings logs
+            COL_ERROR,          // Color for error logs
+            COL_INFO,           // Color for info logs
+
+            COL_TIMESTAMP,      // Color for timestamps
+
+            COL_COUNT
+        };
+
+        COLOR_PALETTE GetLogLevelColor(LogLevel level);
+
+        std::array<ImVec4, COL_COUNT> ColorPalette;
+
+        void DrawConsole();
+
+        void DrawFilterBar();
+
+        void DrawInputBar();
+
+        static int InputCallback(ImGuiInputTextCallbackData* data);
+    };
 }

@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Log.h"
 
+#include <algorithm>
+
 namespace Engine
 {
     PanelManager::~PanelManager()
@@ -136,6 +138,6 @@ namespace Engine
             return data.name == name;
         });
 
-        return it != DataList.end() ? (*it) : PanelData();
+        return *it;
     }
 }

@@ -235,7 +235,7 @@ namespace Engine
 		{
 			AssetData data(Name, Path, Type);
 
-			if (Overwrite ? true : AddAsset(id, data))
+			if (AddAsset(id, data))
 			{
 				if (!Data.Empty() && Type != AssetType::Undefined)
 				{
@@ -377,7 +377,7 @@ namespace Engine
 			return true;
 		}
 
-		return false;
+		return true;
 	}
 
 	void AssetManager::IncrementCounterCallback(std::string& ID)

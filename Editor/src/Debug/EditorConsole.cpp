@@ -1,37 +1,27 @@
+#include "depch.h"
 #include "EditorConsole.h"
-
-#include <spdlog/sinks/ostream_sink.h>
 
 namespace Engine
 {
 	void EditorConsole::OnAttach()
 	{
-		auto sink = CreateRef<spdlog::sinks::ostream_sink_mt>(ConsoleStream);
-		sink->set_pattern("%^[%T][%l] %n: %v%$");
-
-		CoreLogger = CreateRef<spdlog::logger>("Engine", sink);
-		CoreLogger->set_level(spdlog::level::trace);
-		CoreLogger->flush_on(spdlog::level::trace);
-
-		std::string name = TypeUtils::FromUTF16(AppName);
-		ClientLogger = CreateRef<spdlog::logger>(name.c_str(), sink);
-		ClientLogger->set_level(spdlog::level::trace);
-		ClientLogger->flush_on(spdlog::level::trace);
+		m_CoreLogger = CreateRef<CoreLogger>("Engine", this);
+		m_ClientLogger = CreateRef<ClientLogger>("App", this);
 	}
 
 	void EditorConsole::OnDetach()
 	{
-		CoreLogger = nullptr;
-		ClientLogger = nullptr;
+		m_CoreLogger = nullptr;
+		m_ClientLogger = nullptr;
 	}
 
-	Ref<spdlog::logger> EditorConsole::GetCoreLogger()
+	Ref<CoreLogger> EditorConsole::GetCoreLogger()
 	{
-		return CoreLogger;
+		return m_CoreLogger;
 	}
 
-	Ref<spdlog::logger> EditorConsole::GetClientLogger()
+	Ref<ClientLogger> EditorConsole::GetClientLogger()
 	{
-		return ClientLogger;
+		return m_ClientLogger;
 	}
 }

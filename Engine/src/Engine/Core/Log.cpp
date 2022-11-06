@@ -3,9 +3,9 @@
 
 namespace Engine
 {
-	Ref<spdlog::logger> Log::s_CoreLogger = nullptr;
+	Ref<CoreLogger> Log::s_CoreLogger = nullptr;
 
-	Ref<spdlog::logger> Log::s_ClientLogger = nullptr;
+	Ref<ClientLogger> Log::s_ClientLogger = nullptr;
 
 	Ref<Console> Log::DebugConsole = nullptr;
 

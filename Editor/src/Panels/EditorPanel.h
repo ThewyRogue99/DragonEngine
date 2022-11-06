@@ -71,9 +71,10 @@ namespace Engine
 			ImVec4 value;
 		};
 
-	private:
+	protected:
 		std::string PanelName;
 
+	private:
 		ImVec2 PanelPosition;
 		ImVec2 PanelSize;
 
