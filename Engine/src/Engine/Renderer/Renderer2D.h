@@ -121,5 +121,7 @@ namespace Engine
 		{
 			float TilingFactor = 1.f;
 		};
+		
+		static void SetFlushCallbacks();
 	};
 }
