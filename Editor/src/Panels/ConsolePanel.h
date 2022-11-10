@@ -15,9 +15,18 @@ namespace Engine
         virtual void OnRender(float DeltaTime) override;
 
     private:
+        void DrawConsole();
+
+        void DrawFilterBar();
+
+        void DrawInputBar();
+
+        void ScrollToBottom() { bShouldScroll = true; }
+
+    private:
         std::string Buffer;
 
-        bool bShouldAutoScroll = true;
+        bool bShouldScroll = true;
 
         ImGuiTextFilter m_TextFilter;
 
@@ -39,13 +48,5 @@ namespace Engine
         COLOR_PALETTE GetLogLevelColor(LogLevel level);
 
         std::array<ImVec4, COL_COUNT> ColorPalette;
-
-        void DrawConsole();
-
-        void DrawFilterBar();
-
-        void DrawInputBar();
-
-        static int InputCallback(ImGuiInputTextCallbackData* data);
     };
 }

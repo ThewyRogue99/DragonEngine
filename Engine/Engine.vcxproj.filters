@@ -1510,6 +1510,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\ShapeBuffer.h" />
+    <ClInclude Include="src\Engine\Core\CommandSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Asset\Asset.cpp">
@@ -1659,5 +1660,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Core\CommandSystem.cpp" />
   </ItemGroup>
 </Project>

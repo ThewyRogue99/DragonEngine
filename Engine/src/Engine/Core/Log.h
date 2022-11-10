@@ -45,6 +45,13 @@ namespace Engine
 		}
 
 		template<typename... Args>
+		static void CoreLogCommand(const char* fmt, Args &&... args)
+		{
+			if (s_CoreLogger)
+				s_CoreLogger->LogCommand(fmt, std::forward<Args>(args)...);
+		}
+
+		template<typename... Args>
 		static void ClientLog(const char* fmt, Args &&... args)
 		{
 			if (s_ClientLogger)
@@ -70,6 +77,13 @@ namespace Engine
 		{
 			if (s_ClientLogger)
 				s_ClientLogger->Error(fmt, std::forward<Args>(args)...);
+		}
+
+		template<typename... Args>
+		static void ClientLogCommand(const char* fmt, Args &&... args)
+		{
+			if (s_ClientLogger)
+				s_ClientLogger->ClientLogCommand(fmt, std::forward<Args>(args)...);
 		}
 
 		template<typename... Args>
@@ -100,6 +114,13 @@ namespace Engine
 				s_ClientLogger->ClientError(ClientName, fmt, std::forward<Args>(args)...);
 		}
 
+		template<typename... Args>
+		static void ClientLogCommand(const std::string& ClientName, const char* fmt, Args &&... args)
+		{
+			if (s_ClientLogger)
+				s_ClientLogger->ClientLogCommand(ClientName, fmt, std::forward<Args>(args)...);
+		}
+
 	private:
 		static Ref<Console> DebugConsole;
 
@@ -115,6 +136,7 @@ namespace Engine
 #define DE_CORE_INFO(...) Engine::Log::CoreInfo(__VA_ARGS__)
 #define DE_CORE_WARN(...) Engine::Log::CoreWarn(__VA_ARGS__)
 #define DE_CORE_ERROR(...) Engine::Log::CoreError(__VA_ARGS__)
+#define DE_CORE_LOG_COMMAND(...) Engine::Log::CoreLogCommand(__VA_ARGS__)
 
 // Client Log Macros
 
@@ -122,3 +144,4 @@ namespace Engine
 #define DE_INFO(...) Engine::Log::ClientInfo(__VA_ARGS__)
 #define DE_WARN(...) Engine::Log::ClientWarn(__VA_ARGS__)
 #define DE_ERROR(...) Engine::Log::ClientError(__VA_ARGS__)
+#define DE_LOG_COMMAND(...) Engine::Log::ClientLogCommand(__VA_ARGS__)

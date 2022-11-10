@@ -92,6 +92,12 @@ namespace Engine
 			Log_(Name, LogLevel::Error, fmt, std::forward<Args>(args)...);
 		}
 
+		template<typename... Args>
+		void LogCommand(const char* fmt, Args &&... args)
+		{
+			Log_(Name, LogLevel::Command, fmt, std::forward<Args>(args)...);
+		}
+
 		friend class Console;
 
 	protected:
@@ -144,6 +150,12 @@ namespace Engine
 		void ClientError(const std::string& ClientName, const char* fmt, Args &&... args)
 		{
 			CoreLogger::Log_(ClientName, LogLevel::Error, fmt, std::forward<Args>(args)...);
+		}
+
+		template<typename... Args>
+		void ClientLogCommand(const std::string& ClientName, const char* fmt, Args &&... args)
+		{
+			CoreLogger::Log_(ClientName, LogLevel::Command, fmt, std::forward<Args>(args)...);
 		}
 	};
 }

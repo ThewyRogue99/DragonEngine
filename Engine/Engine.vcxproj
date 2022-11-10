@@ -151,6 +151,7 @@
     <ClInclude Include="src\Engine\Asset\Serializer\SceneSerializer.h" />
     <ClInclude Include="src\Engine\Asset\Serializer\Serializer.h" />
     <ClInclude Include="src\Engine\Core\Application.h" />
+    <ClInclude Include="src\Engine\Core\CommandSystem.h" />
     <ClInclude Include="src\Engine\Core\Core.h" />
     <ClInclude Include="src\Engine\Core\EntryPoint.h" />
     <ClInclude Include="src\Engine\Core\Input.h" />
@@ -630,6 +631,7 @@
     <ClCompile Include="src\Engine\Asset\Serializer\SceneSerializer.cpp" />
     <ClCompile Include="src\Engine\Asset\Serializer\Serializer.cpp" />
     <ClCompile Include="src\Engine\Core\Application.cpp" />
+    <ClCompile Include="src\Engine\Core\CommandSystem.cpp" />
     <ClCompile Include="src\Engine\Core\Layer.cpp" />
     <ClCompile Include="src\Engine\Core\LayerStack.cpp" />
     <ClCompile Include="src\Engine\Core\Log.cpp" />
