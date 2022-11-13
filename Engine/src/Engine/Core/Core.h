@@ -18,7 +18,6 @@
 		#error IOS is not supported!
 	#elif TARGET_OS_MAC == 1
 		#define ENGINE_PLATFORM_MACOS
-		#error MacOS is not supported!
 	#else
 		#error Unknown Apple platform!
 	#endif
@@ -33,18 +32,14 @@
 	#error Unknown platform!
 #endif
 
-#ifdef ENGINE_PLATFORM_WINDOWS
-	#ifdef ENGINE_DYNAMIC_LINK
-		#ifdef __ENGINE__
-			#define ENGINE_API __declspec(dllexport)
-		#else
-			#define ENGINE_API __declspec(dllimport)
-		#endif
+#ifdef ENGINE_DYNAMIC_LINK
+	#ifdef __ENGINE__
+		#define ENGINE_API __declspec(dllexport)
 	#else
-		#define ENGINE_API
+		#define ENGINE_API __declspec(dllimport)
 	#endif
 #else
-	#error Dragon Engine only supports Windows!
+	#define ENGINE_API
 #endif
 
 #if ENGINE_BUILD_DEBUG

@@ -2,7 +2,6 @@
 #include "Buffer.h"
 
 #include "Engine/Core/Log.h"
-#include "Renderer.h"
 #include "RendererAPI.h"
 
 #include "Platform/OpenGL/OpenGLBuffer.h"
@@ -45,7 +44,7 @@ namespace Engine
 
 	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
 	{
-		switch (Renderer::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:
 			{
@@ -66,7 +65,7 @@ namespace Engine
 
 	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
 	{
-		switch (Renderer::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:
 			{
@@ -87,7 +86,7 @@ namespace Engine
 
 	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
 	{
-		switch (Renderer::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:
 			{

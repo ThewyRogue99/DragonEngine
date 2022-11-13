@@ -1,14 +1,16 @@
 #include "depch.h"
 #include "RenderCommand.h"
 
-#include "Platform/OpenGL/OpenGLRendererAPI.h"
+#include "RendererAPI.h"
 
 namespace Engine
 {
-	RendererAPI* RenderCommand::API_Instance = new OpenGLRendererAPI();
+	RendererAPI* RenderCommand::API_Instance = nullptr;
 
 	void RenderCommand::Init()
 	{
+		API_Instance = RendererAPI::Create(RendererAPI::API::OpenGL);
+
 		API_Instance->Init();
 	}
 

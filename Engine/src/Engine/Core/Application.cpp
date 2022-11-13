@@ -1,7 +1,8 @@
 #include "depch.h"
 #include "Application.h"
 
-#include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Renderer2D.h"
+#include "Engine/Renderer/RenderCommand.h"
 #include "Platform/Platform.h"
 
 #include "Engine/Scripting/ScriptEngine.h"
@@ -24,10 +25,12 @@ namespace Engine
 		if (!AppSpecification.WorkingDirectory.empty())
 			std::filesystem::current_path(AppSpecification.WorkingDirectory);
 
+		RenderCommand::Init();
+
 		AppWindow = Scope<Window>(Window::Create(WindowProps(NameUTF8.c_str())));
 		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
-		Renderer::Init();
+		Renderer2D::Init();
 		ScriptEngine::Init();
 
 		DE_PROFILE_SCOPE("UI Layer Attach");
@@ -124,7 +127,7 @@ namespace Engine
 		else
 			bIsMinimized = false;
 
-		Renderer::OnWindowResize(width, height);
+		RenderCommand::SetViewport(0, 0, width, height);
 
 		return true;
 	}

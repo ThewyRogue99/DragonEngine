@@ -30,8 +30,10 @@ namespace Engine
 
 		inline static API GetAPI() { return m_API; }
 
+		static RendererAPI* Create(API api);
+
 	protected:
-		inline void SetAPI(API api) { m_API = api; }
+		inline static void SetAPI(API api) { m_API = api; }
 
 	private:
 		static API m_API;

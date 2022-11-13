@@ -1,4 +1,7 @@
 #include "depch.h"
+
+#ifdef ENGINE_PLATFORM_WINDOWS
+
 #include <Windows.h>
 
 #include "Engine/Utils/PlatformUtils.h"
@@ -56,3 +59,5 @@ namespace Engine
 		return CString();
 	}
 }
+
+#endif

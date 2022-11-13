@@ -7,11 +7,11 @@ struct GLFWwindow;
 
 namespace Engine
 {
-	class WindowsWindow : public Window
+	class OpenGLWindow : public Window
 	{
 	public:
-		WindowsWindow(const WindowProps& Props);
-		virtual ~WindowsWindow();
+		OpenGLWindow(const WindowProps& Props);
+		virtual ~OpenGLWindow();
 
 		void OnUpdate() override;
 

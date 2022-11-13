@@ -1,6 +1,6 @@
 #include "depch.h"
 
-#include "WindowsWindow.h"
+#include "OpenGLWindow.h"
 
 #include "Engine/Events/ApplicationEvent.h"
 #include "Engine/Events/MouseEvent.h"
@@ -13,29 +13,17 @@
 
 namespace Engine
 {
-	static bool bGLFWInitialized = false;
-
-	static void GLFWErrorCallback(int error, const char* description)
-	{
-		DE_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
-	}
-
-	Window* Window::Create(const WindowProps& Props)
-	{
-		return new WindowsWindow(Props);
-	}
-
-	WindowsWindow::WindowsWindow(const WindowProps& Props)
+	OpenGLWindow::OpenGLWindow(const WindowProps& Props)
 	{
 		Init(Props);
 	}
 
-	WindowsWindow::~WindowsWindow()
+	OpenGLWindow::~OpenGLWindow()
 	{
 		ShutDown();
 	}
 
-	void WindowsWindow::Init(const WindowProps& Props)
+	void OpenGLWindow::Init(const WindowProps& Props)
 	{
 		DE_PROFILE_FUNCTION();
 
@@ -50,19 +38,9 @@ namespace Engine
 			Props.Height
 		);
 
-		if (!bGLFWInitialized)
-		{
-			DE_PROFILE_SCOPE("GLFW Init");
-
-			// TODO: glfwTerminate on system shutdown
-			int success = glfwInit();
-			DE_CORE_ASSERT(success, "Could not initialize GLFW!");
-			if (!success) return;
-
-			glfwSetErrorCallback(GLFWErrorCallback);
-
-			bGLFWInitialized = true;
-		}
+#ifdef ENGINE_PLATFORM_MACOS
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
 		{
 			DE_PROFILE_SCOPE("Create Window");
@@ -168,7 +146,7 @@ namespace Engine
 		});
 	}
 
-	void WindowsWindow::ShutDown()
+	void OpenGLWindow::ShutDown()
 	{
 		if (NativeWindow)
 		{
@@ -177,7 +155,7 @@ namespace Engine
 		}
 	}
 
-	void WindowsWindow::OnUpdate()
+	void OpenGLWindow::OnUpdate()
 	{
 		DE_PROFILE_FUNCTION();
 
@@ -188,7 +166,7 @@ namespace Engine
 		}
 	}
 
-	void WindowsWindow::SetVSync(bool Enabled)
+	void OpenGLWindow::SetVSync(bool Enabled)
 	{
 		if (Enabled)
 			glfwSwapInterval(1);

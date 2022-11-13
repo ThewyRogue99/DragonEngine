@@ -1,18 +1,28 @@
 #include "depch.h"
 #include "OpenGLRendererAPI.h"
 
+#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 namespace Engine
 {
+	static void GLFWErrorCallback(int error, const char* description)
+	{
+		DE_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
+	}
+
 	void OpenGLRendererAPI::Init()
 	{
-		SetAPI(API::OpenGL);
+		{
+			DE_PROFILE_SCOPE("GLFW Init");
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			// TODO: glfwTerminate on system shutdown
+			int success = glfwInit();
+			DE_CORE_ASSERT(success, "Could not initialize GLFW!");
+			if (!success) return;
 
-		glEnable(GL_DEPTH_TEST);
+			glfwSetErrorCallback(GLFWErrorCallback);
+		}
 	}
 
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)

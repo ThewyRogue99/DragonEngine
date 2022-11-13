@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class WindowsInput : public Input
+	class OpenGLInput : public Input
 	{
 	protected:
 		bool IsKeyPressedImpl(KeyInput KeyCode) override;

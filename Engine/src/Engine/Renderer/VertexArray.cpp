@@ -1,6 +1,5 @@
 #include "depch.h"
 
-#include "Renderer.h"
 #include "RendererAPI.h"
 
 #include "Engine/Core/Log.h"
@@ -11,7 +10,7 @@ namespace Engine
 {
 	Ref<VertexArray> VertexArray::Create()
 	{
-		switch (Renderer::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::OpenGL: return CreateRef<OpenGLVertexArray>();
 			default:

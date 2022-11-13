@@ -5,4 +5,4 @@ bin-int/
 
 # Files
 *.user
-GenerateProjects.bat
+vendor/premake/bin

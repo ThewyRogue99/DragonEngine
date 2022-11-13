@@ -1,7 +1,6 @@
 #include "depch.h"
 #include "Shader.h"
 
-#include "Renderer.h"
 #include "RendererAPI.h"
 
 #include "Engine/Core/Log.h"
@@ -14,7 +13,7 @@ namespace Engine
 {
 	Ref<Shader> Shader::Create(const CString& ShaderName, const std::string& VertexSource, const std::string& FragmentSource, bool isFilePath)
 	{
-		switch (Renderer::GetAPI())
+		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::OpenGL:
 			{
