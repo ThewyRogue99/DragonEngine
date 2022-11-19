@@ -17,18 +17,17 @@ class PremakeSetup:
         else:
             raise Exception("Undefined OS detected!")
 
-    def _GetPremakeZipUrl(self):
+    def _GetPremakeAsset(self):
         assets = self.latestRelease["assets"]
         pname = self._GetPremakePlatformName()
         for asset in assets:
             zipUrl = asset["browser_download_url"]
             if(pname in zipUrl):
-                return zipUrl
+                return asset
 
     def __init__(self):
         self.latestRelease = InstallerUtils.GetLatestGitHubRelease("premake", "premake-core")
-        self.premakeZipUrl = self._GetPremakeZipUrl()
-        self.latestVersion = self.latestRelease["tag_name"]
+        self.premakeAsset = self._GetPremakeAsset()
 
     premakeLicenseUrl = "https://raw.githubusercontent.com/premake/premake-core/master/LICENSE.txt"
     premakeDirectory = "../vendor/premake/bin"
@@ -49,13 +48,14 @@ class PremakeSetup:
         return True
 
     def InstallPremake(self):
-        premakePath = f"{self.premakeDirectory}/premake-{self.latestVersion}-windows.zip"
-        print(premakePath)
-        print("Downloading {0:s} to {1:s}".format(self.premakeZipUrl, premakePath))
-        InstallerUtils.DownloadFile(self.premakeZipUrl, premakePath)
+        fName = self.premakeAsset["name"]
+        premakeUrl = self.premakeAsset["browser_download_url"]
+        premakePath = f"{self.premakeDirectory}/{fName}"
+        print("Downloading {0:s} to {1:s}".format(premakeUrl, premakePath))
+        InstallerUtils.DownloadFile(premakeUrl, premakePath)
         print("Extracting", premakePath)
         InstallerUtils.UnzipFile(premakePath, deleteZipFile=True)
-        print(f"Premake {self.latestVersion} has been downloaded to '{self.premakeDirectory}'")
+        print(f"{fName} has been downloaded to '{self.premakeDirectory}'")
 
         premakeLicensePath = f"{self.premakeDirectory}/LICENSE.txt"
         print("Downloading {0:s} to {1:s}".format(self.premakeLicenseUrl, premakeLicensePath))
@@ -66,4 +66,4 @@ class PremakeSetup:
 
 pSetup = PremakeSetup()
 
-pSetup.Validate()
+pSetup.InstallPremake()

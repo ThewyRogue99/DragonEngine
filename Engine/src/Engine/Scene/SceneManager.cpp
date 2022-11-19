@@ -7,7 +7,7 @@
 
 namespace Engine
 {
-	SceneManager::CallbackManager SceneManager::OnSetActiveSceneManager = SceneManager::CallbackManager();
+	SceneManager::DispatcherType SceneManager::OnSetActiveSceneDispatch = SceneManager::DispatcherType();
 
 	std::vector<SceneManager::SceneData> SceneManager::SceneList = { };
 
@@ -104,9 +104,12 @@ namespace Engine
 
 		if (NewActiveScene)
 		{
-			ActiveScene = NewActiveScene;
+			if (ActiveScene != NewActiveScene)
+			{
+				ActiveScene = NewActiveScene;
 
-			OnSetActiveSceneManager.Run(ActiveScene);
+				OnSetActiveSceneDispatch.Run(ActiveScene);
+			}
 
 			return true;
 		}
@@ -128,18 +131,7 @@ namespace Engine
 		{
 			ActiveScene = nullptr;
 
-			OnSetActiveSceneManager.Run(ActiveScene);
+			OnSetActiveSceneDispatch.Run(ActiveScene);
 		}
-	}
-
-	void SceneManager::CallbackManager::AddCallback(const CallbackType& callback)
-	{
-		CallbackList.push_back(callback);
-	}
-
-	void SceneManager::CallbackManager::Run(Scene* NewScene)
-	{
-		for (auto& callback : CallbackList)
-			callback(NewScene);
 	}
 }

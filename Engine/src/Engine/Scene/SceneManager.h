@@ -2,7 +2,7 @@
 
 #include "Scene.h"
 
-#include <vector>
+#include "Engine/Core/CallbackDispatcher.h"
 
 namespace Engine
 {
@@ -25,25 +25,10 @@ namespace Engine
 
 		static void RemoveActiveScene();
 
-		class CallbackManager
-		{
-		public:
-			CallbackManager() = default;
+		using DispatcherType = CallbackDispatcher<Scene*>;
 
-			using CallbackType = std::function<void(Scene*)>;
-
-			void AddCallback(const CallbackType& callback);
-
-			friend class SceneManager;
-
-		private:
-			void Run(Scene* NewScene);
-
-		private:
-			std::vector<CallbackType> CallbackList = { };
-		};
-
-		inline static CallbackManager& OnSetActiveScene() { return OnSetActiveSceneManager; }
+		inline static DispatcherType::CallbackHandle OnSetActiveScene()
+			{ return OnSetActiveSceneDispatch.GetHandle(); }
 
 	private:
 		struct SceneData
@@ -52,7 +37,7 @@ namespace Engine
 			Scene* SceneRef = nullptr;
 		};
 
-		static CallbackManager OnSetActiveSceneManager;
+		static DispatcherType OnSetActiveSceneDispatch;
 
 		static std::vector<SceneData> SceneList;
 

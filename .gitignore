@@ -6,3 +6,4 @@ bin-int/
 # Files
 *.user
 vendor/premake/bin
+scripts/__pycache__
