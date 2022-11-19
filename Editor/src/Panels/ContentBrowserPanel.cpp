@@ -11,6 +11,8 @@
 #include "Engine/Asset/AssetMetadata.h"
 #include "Engine/Asset/Serializer/Serializer.h"
 
+#include "../Project/ProjectManager.h"
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
@@ -19,15 +21,12 @@ namespace Engine
 	static Ref<Texture2D> DirectoryIcon = nullptr;
 	static Ref<Texture2D> FileIcon = nullptr;
 
-	static const std::filesystem::path AssetPath = L"assets";
-
 	ContentBrowserPanel::ContentBrowserPanel() : EditorPanel("Content Browser")
 	{
 		DirectoryIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/DirectoryIcon.png"));
 		FileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/FileIcon.png"));
-
-		AssetManager::Init(AssetPath);
-		Reload();
+		
+		ProjectManager::OnLoadProject().AddCallback(BIND_EVENT_FN(ContentBrowserPanel::OnLoadProject));
 	}
 
 	void ContentBrowserPanel::OnCreate()
@@ -117,7 +116,9 @@ namespace Engine
 			if (CurrentDirectory.empty())
 				flags |= ImGuiTreeNodeFlags_Selected;
 
-			if (ImGui::TreeNodeEx("Project", flags))
+			std::string ProjectName = LoadedProject ? LoadedProject->Name : "Project";
+
+			if (ImGui::TreeNodeEx(ProjectName.c_str(), flags))
 			{
 				DrawDirectoryTree(L"");
 				ImGui::TreePop();
@@ -238,6 +239,8 @@ namespace Engine
 				AssetManager::CreateAsset(CurrentDirectory, ActiveScene->GetName(), data, AssetType::Scene, true);
 				Reload();
 			}
+
+			ImGui::SameLine(0.f, 5.f);
 		}
 		ImGui::EndChild();
 
@@ -382,5 +385,11 @@ namespace Engine
 
 			ContentList.push_back(data);
 		}
+	}
+
+	void ContentBrowserPanel::OnLoadProject(const Project& project)
+	{
+		LoadedProject = &project;
+		Reload();
 	}
 }

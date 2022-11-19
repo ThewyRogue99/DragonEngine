@@ -114,6 +114,7 @@ namespace Engine
 		for (auto& color : PanelColors)
 			ImGui::PushStyleColor(color.style, color.value);
 
+		ImGui::BeginDisabled(IsDisabled);
 		ImGui::Begin(PanelName.c_str(), nullptr, WindowFlag);
 
 		PanelPosition = ImGui::GetWindowPos();
@@ -135,6 +136,7 @@ namespace Engine
 		OnRender(DeltaTime);
 
 		ImGui::End();
+		ImGui::EndDisabled();
 
 		ImGui::PopStyleVar((int)PanelStyles.size());
 		ImGui::PopStyleColor((int)PanelColors.size());

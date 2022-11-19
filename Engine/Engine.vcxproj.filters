@@ -234,6 +234,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLInput.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -249,14 +252,11 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLWindow.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\Platform.h">
       <Filter>src\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLInput.h">
-      <Filter>src\Platform\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLWindow.h">
-      <Filter>src\Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\depch.h">
       <Filter>src</Filter>
@@ -1512,6 +1512,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Core\CallbackDispatcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Asset\Asset.cpp">
@@ -1548,6 +1549,9 @@
       <Filter>src\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Core\UUID.cpp">
+      <Filter>src\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Core\Window.cpp">
       <Filter>src\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Debug\Instrumentor.cpp">
@@ -1625,6 +1629,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLInput.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1640,16 +1647,13 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLWindow.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\Platform.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLInput.cpp">
-      <Filter>src\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp">
-      <Filter>src\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLWindow.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\depch.cpp">
@@ -1661,6 +1665,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Core\Window.cpp" />
   </ItemGroup>
 </Project>

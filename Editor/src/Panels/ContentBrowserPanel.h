@@ -2,8 +2,9 @@
 
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
-#include "EditorPanel.h"
 
+#include "../Project/ProjectManager.h"
+#include "EditorPanel.h"
 #include "Engine/Asset/AssetManager.h"
 
 #include <filesystem>
@@ -30,6 +31,8 @@ namespace Engine
 
 		void Reload();
 
+		void OnLoadProject(const Project& project);
+
 		class BrowserContent
 		{
 		public:
@@ -54,6 +57,8 @@ namespace Engine
 
 	private:
 		std::filesystem::path CurrentDirectory = L"";
+
+		const Project* LoadedProject = nullptr;
 
 		std::vector<BrowserContent> ContentList = { };
 	};

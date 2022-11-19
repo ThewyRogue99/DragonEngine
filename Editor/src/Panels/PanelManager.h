@@ -19,8 +19,13 @@ namespace Engine
 		void AddPanels(std::initializer_list<EditorPanel*> panels);
 
 		void RemovePanel(const std::string& PanelName);
-
 		void RemoveAllPanels();
+
+		void DisablePanel(const std::string& PanelName);
+		void DisableAllPanels();
+
+		void ActivatePanel(const std::string& PanelName);
+		void ActivateAllPanels();
 
 		void Update(float DeltaTime);
 		void Render(float DeltaTime);

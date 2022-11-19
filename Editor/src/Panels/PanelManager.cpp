@@ -131,6 +131,42 @@ namespace Engine
         });
     }
 
+    void PanelManager::DisablePanel(const std::string& PanelName)
+    {
+        for (auto& panel : Panels)
+        {
+            if (panel->PanelName == PanelName)
+            {
+                panel->IsDisabled = true;
+                break;
+            }
+        }
+    }
+
+    void PanelManager::DisableAllPanels()
+    {
+        for (auto& panel : Panels)
+            panel->IsDisabled = true;
+    }
+
+    void PanelManager::ActivatePanel(const std::string& PanelName)
+    {
+        for (auto& panel : Panels)
+        {
+            if (panel->PanelName == PanelName)
+            {
+                panel->IsDisabled = false;
+                break;
+            }
+        }
+    }
+
+    void PanelManager::ActivateAllPanels()
+    {
+        for (auto& panel : Panels)
+            panel->IsDisabled = false;
+    }
+
     PanelManager::PanelData& PanelManager::GetData(const CString& name)
     {
         auto it = std::find_if(DataList.begin(), DataList.end(), [name](const PanelData& data)

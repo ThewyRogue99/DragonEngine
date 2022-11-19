@@ -74,6 +74,8 @@ namespace Engine
 	protected:
 		std::string PanelName;
 
+		bool IsDisabled = false;
+
 	private:
 		ImVec2 PanelPosition;
 		ImVec2 PanelSize;

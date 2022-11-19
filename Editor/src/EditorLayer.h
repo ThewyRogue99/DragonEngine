@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
+
+#include "Project/ProjectManager.h"
 #include "Engine/Core/Layer.h"
 #include "Panels/PanelManager.h"
 #include "Scene/EditorScene.h"
 #include "Engine/Scene/SceneManager.h"
-
-#include <imgui/imgui.h>
 
 namespace Engine
 {
@@ -27,16 +27,12 @@ namespace Engine
 	private:
 		void NewScene();
 
-		void OpenScene();
-		void OpenScene(const CString& path);
-
-		void SaveScene();
-		void SaveScene(const CString& path);
-
 		void OnActiveSceneChange(Scene* scene);
 
+		void OnProjectLoad(const Project& project);
+
 	private:
-		EditorScene* ActiveScene;
+		EditorScene* ActiveScene = nullptr;
 
 		// Panels
 		PanelManager PManager;

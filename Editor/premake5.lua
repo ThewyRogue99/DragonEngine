@@ -17,9 +17,10 @@ project "Editor"
 	{
 		"%{wks.location}/Engine/vendor/spdlog/include",
 		"%{wks.location}/Engine/src",
-        "%{wks.location}/Engine/vendor",
+		"%{wks.location}/Engine/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 	
 	postbuildcommands

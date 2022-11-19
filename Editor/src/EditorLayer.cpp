@@ -6,7 +6,10 @@
 
 #include "Engine/Utils/PlatformUtils.h"
 
-#include "ImGuizmo/ImGuizmo.h"
+#include <imgui/imgui.h>
+#include <ImGuizmo/ImGuizmo.h>
+
+#include <filesystem>
 
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
@@ -23,13 +26,7 @@ namespace Engine
 
 	void EditorLayer::OnAttach()
 	{
-		EditorScene* scene = new EditorScene();
-
-		if (SceneManager::AddScene(TEXT("Editor Scene"), scene))
-		{
-			if(SceneManager::SetActiveScene(TEXT("Editor Scene")))
-				ActiveScene = scene;
-		}
+		NewScene();
 
 		// TODO: Implement Scene Serialize
 		/*
@@ -53,7 +50,11 @@ namespace Engine
 			new ContentBrowserPanel()
 		});
 
+		if (!ProjectManager::IsProjectLoaded())
+			PManager.DisableAllPanels();
+
 		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(EditorLayer::OnActiveSceneChange));
+		ProjectManager::OnLoadProject().AddCallback(BIND_CLASS_FN(EditorLayer::OnProjectLoad));
 	}
 
 	void EditorLayer::OnDetach()
@@ -131,16 +132,21 @@ namespace Engine
 
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New Scene", "Ctrl+N"))
-					NewScene();
-
-				if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
+				if (ImGui::MenuItem("New Project", "Ctrl+N"))
 				{
-					OpenScene();
-				}
+					std::filesystem::path FullPath = FileDialogs::SaveFile(L"Project Files (*.deproject*) \0*.deproject*\0");
 
-				if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
-					SaveScene();
+					CString ProjectPath = FullPath.parent_path();
+					std::string ProjectName = TypeUtils::FromUTF16(FullPath.filename());
+
+					ProjectManager::CreateProject(ProjectPath, ProjectName);
+				}
+				if (ImGui::MenuItem("Load Project", "Ctrl+L"))
+				{
+					CString FullPath = FileDialogs::OpenFile(L"Project Files (*.deproject*) \0*.deproject*\0");
+
+					ProjectManager::LoadProject(FullPath);
+				}
 
 				ImGui::EndMenu();
 			}
@@ -167,43 +173,10 @@ namespace Engine
 		EditorScene* ref = new EditorScene();
 
 		if (SceneManager::AddScene(TEXT("Editor Scene"), ref, true))
+		{
+			SceneManager::SetActiveScene(TEXT("Editor Scene"));
 			ActiveScene = ref;
-	}
-
-	void EditorLayer::OpenScene()
-	{
-		CString filepath = FileDialogs::OpenFile(TEXT("Dragon Engine Scene (*.descene)\0*.descene\0"));
-
-		if (!filepath.empty())
-			OpenScene(filepath);
-	}
-
-	void EditorLayer::OpenScene(const CString& path)
-	{
-		NewScene();
-
-		// TODO: Implement Scene Serialize
-		/*
-			SceneSerializer s(ActiveScene);
-			s.Deserialize(path);
-		*/
-	}
-
-	void EditorLayer::SaveScene()
-	{
-		CString filepath = FileDialogs::SaveFile(TEXT("Dragon Engine Scene (*.descene)\0*.descene\0"));
-
-		if (!filepath.empty())
-			SaveScene(filepath);
-	}
-
-	void EditorLayer::SaveScene(const CString& path)
-	{
-		// TODO: Implement Scene Serialize
-		/*
-			SceneSerializer s(ActiveScene);
-			s.Serialize(path);
-		*/
+		}
 	}
 
 	void EditorLayer::OnActiveSceneChange(Scene* scene)
@@ -213,5 +186,10 @@ namespace Engine
 		ActiveScene = (EditorScene*)scene;
 
 		ActiveScene->OnSceneBegin();
+	}
+
+	void EditorLayer::OnProjectLoad(const Project& project)
+	{
+		PManager.ActivateAllPanels();
 	}
 }

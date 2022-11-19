@@ -154,6 +154,7 @@
     <ClInclude Include="src\Engine\Asset\Serializer\SceneSerializer.h" />
     <ClInclude Include="src\Engine\Asset\Serializer\Serializer.h" />
     <ClInclude Include="src\Engine\Core\Application.h" />
+    <ClInclude Include="src\Engine\Core\CallbackDispatcher.h" />
     <ClInclude Include="src\Engine\Core\CommandSystem.h" />
     <ClInclude Include="src\Engine\Core\Core.h" />
     <ClInclude Include="src\Engine\Core\EntryPoint.h" />
@@ -198,14 +199,14 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLInput.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\Platform\Platform.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLInput.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLWindow.h" />
+    <ClInclude Include="src\Platform\Platform.h" />
     <ClInclude Include="src\depch.h" />
     <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
@@ -664,15 +665,15 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLInput.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\Platform\Platform.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLInput.cpp" />
-    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLWindow.cpp" />
+    <ClCompile Include="src\Platform\Platform.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp" />
     <ClCompile Include="src\depch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
