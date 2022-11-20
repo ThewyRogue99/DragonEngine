@@ -4,8 +4,8 @@ project "Editor"
 	cppdialect "C++17"
 	staticruntime "off"
 
-	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("%{wks.location}/bin/" .. outputdir)
+	objdir ("%{wks.location}/bin-int/" .. outputdir)
 
 	files
 	{
@@ -22,10 +22,10 @@ project "Editor"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}"
 	}
-	
+
 	postbuildcommands
 	{
-		("{COPY} %{wks.location}Engine/vendor/mono/lib/mono-2.0-sgen.dll ../bin/%{outputdir}/Editor")
+		("{COPY} %{wks.location}/vendor/lib/mono/mono-2.0-sgen.dll ../bin/%{outputdir}")
 	}
 
 	links

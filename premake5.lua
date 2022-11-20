@@ -38,7 +38,7 @@ IncludeDir["mono"] = "%{wks.location}/Engine/vendor/mono/include"
 IncludeDir["uuid_v4"] = "%{wks.location}/Engine/vendor/uuid_v4"
 
 LibraryDir = {}
-LibraryDir["mono"] = "%{wks.location}/Engine/vendor/mono/lib"
+LibraryDir["mono"] = "%{wks.location}/vendor/lib/mono"
 
 Library = {}
 Library["mono"] = "%{LibraryDir.mono}/mono-2.0-sgen.lib"
