@@ -34,8 +34,6 @@ namespace Engine
 				DirectoryEntry DirEntry;
 
 				bool isDirectory = entry.is_directory();
-				if (isDirectory)
-					DirEntry.Type = AssetType::Folder;
 
 				if (!isDirectory)
 				{
@@ -60,6 +58,7 @@ namespace Engine
 				}
 				else
 				{
+					DirEntry.Type = AssetType::Folder;
 					DirEntry.Path = Path;
 					DirEntry.Name = entry.path().filename();
 
@@ -513,7 +512,7 @@ namespace Engine
 			if (idx == -1)
 				return L"";
 			else
-				return Name + idx_str;
+				return Name + L' ' + idx_str;
 		}
 
 		return Name;

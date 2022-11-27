@@ -15,8 +15,15 @@ namespace Engine
 		static void Init();
 		static void Shutdown();
 
+		static void SetAssemblyPath(const CString& CoreAssemblyPath, const CString& AppAssemblyPath);
+
 		static void Run();
 		static void Stop();
+
+		static bool LoadCore();
+		static bool LoadApp();
+
+		static bool Load(bool LoadCoreAssembly = true);
 
 		static void LoadAllScripts();
 

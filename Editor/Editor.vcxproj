@@ -55,22 +55,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Debug-windows-x86_64\Editor\</OutDir>
-    <IntDir>..\bin-int\Debug-windows-x86_64\Editor\</IntDir>
+    <OutDir>..\bin\Debug-windows-x86_64\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\Debug\Editor\</IntDir>
     <TargetName>Editor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Release-windows-x86_64\Editor\</OutDir>
-    <IntDir>..\bin-int\Release-windows-x86_64\Editor\</IntDir>
+    <OutDir>..\bin\Release-windows-x86_64\</OutDir>
+    <IntDir>..\bin-int\Release-windows-x86_64\Release\Editor\</IntDir>
     <TargetName>Editor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Dist-windows-x86_64\Editor\</OutDir>
-    <IntDir>..\bin-int\Dist-windows-x86_64\Editor\</IntDir>
+    <OutDir>..\bin\Dist-windows-x86_64\</OutDir>
+    <IntDir>..\bin-int\Dist-windows-x86_64\Dist\Editor\</IntDir>
     <TargetName>Editor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
@@ -93,7 +93,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll\ (xcopy /Q /E /Y /I $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll ..\bin\Debug-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll ..\bin\Debug-windows-x86_64\Editor &gt; nul)</Command>
+      <Command>IF EXIST $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll ..\bin\Debug-windows-x86_64 &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll ..\bin\Debug-windows-x86_64 &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -118,7 +118,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll\ (xcopy /Q /E /Y /I $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll ..\bin\Release-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll ..\bin\Release-windows-x86_64\Editor &gt; nul)</Command>
+      <Command>IF EXIST $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll ..\bin\Release-windows-x86_64 &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll ..\bin\Release-windows-x86_64 &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -143,7 +143,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll\ (xcopy /Q /E /Y /I $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll ..\bin\Dist-windows-x86_64\Editor &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)Engine\vendor\mono\lib\mono-2.0-sgen.dll ..\bin\Dist-windows-x86_64\Editor &gt; nul)</Command>
+      <Command>IF EXIST $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll\ (xcopy /Q /E /Y /I $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll ..\bin\Dist-windows-x86_64 &gt; nul) ELSE (xcopy /Q /Y /I $(SolutionDir)\vendor\lib\mono\mono-2.0-sgen.dll ..\bin\Dist-windows-x86_64 &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -157,6 +157,7 @@
     <ClInclude Include="src\Panels\ToolbarPanel.h" />
     <ClInclude Include="src\Panels\ViewportPanel.h" />
     <ClInclude Include="src\Project\ProjectManager.h" />
+    <ClInclude Include="src\Project\ProjectTools.h" />
     <ClInclude Include="src\Scene\EditorCamera.h" />
     <ClInclude Include="src\Scene\EditorScene.h" />
   </ItemGroup>
@@ -172,6 +173,7 @@
     <ClCompile Include="src\Panels\ToolbarPanel.cpp" />
     <ClCompile Include="src\Panels\ViewportPanel.cpp" />
     <ClCompile Include="src\Project\ProjectManager.cpp" />
+    <ClCompile Include="src\Project\ProjectTools.cpp" />
     <ClCompile Include="src\Scene\EditorCamera.cpp" />
     <ClCompile Include="src\Scene\EditorScene.cpp" />
   </ItemGroup>

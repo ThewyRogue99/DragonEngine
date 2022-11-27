@@ -9,7 +9,8 @@ namespace Engine
 		Undefined,
 		Folder,
 		Texture,
-		Scene
+		Scene,
+		Script
 	};
 
 	namespace AssetUtils

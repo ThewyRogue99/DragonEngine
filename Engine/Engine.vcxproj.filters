@@ -102,6 +102,9 @@
     <ClInclude Include="src\Engine\Core\Application.h">
       <Filter>src\Engine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Core\CallbackDispatcher.h">
+      <Filter>src\Engine\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Core\CommandSystem.h">
       <Filter>src\Engine\Core</Filter>
     </ClInclude>
@@ -1512,7 +1515,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Core\CallbackDispatcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Asset\Asset.cpp">

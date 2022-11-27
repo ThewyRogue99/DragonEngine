@@ -13,6 +13,7 @@ namespace Engine
 	{
 	public:
 		std::string Name;
+		CString Path;
 
 		friend class ProjectManager;
 
@@ -27,6 +28,8 @@ namespace Engine
 		static bool CreateProject(const CString& ProjectPath, const std::string& ProjectName);
 
 		static bool LoadProject(const CString& ProjectPath);
+
+		static bool CreateScript(const std::string& Name);
 
 		static bool IsProjectLoaded();
 

@@ -15,6 +15,9 @@ namespace Engine
 
         using CallbackType = std::function<void(Args...)>;
 
+        CallbackDispatcher(std::initializer_list<CallbackType> initializers)
+            : CallbackList(initializers) { }
+
         class CallbackHandle
         {
         public:

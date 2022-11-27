@@ -2,6 +2,8 @@
 
 #include "Engine/Scene/SceneManager.h"
 
+#include "../Project/ProjectTools.h"
+
 #pragma warning(disable : 4312)
 
 namespace Engine
@@ -56,6 +58,8 @@ namespace Engine
 				{
 					case SceneState::Edit:
 					{
+						ProjectTools::CompileScriptProject();
+
 						Scene* CopyScene = ActiveScene->Copy();
 
 						SceneManager::AddScene(TEXT("Copy Scene"), CopyScene, true);

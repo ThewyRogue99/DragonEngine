@@ -20,6 +20,8 @@ namespace Engine
 				) {
 				return AssetType::Texture;
 			}
+			else if (Extension == L".cs")
+				return AssetType::Script;
 			
 			return AssetType::Undefined;
 		}

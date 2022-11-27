@@ -130,20 +130,39 @@ namespace Engine
 		ImGui::EndChild();
 	}
 
+	static std::string _labelPrefix(const char* const label)
+	{
+		float width = ImGui::CalcItemWidth();
+
+		float x = ImGui::GetCursorPosX();
+		ImGui::Text(label);
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(x + width * 0.5f + ImGui::GetStyle().ItemInnerSpacing.x);
+		ImGui::SetNextItemWidth(-1);
+
+		std::string labelID = "##";
+		labelID += label;
+
+		return labelID;
+	}
+
 	void ContentBrowserPanel::DrawAssetBrowser()
 	{
 		ImGui::BeginChild("##asset_browser");
 		{
-			if (ImGui::BeginPopupContextWindow(0, 1, false))
+			if (ImGui::BeginPopupContextWindow())
 			{
 				if (ImGui::MenuItem("Create Folder"))
 				{
-					AssetManager::CreateFolder(CurrentDirectory, L"New Folder");
-					Reload();
+					CreateContent(AssetType::Folder);
 				}
 				if (ImGui::MenuItem("Reload"))
 				{
 					Reload();
+				}
+				if (ImGui::MenuItem("New C# Script"))
+				{
+					CreateContent(AssetType::Script);
 				}
 
 				ImGui::EndPopup();
@@ -216,7 +235,7 @@ namespace Engine
 			TopBarUtils::DrawTextButton("->");
 			ImGui::SameLine(0.f, 15.f);
 
-			if (TopBarUtils::DrawTextButton("Add Content"))
+			if (TopBarUtils::DrawTextButton("Import Asset"))
 			{
 				std::filesystem::path FPath = FileDialogs::OpenFile(L"All Files (*.*) \0*.*\0");
 
@@ -261,6 +280,63 @@ namespace Engine
 
 		ImGui::PopStyleColor(3);
 
+		if (bIsCreated)
+		{
+			DrawCreatedContent();
+		}
+		else
+		{
+			DrawUncreatedContent();
+		}
+	}
+
+	void ContentBrowserPanel::BrowserContent::DrawUncreatedContent()
+	{
+		bool isDirectory = Entry.Type == AssetType::Folder;
+
+		if (!RenameBuffer)
+		{
+			RenameBuffer = new char[RenameBufferSize];
+			memset(RenameBuffer, 0, RenameBufferSize);
+		}
+
+		if (bIsError)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
+		}
+
+		ImGui::InputText("##name", RenameBuffer, RenameBufferSize);
+
+		if (bIsError)
+		{
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+		}
+
+		ImGui::SetKeyboardFocusHere(-1);
+
+		if (
+			!ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) ||
+			ImGui::IsItemFocused() && ImGui::IsKeyDown(ImGuiKey_Enter)
+		){
+			bIsError = !Panel->OnCreateContent(this);
+
+			if (!bIsError)
+			{
+				bIsCreated = true;
+
+				delete[] RenameBuffer;
+				RenameBuffer = nullptr;
+
+				Panel->Reload();
+			}
+		}
+	}
+
+	void ContentBrowserPanel::BrowserContent::DrawCreatedContent()
+	{
+		bool isDirectory = Entry.Type == AssetType::Folder;
 		bool lastRenameState = bShouldRename;
 
 		if (ImGui::BeginPopupContextItem())
@@ -370,6 +446,48 @@ namespace Engine
 			Panel->Reload();
 
 			delete[] RenameBuffer;
+		}
+	}
+
+	void ContentBrowserPanel::CreateContent(AssetType type)
+	{
+		BrowserContent content = BrowserContent();
+		content.bIsCreated = false;
+		content.Entry.Type = type;
+		content.Panel = this;
+
+		ContentList.push_back(content);
+	}
+
+	bool ContentBrowserPanel::OnCreateContent(BrowserContent* Content)
+	{
+		switch (Content->Entry.Type)
+		{
+		case AssetType::Folder:
+		{
+			CString FolderName = TypeUtils::FromUTF8(Content->RenameBuffer);
+			return AssetManager::CreateFolder(CurrentDirectory, FolderName);
+		}
+		case AssetType::Script:
+		{
+			std::string ScriptName = Content->RenameBuffer;
+			if (ProjectManager::CreateScript(ScriptName))
+			{
+				AssetMetadata data;
+				data.SetStringField("Name", ScriptName);
+
+				return AssetManager::CreateAsset(
+					CurrentDirectory,
+					TypeUtils::FromUTF8(ScriptName),
+					data,
+					AssetType::Script
+				);
+			}
+
+			return false;
+		}
+		default:
+			return false;
 		}
 	}
 

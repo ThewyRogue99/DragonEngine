@@ -92,6 +92,7 @@ namespace Engine
     class DirectoryEntry
     {
     public:
+        DirectoryEntry() = default;
         DirectoryEntry(const DirectoryEntry&) = default;
 
         AssetType Type = AssetType::Undefined;
@@ -113,9 +114,6 @@ namespace Engine
         CString PathName;
 
         AssetManager::AssetMap::iterator _it = AssetManager::AssetList.end();
-
-    private:
-        DirectoryEntry() = default;
     };
 
     class AssetIterator

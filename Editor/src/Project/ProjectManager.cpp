@@ -1,9 +1,12 @@
 #include "ProjectManager.h"
 
+#include "ProjectTools.h"
+#include "Engine/Scripting/ScriptEngine.h"
 #include "Engine/Asset/AssetManager.h"
 
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 
 namespace Engine
 {
@@ -12,7 +15,15 @@ namespace Engine
 	static Project ProjectData;
 	static bool bIsProjectLoaded = false;
 
-	static DispatcherType Dispatcher;
+	static void OnProjectLoad(const Project& p)
+	{
+		ProjectTools::SetProjectPath(p.Path);
+
+		if(ProjectTools::ScriptProjectExists())
+			ProjectTools::CompileScriptProject();
+	}
+
+	static DispatcherType Dispatcher = { OnProjectLoad };
 
 	static void SetAssetManager(const std::filesystem::path& ProjectPath)
 	{
@@ -25,11 +36,12 @@ namespace Engine
 
 		if (std::filesystem::is_directory(Path) && std::filesystem::exists(Path))
 		{
-			// Set Project
-			ProjectData.Name = ProjectName;
-
 			Path /= ProjectName;
 			std::filesystem::create_directory(Path);
+
+			// Set Project
+			ProjectData.Name = ProjectName;
+			ProjectData.Path = Path;
 
 			// Create Project File
 			CString ProjectPath = Path / (ProjectName + ".deproject");
@@ -46,9 +58,11 @@ namespace Engine
 			}
 
 			// Create Directories
+			std::filesystem::create_directories(Path / TEXT("Binary/Scripts"));
+
 			std::filesystem::create_directory(Path / TEXT("Assets"));
 
-			std::filesystem::create_directory(Path / TEXT("Sources"));
+			std::filesystem::create_directory(Path / TEXT("Source"));
 
 			bIsProjectLoaded = true;
 			SetAssetManager(Path);
@@ -75,14 +89,43 @@ namespace Engine
 
 				ProjectData.Deserialize(data);
 
+				std::filesystem::path ParentPath = Path.parent_path();
+				ProjectData.Path = ParentPath;
+
 				bIsProjectLoaded = true;
-				SetAssetManager(Path.parent_path());
+				SetAssetManager(ParentPath);
 
 				Dispatcher.Run(ProjectData);
 
 				return true;
 			}
 
+		}
+
+		return false;
+	}
+
+	bool ProjectManager::CreateScript(const std::string& Name)
+	{
+		if (Name != "Script")
+		{
+			std::filesystem::path SourcePath = ProjectData.Path;
+			SourcePath /= TEXT("Source");
+			SourcePath /= Name + ".cs";
+
+			std::ofstream f(SourcePath, std::ios::out);
+			if (f.is_open())
+			{
+				f << ProjectTools::GetScriptTemplateString(Name);
+
+				f.close();
+
+				ProjectTools::GenerateScriptProject();
+
+				ProjectTools::CompileScriptProject();
+
+				return true;
+			}
 		}
 
 		return false;

@@ -33,27 +33,37 @@ namespace Engine
 
 		void OnLoadProject(const Project& project);
 
+		void CreateContent(AssetType type);
+
 		class BrowserContent
 		{
 		public:
+			BrowserContent() = default;
+
 			BrowserContent(ContentBrowserPanel* panel, const DirectoryEntry& entry)
 				: Panel(panel), Entry(entry) { }
 
 			void Draw(float ThumbnailSize);
 
+			void DrawUncreatedContent();
+			void DrawCreatedContent();
+
 			void StartRename();
 			void StopRename();
 
-		private:
 			DirectoryEntry Entry;
 			ContentBrowserPanel* Panel = nullptr;
 
 			bool bShouldRename = false;
+			bool bIsCreated = true;
+			bool bIsError = false;
 
 			char* RenameBuffer = nullptr;
 
 			static const size_t RenameBufferSize = 256;
 		};
+
+		bool OnCreateContent(BrowserContent* Content);
 
 	private:
 		std::filesystem::path CurrentDirectory = L"";

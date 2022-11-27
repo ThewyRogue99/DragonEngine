@@ -43,6 +43,9 @@
     <ClInclude Include="src\Project\ProjectManager.h">
       <Filter>Project</Filter>
     </ClInclude>
+    <ClInclude Include="src\Project\ProjectTools.h">
+      <Filter>Project</Filter>
+    </ClInclude>
     <ClInclude Include="src\Scene\EditorCamera.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -86,5 +89,6 @@
     <ClCompile Include="src\Scene\EditorScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Project\ProjectTools.cpp" />
   </ItemGroup>
 </Project>

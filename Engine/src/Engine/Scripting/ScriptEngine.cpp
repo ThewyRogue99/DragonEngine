@@ -8,6 +8,12 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 
+#ifdef ENGINE_BUILD_DEBUG
+	#define MONO_PATH "../vendor/lib"
+#else
+	#define MONO_PATH "lib"
+#endif
+
 namespace Engine
 {
 	static bool bShouldRun = false;
@@ -15,9 +21,16 @@ namespace Engine
 	static MonoDomain* RootDomain = nullptr;
 	static MonoDomain* AppDomain = nullptr;
 
-	static MonoAssembly* CoreAssembly = nullptr;
+	struct AssemblyInfo
+	{
+		CString Path = L"";
 
-	static MonoImage* AssemblyImage = nullptr;
+		MonoAssembly* Assembly = nullptr;
+		MonoImage* Image = nullptr;
+	};
+
+	static AssemblyInfo CoreAssembly;
+	static AssemblyInfo AppAssembly;
 
 	struct ScriptData;
 
@@ -74,7 +87,7 @@ namespace Engine
 			}
 			else if (!image)
 			{
-				DE_CORE_ERROR("Failed to load assmebly in path: {0}", path_str.c_str());
+				DE_CORE_ERROR("Failed to load assembly in path: {0}", path_str.c_str());
 
 				delete[] data.Data;
 				return nullptr;
@@ -100,15 +113,6 @@ namespace Engine
 	void ScriptEngine::Init()
 	{
 		MonoInit();
-
-		CoreAssembly = Utils::LoadAssembly(TEXT("../bin/Resources/Scripts/DE_ScriptCore.dll"));
-
-		AssemblyImage = mono_assembly_get_image(CoreAssembly);
-
-		ScriptInternals::RegisterFunctions();
-		ScriptInternals::RegisterComponents();
-
-		ScriptEngine::LoadAllScripts();
 	}
 
 	void ScriptEngine::Shutdown()
@@ -118,6 +122,12 @@ namespace Engine
 		mono_jit_cleanup(RootDomain);
 
 		ScriptDataList.clear();
+	}
+
+	void ScriptEngine::SetAssemblyPath(const CString& CoreAssemblyPath, const CString& AppAssemblyPath)
+	{
+		CoreAssembly.Path = CoreAssemblyPath;
+		AppAssembly.Path = AppAssemblyPath;
 	}
 
 	void ScriptEngine::Run()
@@ -141,23 +151,78 @@ namespace Engine
 		ScriptObjectList.clear();
 	}
 
+	bool ScriptEngine::LoadCore()
+	{
+		CoreAssembly.Assembly = Utils::LoadAssembly(CoreAssembly.Path);
+
+		if (CoreAssembly.Assembly)
+		{
+			CoreAssembly.Image = mono_assembly_get_image(CoreAssembly.Assembly);
+
+			ScriptInternals::RegisterFunctions();
+			ScriptInternals::RegisterComponents();
+
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ScriptEngine::LoadApp()
+	{
+		AppAssembly.Assembly = Utils::LoadAssembly(AppAssembly.Path);
+
+		if (AppAssembly.Assembly)
+		{
+			AppAssembly.Image = mono_assembly_get_image(AppAssembly.Assembly);
+
+			ScriptEngine::LoadAllScripts();
+
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ScriptEngine::Load(bool LoadCoreAssembly)
+	{
+		if (AppDomain)
+		{
+			mono_domain_set(mono_get_root_domain(), false);
+			mono_domain_unload(AppDomain);
+		}
+
+		AppDomain = mono_domain_create_appdomain("DEScript_AppDomain", nullptr);
+		mono_domain_set(AppDomain, true);
+
+		bool result = true;
+
+		if (LoadCoreAssembly)
+			result = result && LoadCore();
+
+		return result && LoadApp();
+	}
+
 	void ScriptEngine::LoadAllScripts()
 	{
 		ScriptDataList.clear();
 
-		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(AssemblyImage, MONO_TABLE_TYPEDEF);
+		MonoImage* CoreImage = CoreAssembly.Image;
+		MonoImage* AppImage = AppAssembly.Image;
+
+		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(AppImage, MONO_TABLE_TYPEDEF);
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
-		MonoClass* scriptBaseClass = mono_class_from_name(AssemblyImage, "DragonEngine", "Script");
+		MonoClass* scriptBaseClass = mono_class_from_name(CoreImage, "DragonEngine", "Script");
 
 		for (int32_t i = 0; i < numTypes; i++)
 		{
 			uint32_t cols[MONO_TYPEDEF_SIZE];
 			mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
 
-			const char* nameSpace = mono_metadata_string_heap(AssemblyImage, cols[MONO_TYPEDEF_NAMESPACE]);
-			const char* name = mono_metadata_string_heap(AssemblyImage, cols[MONO_TYPEDEF_NAME]);
+			const char* nameSpace = mono_metadata_string_heap(AppImage, cols[MONO_TYPEDEF_NAMESPACE]);
+			const char* name = mono_metadata_string_heap(AppImage, cols[MONO_TYPEDEF_NAME]);
 
-			MonoClass* scriptClass = mono_class_from_name(AssemblyImage, nameSpace, name);
+			MonoClass* scriptClass = mono_class_from_name(AppImage, nameSpace, name);
 
 			if (scriptClass == scriptBaseClass)
 				continue;
@@ -169,8 +234,6 @@ namespace Engine
 					ScriptDataList.push_back({ name, nameSpace, scriptClass });
 			}
 		}
-
-		return;
 	}
 
 	Script* ScriptEngine::NewScript(const std::string& ScriptNamespace, const std::string& ScriptName)
@@ -189,7 +252,7 @@ namespace Engine
 			{
 				mono_runtime_object_init(ScriptObject);
 
-				MonoClass* scriptBaseClass = mono_class_from_name(AssemblyImage, "DragonEngine", "Script");
+				MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
 
 				Script* newScript = new Script();
 
@@ -247,18 +310,15 @@ namespace Engine
 
 	void* ScriptEngine::GetCoreAssemblyImage()
 	{
-		return AssemblyImage;
+		return CoreAssembly.Image;
 	}
 
 	void ScriptEngine::MonoInit()
 	{
+		mono_set_dirs(MONO_PATH, MONO_PATH);
+
 		RootDomain = mono_jit_init("DEScript_JITRuntime");
 
 		DE_CORE_ASSERT(RootDomain, "Failed to initialize JIT");
-
-		AppDomain = mono_domain_create_appdomain((char*)"DEScript_AppDomain", nullptr);
-		DE_CORE_ASSERT(AppDomain, "Failed to create an app domain");
-
-		mono_domain_set(AppDomain, true);
 	}
 }
