@@ -13,9 +13,9 @@
 [submodule "Engine/vendor/GLFW"]
 	path = Engine/vendor/GLFW
 	url = https://github.com/ThewyRogue99/glfw
-[submodule "Engine/vendor/imgui"]
-	path = Engine/vendor/imgui
-	url = https://github.com/ThewyRogue99/imgui/tree/docking
 [submodule "Engine/vendor/yaml-cpp"]
 	path = Engine/vendor/yaml-cpp
 	url = https://github.com/ThewyRogue99/yaml-cpp
+[submodule "Engine/vendor/imgui"]
+	path = Engine/vendor/imgui
+	url = https://github.com/ThewyRogue99/imgui
