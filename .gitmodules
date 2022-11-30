@@ -7,3 +7,15 @@
 [submodule "Engine/vendor/ImGuizmo"]
 	path = Engine/vendor/ImGuizmo
 	url = https://github.com/ThewyRogue99/ImGuizmo
+[submodule "Engine/vendor/Box2D"]
+	path = Engine/vendor/Box2D
+	url = https://github.com/ThewyRogue99/box2d
+[submodule "Engine/vendor/GLFW"]
+	path = Engine/vendor/GLFW
+	url = https://github.com/ThewyRogue99/glfw
+[submodule "Engine/vendor/imgui"]
+	path = Engine/vendor/imgui
+	url = https://github.com/ThewyRogue99/imgui/tree/docking
+[submodule "Engine/vendor/yaml-cpp"]
+	path = Engine/vendor/yaml-cpp
+	url = https://github.com/ThewyRogue99/yaml-cpp
