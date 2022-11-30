@@ -95,8 +95,6 @@ namespace Engine
         DirectoryEntry() = default;
         DirectoryEntry(const DirectoryEntry&) = default;
 
-        AssetType Type = AssetType::Undefined;
-
         friend class AssetManager;
         friend class AssetIterator;
 
@@ -107,11 +105,17 @@ namespace Engine
 
         const std::string& GetID() const;
 
-    private:
-        CString Path;
-        CString Name;
+        const AssetType GetType() const;
 
-        CString PathName;
+    private:
+        struct FolderData
+        {
+            CString Path;
+            CString Name;
+
+            CString PathName;
+        };
+        Ref<FolderData> dFolder = nullptr;
 
         AssetManager::AssetMap::iterator _it = AssetManager::AssetList.end();
     };

@@ -41,7 +41,7 @@ namespace Engine
 			BrowserContent() = default;
 
 			BrowserContent(ContentBrowserPanel* panel, const DirectoryEntry& entry)
-				: Panel(panel), Entry(entry) { }
+				: Panel(panel), Entry(entry), Type(entry.GetType()) { }
 
 			void Draw(float ThumbnailSize);
 
@@ -53,6 +53,8 @@ namespace Engine
 
 			DirectoryEntry Entry;
 			ContentBrowserPanel* Panel = nullptr;
+
+			AssetType Type = AssetType::Undefined;
 
 			bool bShouldRename = false;
 			bool bIsCreated = true;

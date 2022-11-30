@@ -20,11 +20,15 @@ namespace Engine
 {
 	static Ref<Texture2D> DirectoryIcon = nullptr;
 	static Ref<Texture2D> FileIcon = nullptr;
+	static Ref<Texture2D> SceneFileIcon = nullptr;
+	static Ref<Texture2D> ScriptFileIcon = nullptr;
 
 	ContentBrowserPanel::ContentBrowserPanel() : EditorPanel("Content Browser")
 	{
 		DirectoryIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/DirectoryIcon.png"));
 		FileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/FileIcon.png"));
+		SceneFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/SceneFileIcon.png"));
+		ScriptFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/ScriptFileIcon.png"));
 		
 		ProjectManager::OnLoadProject().AddCallback(BIND_EVENT_FN(ContentBrowserPanel::OnLoadProject));
 	}
@@ -38,6 +42,12 @@ namespace Engine
 
 		if(!FileIcon)
 			FileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/FileIcon.png"));
+
+		if (!SceneFileIcon)
+			SceneFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/SceneFileIcon.png"));
+
+		if (!ScriptFileIcon)
+			ScriptFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/ScriptFileIcon.png"));
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 	}
@@ -76,7 +86,7 @@ namespace Engine
 		int idx = 0;
 		for (auto& it : AssetIterator(DirectoryPath))
 		{
-			if (it.Type == AssetType::Folder)
+			if (it.GetType() == AssetType::Folder)
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
 
@@ -269,8 +279,22 @@ namespace Engine
 
 	void ContentBrowserPanel::BrowserContent::Draw(float ThumbnailSize)
 	{
-		bool isDirectory = Entry.Type == AssetType::Folder;
-		Ref<Texture2D> icon = isDirectory ? DirectoryIcon : FileIcon;
+		Ref<Texture2D> icon = nullptr;
+		switch (Type)
+		{
+		case AssetType::Folder:
+			icon = DirectoryIcon;
+			break;
+		case AssetType::Scene:
+			icon = SceneFileIcon;
+			break;
+		case AssetType::Script:
+			icon = ScriptFileIcon;
+			break;
+		default:
+			icon = FileIcon;
+			break;
+		}
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 0.f));
@@ -292,7 +316,7 @@ namespace Engine
 
 	void ContentBrowserPanel::BrowserContent::DrawUncreatedContent()
 	{
-		bool isDirectory = Entry.Type == AssetType::Folder;
+		bool isDirectory = Type == AssetType::Folder;
 
 		if (!RenameBuffer)
 		{
@@ -336,7 +360,7 @@ namespace Engine
 
 	void ContentBrowserPanel::BrowserContent::DrawCreatedContent()
 	{
-		bool isDirectory = Entry.Type == AssetType::Folder;
+		bool isDirectory = Type == AssetType::Folder;
 		bool lastRenameState = bShouldRename;
 
 		if (ImGui::BeginPopupContextItem())
@@ -434,7 +458,7 @@ namespace Engine
 
 			CString NewName = TypeUtils::FromUTF8(RenameBuffer);
 
-			if (Entry.Type == AssetType::Folder)
+			if (Type == AssetType::Folder)
 			{
 				AssetManager::RenameFolder(Entry.GetPath(), Entry.GetName(), NewName);
 			}
@@ -453,7 +477,7 @@ namespace Engine
 	{
 		BrowserContent content = BrowserContent();
 		content.bIsCreated = false;
-		content.Entry.Type = type;
+		content.Type = type;
 		content.Panel = this;
 
 		ContentList.push_back(content);
@@ -461,7 +485,7 @@ namespace Engine
 
 	bool ContentBrowserPanel::OnCreateContent(BrowserContent* Content)
 	{
-		switch (Content->Entry.Type)
+		switch (Content->Type)
 		{
 		case AssetType::Folder:
 		{

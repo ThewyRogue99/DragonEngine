@@ -58,12 +58,12 @@ namespace Engine
 				}
 				else
 				{
-					DirEntry.Type = AssetType::Folder;
-					DirEntry.Path = Path;
-					DirEntry.Name = entry.path().filename();
+					DirEntry.dFolder = CreateRef<DirectoryEntry::FolderData>();
+					DirEntry.dFolder->Path = Path;
+					DirEntry.dFolder->Name = entry.path().filename();
 
-					std::filesystem::path fPath = DirEntry.Path;
-					DirEntry.PathName = fPath / DirEntry.Name;
+					std::filesystem::path fPath = DirEntry.dFolder->Path;
+					DirEntry.dFolder->PathName = fPath / DirEntry.dFolder->Name;
 				}
 
 				EntryList->push_back(DirEntry);
@@ -75,34 +75,42 @@ namespace Engine
 
 	const CString& DirectoryEntry::GetPath() const
 	{
-		if ((Type == AssetType::Folder))
-			return Path;
+		if (dFolder)
+			return dFolder->Path;
 		else
 			return (*_it).second.Path;
 	}
 
 	const CString& DirectoryEntry::GetName() const
 	{
-		if ((Type == AssetType::Folder))
-			return Name;
+		if (dFolder)
+			return dFolder->Name;
 		else
 			return (*_it).second.Name;
 	}
 
 	const CString& DirectoryEntry::GetPathName() const
 	{
-		if ((Type == AssetType::Folder))
-			return PathName;
+		if (dFolder)
+			return dFolder->PathName;
 		else
 			return (*_it).second.Path;
 	}
 
 	const std::string& DirectoryEntry::GetID() const
 	{
-		if (!(Type == AssetType::Folder))
+		if (!dFolder)
 			return (*_it).first;
 		else
 			throw std::out_of_range("Entry is not a Directory!");
+	}
+
+	const AssetType DirectoryEntry::GetType() const
+	{
+		if (dFolder)
+			return AssetType::Folder;
+		else
+			return (*_it).second.Type;
 	}
 
 	const DirectoryEntry& AssetIterator::operator*() const

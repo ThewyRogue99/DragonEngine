@@ -90,13 +90,16 @@ namespace Engine
 			{
 				std::string id = (const char*)payload->Data;
 
-				EditorScene* NewScene = new EditorScene();
-
 				Asset asset = AssetManager::LoadAsset(id);
+				if (asset.GetAssetType() == AssetType::Scene)
+				{
+					EditorScene* NewScene = new EditorScene();
 
-				SceneSerializer::Deserialize(NewScene, *asset.GetData());
+					SceneSerializer::Deserialize(NewScene, *asset.GetData());
 
-				SceneManager::AddScene(NewScene->GetName(), NewScene, true);
+					SceneManager::AddScene(NewScene->GetName(), NewScene, true);
+				}
+
 			}
 
 			ImGui::EndDragDropTarget();
