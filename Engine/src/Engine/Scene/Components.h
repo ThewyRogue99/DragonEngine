@@ -7,8 +7,10 @@
 #include "Engine/Math/Math.h"
 #include "Engine/Core/UUID.h"
 
+#include "Engine/Scripting/ScriptField.h"
 #include "Engine/Scripting/Script.h"
 
+#include <vector>
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -137,6 +139,8 @@ namespace Engine
 
 		std::string Name = "";
 		std::string Namespace = "";
+
+		std::vector<ScriptField> Fields = { };
 
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;

@@ -4,9 +4,13 @@
 #include "ScriptInternals.h"
 
 #include "Engine/Core/Log.h"
+#include "ScriptField.h"
+
+#include <algorithm>
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
+#include <mono/metadata/attrdefs.h>
 
 #ifdef ENGINE_BUILD_DEBUG
 	#define MONO_PATH "../vendor/lib"
@@ -31,8 +35,6 @@ namespace Engine
 
 	static AssemblyInfo CoreAssembly;
 	static AssemblyInfo AppAssembly;
-
-	struct ScriptData;
 
 	static std::unordered_map<std::string, Script*> ScriptObjectList = { };
 	static std::vector<ScriptData> ScriptDataList = { };
@@ -101,14 +103,6 @@ namespace Engine
 			return assembly;
 		}
 	}
-
-	struct ScriptData
-	{
-		std::string Name = "";
-		std::string NameSpace = "";
-
-		MonoClass* Class = nullptr;
-	};
 
 	void ScriptEngine::Init()
 	{
@@ -203,6 +197,55 @@ namespace Engine
 		return result && LoadApp();
 	}
 
+	void ScriptEngine::GetFields(ScriptData& data)
+	{
+		// Get Fields
+		int fieldCount = mono_class_num_fields(data.Class);
+		MonoClassField* iterator = nullptr;
+
+		for (int i = 0; i < fieldCount; i++)
+		{
+			mono_class_get_fields(data.Class, (void**)&iterator);
+
+			ScriptFieldVisibility visibility = ScriptFieldVisibility::Hidden;
+
+			if ((mono_field_get_flags(iterator) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK) == MONO_FIELD_ATTR_PUBLIC)
+				visibility = ScriptFieldVisibility::EditDefault;
+
+			MonoCustomAttrInfo* inf = mono_custom_attrs_from_field(data.Class, iterator);
+			if (inf)
+			{
+				MonoArray* attrArray = mono_custom_attrs_construct(inf);
+
+				uintptr_t len = mono_array_length(attrArray);
+
+				for (uintptr_t i = 0; i < len; i++)
+				{
+					MonoObject* obj = mono_array_get(attrArray, MonoObject*, i);
+					MonoClass* attrClass = mono_object_get_class(obj);
+					MonoType* attrType = mono_class_get_type(attrClass);
+
+					if (strcmp("DragonEngine.EditorReflection", mono_type_get_name(attrType)) == 0)
+					{
+						MonoClassField* VisibilityField = mono_class_get_field_from_name(attrClass, "_visibility");
+
+						mono_field_get_value(obj, VisibilityField, &visibility);
+					}
+
+					mono_custom_attrs_free(inf);
+				}
+			}
+
+			if (visibility != ScriptFieldVisibility::Hidden)
+			{
+				ScriptField f(iterator);
+				f.FieldVisibility = visibility;
+				DE_CORE_LOG("Found Field on {0}.{1}: {2}", data.NameSpace, data.Name, f.GetName());
+				data.Fields.push_back(f);
+			}
+		}
+	}
+
 	void ScriptEngine::LoadAllScripts()
 	{
 		ScriptDataList.clear();
@@ -231,36 +274,55 @@ namespace Engine
 			{
 				bool isScript = mono_class_is_subclass_of(scriptClass, scriptBaseClass, false);
 				if (isScript)
-					ScriptDataList.push_back({ name, nameSpace, scriptClass });
+				{
+					ScriptData data(name, nameSpace, scriptClass);
+					GetFields(data);
+
+					ScriptDataList.push_back(data);
+				}
 			}
 		}
 	}
 
+	ScriptData* ScriptEngine::GetScriptData(const std::string& ScriptNamespace, const std::string& ScriptName)
+	{
+		if (!ScriptName.empty())
+		{
+			auto it = std::find_if(ScriptDataList.begin(), ScriptDataList.end(), [ScriptNamespace, ScriptName](const ScriptData& data)
+			{
+				return (data.Name == ScriptName) && (data.NameSpace == ScriptNamespace);
+			});
+
+			if (it != ScriptDataList.end())
+			{
+				return &(*it);
+			}
+		}
+
+		return nullptr;
+	}
+
 	Script* ScriptEngine::NewScript(const std::string& ScriptNamespace, const std::string& ScriptName)
 	{
-		auto it = std::find_if(ScriptDataList.begin(), ScriptDataList.end(), [ScriptNamespace, ScriptName](const ScriptData& data)
-		{
-			return (data.Name == ScriptName) && (data.NameSpace == ScriptNamespace);
-		});
+		const ScriptData* data = GetScriptData(ScriptNamespace, ScriptName);
 
-		if (it != ScriptDataList.end())
+		if (data)
 		{
-			ScriptData& data = *it;
-
-			MonoObject* ScriptObject = mono_object_new(AppDomain, data.Class);
+			MonoObject* ScriptObject = mono_object_new(AppDomain, data->Class);
 			if (ScriptObject)
 			{
 				mono_runtime_object_init(ScriptObject);
 
-				MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
-
 				Script* newScript = new Script();
+				newScript->GCHandle = mono_gchandle_new(ScriptObject, false);
+
+				MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
 
 				MonoMethod* vMethod = mono_class_get_method_from_name(scriptBaseClass, "AttachToEntity", 1);
 				newScript->AttachToEntityMethod = mono_object_get_virtual_method(ScriptObject, vMethod);
 
-				newScript->BeginPlayMethod = mono_class_get_method_from_name(data.Class, "BeginPlay", 0);
-				newScript->UpdateMethod = mono_class_get_method_from_name(data.Class, "Update", 1);
+				newScript->BeginPlayMethod = mono_class_get_method_from_name(data->Class, "BeginPlay", 0);
+				newScript->UpdateMethod = mono_class_get_method_from_name(data->Class, "Update", 1);
 
 				newScript->ScriptObject = ScriptObject;
 
@@ -273,27 +335,20 @@ namespace Engine
 		return nullptr;
 	}
 
-	bool ScriptEngine::ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName)
+	void ScriptEngine::DestroyScript(Script* ScriptToDestroy)
 	{
-		auto it = std::find_if(ScriptDataList.begin(), ScriptDataList.end(), [ScriptNamespace, ScriptName](const ScriptData& data)
-		{
-			return (data.Name == ScriptName) && (data.NameSpace == ScriptNamespace);
-		});
-
-		return it != ScriptDataList.end();
+		mono_gchandle_free(ScriptToDestroy->GCHandle);
+		ScriptToDestroy->Clear();
 	}
 
-	std::vector<std::pair<std::string, std::string>> ScriptEngine::GetScriptData()
+	bool ScriptEngine::ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName)
 	{
-		size_t size = ScriptDataList.size();
-		std::vector<std::pair<std::string, std::string>> data(size);
+		return GetScriptData(ScriptNamespace, ScriptName);
+	}
 
-		for (size_t i = 0; i < size; i++)
-		{
-			data[i] = { ScriptDataList[i].Name, ScriptDataList[i].NameSpace };
-		}
-
-		return data;
+	const std::vector<ScriptData>& ScriptEngine::GetScriptDataList()
+	{
+		return ScriptDataList;
 	}
 
 	void ScriptEngine::Update(float DeltaTime)

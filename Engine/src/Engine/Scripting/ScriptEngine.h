@@ -27,11 +27,13 @@ namespace Engine
 
 		static void LoadAllScripts();
 
+		static ScriptData* GetScriptData(const std::string& ScriptNamespace, const std::string& ScriptName);
 		static Script* NewScript(const std::string& ScriptNamespace, const std::string& ScriptName);
+		static void DestroyScript(Script* ScriptToDestroy);
 
 		static bool ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName);
 
-		static std::vector<std::pair<std::string, std::string>> GetScriptData();
+		static const std::vector<ScriptData>& GetScriptDataList();
 
 		static void Update(float DeltaTime);
 
@@ -39,5 +41,7 @@ namespace Engine
 
 	private:
 		static void MonoInit();
+
+		static void GetFields(ScriptData& data);
 	};
 }

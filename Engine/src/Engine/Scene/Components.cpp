@@ -93,12 +93,29 @@ namespace Engine
 	{
 		Metadata.SetStringField("Name", Name);
 		Metadata.SetStringField("Namespace", Namespace);
+
+		AssetMetadata fieldData;
+		for (auto& field : Fields)
+		{
+			void* Data = field.GetBufferData();
+			size_t size = field.GetBufferSize();
+
+			fieldData.SetField(field.GetName(), Data, size);
+		}
+
+		Metadata.SetField("Fields", fieldData);
 	}
 
 	void ScriptComponent::OnDeserialize(AssetMetadata& Metadata)
 	{
 		Name = Metadata.GetStringField<char>("Name");
 		Namespace = Metadata.GetStringField<char>("Namespace");
+
+		AssetMetadata& fieldData = Metadata.GetField<AssetMetadata>("Fields");
+		for (auto& [name, field] : fieldData)
+		{
+			// TODO: Implement Deserialization
+		}
 	}
 
 	void Rigidbody2DComponent::OnSerialize(AssetMetadata& Metadata)

@@ -456,6 +456,9 @@
     <ClInclude Include="vendor\glm\glm\ext.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="vendor\glm\glm\ext\_matrix_vectorize.hpp">
+      <Filter>vendor\glm\glm\ext</Filter>
+    </ClInclude>
     <ClInclude Include="vendor\glm\glm\ext\matrix_clip_space.hpp">
       <Filter>vendor\glm\glm\ext</Filter>
     </ClInclude>
@@ -1515,6 +1518,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Scripting\ScriptField.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Asset\Asset.cpp">
@@ -1667,5 +1671,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Scripting\ScriptField.cpp" />
   </ItemGroup>
 </Project>

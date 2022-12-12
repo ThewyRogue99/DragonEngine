@@ -193,6 +193,7 @@
     <ClInclude Include="src\Engine\Scene\SceneManager.h" />
     <ClInclude Include="src\Engine\Scripting\Script.h" />
     <ClInclude Include="src\Engine\Scripting\ScriptEngine.h" />
+    <ClInclude Include="src\Engine\Scripting\ScriptField.h" />
     <ClInclude Include="src\Engine\Scripting\ScriptInternals.h" />
     <ClInclude Include="src\Engine\Types\Types.h" />
     <ClInclude Include="src\Engine\Utils\PlatformUtils.h" />
@@ -272,6 +273,7 @@
     <ClInclude Include="vendor\glm\glm\detail\type_vec4_simd.inl" />
     <ClInclude Include="vendor\glm\glm\exponential.hpp" />
     <ClInclude Include="vendor\glm\glm\ext.hpp" />
+    <ClInclude Include="vendor\glm\glm\ext\_matrix_vectorize.hpp" />
     <ClInclude Include="vendor\glm\glm\ext\matrix_clip_space.hpp" />
     <ClInclude Include="vendor\glm\glm\ext\matrix_clip_space.inl" />
     <ClInclude Include="vendor\glm\glm\ext\matrix_common.hpp" />
@@ -660,6 +662,7 @@
     <ClCompile Include="src\Engine\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Engine\Scripting\Script.cpp" />
     <ClCompile Include="src\Engine\Scripting\ScriptEngine.cpp" />
+    <ClCompile Include="src\Engine\Scripting\ScriptField.cpp" />
     <ClCompile Include="src\Engine\Scripting\ScriptInternals.cpp" />
     <ClCompile Include="src\Engine\Types\Types.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />

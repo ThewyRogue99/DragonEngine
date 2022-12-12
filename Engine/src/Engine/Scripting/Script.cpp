@@ -42,4 +42,16 @@ namespace Engine
 			}
 		}
 	}
+
+	void Script::Clear()
+	{
+		AttachedEntity = { };
+
+		ScriptObject = nullptr;
+		GCHandle = 0;
+
+		AttachToEntityMethod = nullptr;
+		BeginPlayMethod = nullptr;
+		UpdateMethod = nullptr;
+	}
 }

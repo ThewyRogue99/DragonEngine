@@ -294,6 +294,14 @@ namespace Engine
 						scriptObject->AttachToEntity({ entity, this });
 
 						script.ScriptObject = scriptObject;
+
+						// Set Fields
+						{
+							for (auto& field : script.Fields)
+							{
+								field.Set(scriptObject->ScriptObject);
+							}
+						}
 					}
 				}
 			}

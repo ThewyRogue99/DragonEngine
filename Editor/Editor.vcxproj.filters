@@ -83,12 +83,14 @@
     <ClCompile Include="src\Project\ProjectManager.cpp">
       <Filter>Project</Filter>
     </ClCompile>
+    <ClCompile Include="src\Project\ProjectTools.cpp">
+      <Filter>Project</Filter>
+    </ClCompile>
     <ClCompile Include="src\Scene\EditorCamera.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\EditorScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Project\ProjectTools.cpp" />
   </ItemGroup>
 </Project>

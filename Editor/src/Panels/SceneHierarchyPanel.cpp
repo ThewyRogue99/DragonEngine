@@ -36,7 +36,7 @@ namespace Engine
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			SetSelectedEntity({ });
 
-		if (ImGui::BeginPopupContextWindow(0, 1, false))
+		if (ImGui::BeginPopupContextWindow(0, 1))
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
 			{
@@ -472,14 +472,17 @@ namespace Engine
 
 		DrawComponent<ScriptComponent>("Script", entity, [](ScriptComponent& component)
 		{
-			auto ScriptDataList = ScriptEngine::GetScriptData();
+			auto& ScriptDataList = ScriptEngine::GetScriptDataList();
 
 			size_t size = ScriptDataList.size();
 			std::vector<std::string> FullScriptNameList(size);
 
 			for (size_t i = 0; i < size; i++)
 			{
-				auto& [Name, Namespace] = ScriptDataList[i];
+				auto& data = ScriptDataList[i];
+
+				auto& Namespace = data.GetNameSpace();
+				auto& Name = data.GetName();
 
 				FullScriptNameList[i] = (Namespace.empty() ? "" : Namespace + ".") + Name;
 			}
@@ -501,12 +504,103 @@ namespace Engine
 
 					if (ImGui::Selectable(ScriptNameList[i], selected))
 					{
-						component.Name = ScriptDataList[i].first;
-						component.Namespace = ScriptDataList[i].second;
+						component.Name = ScriptDataList[i].GetName();
+						component.Namespace = ScriptDataList[i].GetNameSpace();
+
+						component.Fields = ScriptDataList[i].GetFields();
 					}
 				}
 
 				ImGui::EndCombo();
+			}
+
+			for (auto& field : component.Fields)
+			{
+				const char* FieldName = field.GetName().c_str();
+
+				switch (field.GetFieldType())
+				{
+				case Engine::ScriptFieldType::Float:
+				{
+					auto& val = field.GetBuffer<float>();
+					float buff = val;
+
+					if (ImGui::DragFloat(FieldName, &buff))
+					{
+						field.SetBuffer(&buff);
+					}
+				} break;
+				case Engine::ScriptFieldType::Double:
+					break;
+				case Engine::ScriptFieldType::Bool:
+				{
+					auto& val = field.GetBuffer<bool>();
+					bool buff = val;
+
+					if (ImGui::Checkbox(FieldName, &buff))
+					{
+						field.SetBuffer(&buff);
+					}
+				} break;
+				case Engine::ScriptFieldType::Char:
+					break;
+				case Engine::ScriptFieldType::Short:
+					break;
+				case Engine::ScriptFieldType::Int:
+				{
+					auto& val = field.GetBuffer<int>();
+					int buff = val;
+
+					if (ImGui::DragInt(FieldName, &buff))
+					{
+						field.SetBuffer(&buff);
+					}
+				} break;
+				case Engine::ScriptFieldType::Long:
+					break;
+				case Engine::ScriptFieldType::Byte:
+					break;
+				case Engine::ScriptFieldType::UShort:
+					break;
+				case Engine::ScriptFieldType::UInt:
+					break;
+				case Engine::ScriptFieldType::ULong:
+					break;
+				case Engine::ScriptFieldType::Vector2:
+				{
+					auto& val = field.GetBuffer<glm::vec2>();
+					glm::vec2 buff = val;
+
+					if (ImGui::DragFloat2(FieldName, glm::value_ptr(buff)))
+					{
+						field.SetBuffer(&buff);
+					}
+				} break;
+				case Engine::ScriptFieldType::Vector3:
+				{
+					auto& val = field.GetBuffer<glm::vec3>();
+					glm::vec3 buff = val;
+
+					if (ImGui::DragFloat3(FieldName, glm::value_ptr(buff)))
+					{
+						field.SetBuffer(&buff);
+					}
+				} break;
+				case Engine::ScriptFieldType::Vector4:
+				{
+					auto& val = field.GetBuffer<glm::vec4>();
+					glm::vec4 buff = val;
+
+					if (ImGui::DragFloat4(FieldName, glm::value_ptr(buff)))
+					{
+						field.SetBuffer(&buff);
+					}
+				} break;
+				case Engine::ScriptFieldType::Entity:
+					break;
+				default:
+					break;
+				}
 			}
 		});
 	}
