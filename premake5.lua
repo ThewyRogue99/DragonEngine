@@ -36,6 +36,7 @@ IncludeDir["ImGuizmo"] = "%{wks.location}/Engine/vendor/ImGuizmo"
 IncludeDir["Box2D"] = "%{wks.location}/Engine/vendor/Box2D/include"
 IncludeDir["mono"] = "%{wks.location}/Engine/vendor/mono/include"
 IncludeDir["uuid_v4"] = "%{wks.location}/Engine/vendor/uuid_v4"
+IncludeDir["nfd"] = "%{wks.location}/Editor/vendor/nfd/src/include"
 
 LibraryDir = {}
 LibraryDir["mono"] = "%{wks.location}/vendor/lib/mono"
@@ -49,6 +50,7 @@ group "Dependencies"
 	include "Engine/vendor/imgui"
 	include "Engine/vendor/yaml-cpp"
 	include "Engine/vendor/Box2D"
+	include "Editor/vendor/nfd"
 group ""
 
 group "Core"

@@ -30,7 +30,13 @@ project "Editor"
 
 	links
 	{
+		"nfd",
 		"Engine"
+	}
+
+	includedirs
+	{
+		"%{IncludeDir.nfd}"
 	}
 
 	defines

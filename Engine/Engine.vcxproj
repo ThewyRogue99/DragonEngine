@@ -196,7 +196,6 @@
     <ClInclude Include="src\Engine\Scripting\ScriptField.h" />
     <ClInclude Include="src\Engine\Scripting\ScriptInternals.h" />
     <ClInclude Include="src\Engine\Types\Types.h" />
-    <ClInclude Include="src\Engine\Utils\PlatformUtils.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
@@ -676,7 +675,6 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLWindow.cpp" />
     <ClCompile Include="src\Platform\Platform.cpp" />
-    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp" />
     <ClCompile Include="src\depch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

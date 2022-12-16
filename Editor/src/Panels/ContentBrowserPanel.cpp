@@ -5,7 +5,6 @@
 
 #include "PanelDragPayload.h"
 
-#include "Engine/Utils/PlatformUtils.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/Asset/Serializer/SceneSerializer.h"
@@ -17,6 +16,7 @@
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
+#include <nfd.h>
 
 namespace Engine
 {
@@ -249,12 +249,27 @@ namespace Engine
 
 			if (TopBarUtils::DrawTextButton("Import Asset"))
 			{
-				std::filesystem::path FPath = FileDialogs::OpenFile(L"All Files (*.*) \0*.*\0");
+				nfdchar_t* outPath = nullptr;
+				nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &outPath);
 
-				if (!std::filesystem::is_directory(FPath))
+				if (result == NFD_OKAY)
 				{
-					AssetManager::CreateAssetFromFile(FPath, CurrentDirectory);
-					Reload();
+					std::filesystem::path FPath = outPath;
+					free(outPath);
+
+					if (!std::filesystem::is_directory(FPath))
+					{
+						AssetManager::CreateAssetFromFile(FPath, CurrentDirectory);
+						Reload();
+					}
+				}
+				else if (result == NFD_CANCEL)
+				{
+					DE_CORE_INFO("User cancelled file dialog");
+				}
+				else
+				{
+					DE_CORE_INFO("Error: {0}", NFD_GetError());
 				}
 			}
 

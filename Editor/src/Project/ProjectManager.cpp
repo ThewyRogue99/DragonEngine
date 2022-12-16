@@ -36,9 +36,6 @@ namespace Engine
 
 		if (std::filesystem::is_directory(Path) && std::filesystem::exists(Path))
 		{
-			Path /= ProjectName;
-			std::filesystem::create_directory(Path);
-
 			// Set Project
 			ProjectData.Name = ProjectName;
 			ProjectData.Path = Path;

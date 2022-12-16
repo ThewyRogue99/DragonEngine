@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>__EDITOR__;ENGINE_BUILD_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Engine\vendor\spdlog\include;..\Engine\src;..\Engine\vendor;..\Engine\vendor\glm;..\Engine\vendor\entt\include;..\Engine\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Engine\vendor\spdlog\include;..\Engine\src;..\Engine\vendor;..\Engine\vendor\glm;..\Engine\vendor\entt\include;..\Engine\vendor\yaml-cpp\include;vendor\nfd\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -101,7 +101,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>__EDITOR__;ENGINE_BUILD_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Engine\vendor\spdlog\include;..\Engine\src;..\Engine\vendor;..\Engine\vendor\glm;..\Engine\vendor\entt\include;..\Engine\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Engine\vendor\spdlog\include;..\Engine\src;..\Engine\vendor;..\Engine\vendor\glm;..\Engine\vendor\entt\include;..\Engine\vendor\yaml-cpp\include;vendor\nfd\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -126,7 +126,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>__EDITOR__;ENGINE_BUILD_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Engine\vendor\spdlog\include;..\Engine\src;..\Engine\vendor;..\Engine\vendor\glm;..\Engine\vendor\entt\include;..\Engine\vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Engine\vendor\spdlog\include;..\Engine\src;..\Engine\vendor;..\Engine\vendor\glm;..\Engine\vendor\entt\include;..\Engine\vendor\yaml-cpp\include;vendor\nfd\src\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -179,6 +179,9 @@
     <ClCompile Include="src\Scene\EditorScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="vendor\nfd\nfd.vcxproj">
+      <Project>{5D94880B-C99D-887C-5219-9F7CBE21947C}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Engine\Engine.vcxproj">
       <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
     </ProjectReference>

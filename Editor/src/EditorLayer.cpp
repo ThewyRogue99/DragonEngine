@@ -4,12 +4,11 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Renderer/Renderer2D.h"
 
-#include "Engine/Utils/PlatformUtils.h"
-
 #include <imgui/imgui.h>
 #include <ImGuizmo/ImGuizmo.h>
 
 #include <filesystem>
+#include <nfd.h>
 
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
@@ -134,18 +133,51 @@ namespace Engine
 			{
 				if (ImGui::MenuItem("New Project", "Ctrl+N"))
 				{
-					std::filesystem::path FullPath = FileDialogs::SaveFile(L"Project Files (*.deproject*) \0*.deproject*\0");
+					//std::filesystem::path FullPath = FileDialogs::SaveFile(L"Project Files (*.deproject*) \0*.deproject*\0");
 
-					CString ProjectPath = FullPath.parent_path();
-					std::string ProjectName = TypeUtils::FromUTF16(FullPath.filename());
+					nfdchar_t* outPath = nullptr;
+					nfdresult_t result = NFD_PickFolder(nullptr, &outPath);
 
-					ProjectManager::CreateProject(ProjectPath, ProjectName);
+					if (result == NFD_OKAY)
+					{
+						std::filesystem::path FullPath = outPath;
+						free(outPath);
+
+						std::string ProjectName = TypeUtils::FromUTF16(FullPath.filename());
+
+						ProjectManager::CreateProject(FullPath, ProjectName);
+					}
+					else if (result == NFD_CANCEL)
+					{
+						DE_CORE_INFO("User cancelled file dialog");
+					}
+					else
+					{
+						DE_CORE_INFO("Error: {0}", NFD_GetError());
+					}
 				}
 				if (ImGui::MenuItem("Load Project", "Ctrl+L"))
 				{
-					CString FullPath = FileDialogs::OpenFile(L"Project Files (*.deproject*) \0*.deproject*\0");
+					//CString FullPath = FileDialogs::OpenFile(L"Project Files (*.deproject*) \0*.deproject*\0");
 
-					ProjectManager::LoadProject(FullPath);
+					nfdchar_t* outPath = nullptr;
+					nfdresult_t result = NFD_OpenDialog("deproject;", nullptr, &outPath);
+
+					if (result == NFD_OKAY)
+					{
+						std::filesystem::path FullPath = outPath;
+						free(outPath);
+
+						ProjectManager::LoadProject(FullPath);
+					}
+					else if (result == NFD_CANCEL)
+					{
+						DE_CORE_INFO("User cancelled file dialog");
+					}
+					else
+					{
+						DE_CORE_INFO("Error: {0}", NFD_GetError());
+					}
 				}
 
 				ImGui::EndMenu();

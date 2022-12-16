@@ -219,14 +219,14 @@
     <ClInclude Include="src\Engine\Scripting\ScriptEngine.h">
       <Filter>src\Engine\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Scripting\ScriptField.h">
+      <Filter>src\Engine\Scripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Scripting\ScriptInternals.h">
       <Filter>src\Engine\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Types\Types.h">
       <Filter>src\Engine\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Utils\PlatformUtils.h">
-      <Filter>src\Engine\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
@@ -1518,7 +1518,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Scripting\ScriptField.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Asset\Asset.cpp">
@@ -1620,6 +1619,9 @@
     <ClCompile Include="src\Engine\Scripting\ScriptEngine.cpp">
       <Filter>src\Engine\Scripting</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Scripting\ScriptField.cpp">
+      <Filter>src\Engine\Scripting</Filter>
+    </ClCompile>
     <ClCompile Include="src\Engine\Scripting\ScriptInternals.cpp">
       <Filter>src\Engine\Scripting</Filter>
     </ClCompile>
@@ -1659,9 +1661,6 @@
     <ClCompile Include="src\Platform\Platform.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp">
-      <Filter>src\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\depch.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1671,6 +1670,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Scripting\ScriptField.cpp" />
   </ItemGroup>
 </Project>
