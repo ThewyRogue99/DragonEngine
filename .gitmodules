@@ -19,6 +19,3 @@
 [submodule "Engine/vendor/imgui"]
 	path = Engine/vendor/imgui
 	url = https://github.com/ThewyRogue99/imgui
-[submodule "Editor/vendor/nfd"]
-	path = Editor/vendor/nfd
-	url = https://github.com/ThewyRogue99/nativefiledialog
