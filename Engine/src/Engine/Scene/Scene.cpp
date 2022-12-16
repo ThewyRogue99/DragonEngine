@@ -297,7 +297,7 @@ namespace Engine
 
 						// Set Fields
 						{
-							for (auto& field : script.Fields)
+							for (auto& field : *(script.Fields))
 							{
 								field.Set(scriptObject->ScriptObject);
 							}

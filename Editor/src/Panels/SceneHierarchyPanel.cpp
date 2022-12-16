@@ -487,12 +487,6 @@ namespace Engine
 				FullScriptNameList[i] = (Namespace.empty() ? "" : Namespace + ".") + Name;
 			}
 
-			std::vector<const char*> ScriptNameList(size);
-			for (size_t i = 0; i < size; i++)
-			{
-				ScriptNameList[i] = FullScriptNameList[i].c_str();
-			}
-
 			std::string componentScriptFullName = (component.Namespace.empty() ? "" : component.Namespace + ".") + component.Name;
 			const char* preview = component.Name.empty() ? "Select Script..." : componentScriptFullName.c_str();
 
@@ -502,104 +496,107 @@ namespace Engine
 				{
 					bool selected = FullScriptNameList[i] == preview;
 
-					if (ImGui::Selectable(ScriptNameList[i], selected))
+					if (ImGui::Selectable(FullScriptNameList[i].c_str(), selected))
 					{
 						component.Name = ScriptDataList[i].GetName();
 						component.Namespace = ScriptDataList[i].GetNameSpace();
 
-						component.Fields = ScriptDataList[i].GetFields();
+						component.Fields = &ScriptDataList[i].GetFields();
 					}
 				}
 
 				ImGui::EndCombo();
 			}
 
-			for (auto& field : component.Fields)
+			if (component.Fields)
 			{
-				const char* FieldName = field.GetName().c_str();
-
-				switch (field.GetFieldType())
+				for (auto& field : *component.Fields)
 				{
-				case Engine::ScriptFieldType::Float:
-				{
-					auto& val = field.GetBuffer<float>();
-					float buff = val;
+					const char* FieldName = field.GetName().c_str();
 
-					if (ImGui::DragFloat(FieldName, &buff))
+					switch (field.GetFieldType())
 					{
-						field.SetBuffer(&buff);
-					}
-				} break;
-				case Engine::ScriptFieldType::Double:
-					break;
-				case Engine::ScriptFieldType::Bool:
-				{
-					auto& val = field.GetBuffer<bool>();
-					bool buff = val;
-
-					if (ImGui::Checkbox(FieldName, &buff))
+					case Engine::ScriptFieldType::Float:
 					{
-						field.SetBuffer(&buff);
-					}
-				} break;
-				case Engine::ScriptFieldType::Char:
-					break;
-				case Engine::ScriptFieldType::Short:
-					break;
-				case Engine::ScriptFieldType::Int:
-				{
-					auto& val = field.GetBuffer<int>();
-					int buff = val;
+						auto& val = field.GetBufferValue<float>();
+						float buff = val;
 
-					if (ImGui::DragInt(FieldName, &buff))
+						if (ImGui::DragFloat(FieldName, &buff))
+						{
+							field.SetBufferValue(&buff);
+						}
+					} break;
+					case Engine::ScriptFieldType::Double:
+						break;
+					case Engine::ScriptFieldType::Bool:
 					{
-						field.SetBuffer(&buff);
-					}
-				} break;
-				case Engine::ScriptFieldType::Long:
-					break;
-				case Engine::ScriptFieldType::Byte:
-					break;
-				case Engine::ScriptFieldType::UShort:
-					break;
-				case Engine::ScriptFieldType::UInt:
-					break;
-				case Engine::ScriptFieldType::ULong:
-					break;
-				case Engine::ScriptFieldType::Vector2:
-				{
-					auto& val = field.GetBuffer<glm::vec2>();
-					glm::vec2 buff = val;
+						auto& val = field.GetBufferValue<bool>();
+						bool buff = val;
 
-					if (ImGui::DragFloat2(FieldName, glm::value_ptr(buff)))
+						if (ImGui::Checkbox(FieldName, &buff))
+						{
+							field.SetBufferValue(&buff);
+						}
+					} break;
+					case Engine::ScriptFieldType::Char:
+						break;
+					case Engine::ScriptFieldType::Short:
+						break;
+					case Engine::ScriptFieldType::Int:
 					{
-						field.SetBuffer(&buff);
-					}
-				} break;
-				case Engine::ScriptFieldType::Vector3:
-				{
-					auto& val = field.GetBuffer<glm::vec3>();
-					glm::vec3 buff = val;
+						auto& val = field.GetBufferValue<int>();
+						int buff = val;
 
-					if (ImGui::DragFloat3(FieldName, glm::value_ptr(buff)))
+						if (ImGui::DragInt(FieldName, &buff))
+						{
+							field.SetBufferValue(&buff);
+						}
+					} break;
+					case Engine::ScriptFieldType::Long:
+						break;
+					case Engine::ScriptFieldType::Byte:
+						break;
+					case Engine::ScriptFieldType::UShort:
+						break;
+					case Engine::ScriptFieldType::UInt:
+						break;
+					case Engine::ScriptFieldType::ULong:
+						break;
+					case Engine::ScriptFieldType::Vector2:
 					{
-						field.SetBuffer(&buff);
-					}
-				} break;
-				case Engine::ScriptFieldType::Vector4:
-				{
-					auto& val = field.GetBuffer<glm::vec4>();
-					glm::vec4 buff = val;
+						auto& val = field.GetBufferValue<glm::vec2>();
+						glm::vec2 buff = val;
 
-					if (ImGui::DragFloat4(FieldName, glm::value_ptr(buff)))
+						if (ImGui::DragFloat2(FieldName, glm::value_ptr(buff)))
+						{
+							field.SetBufferValue(&buff);
+						}
+					} break;
+					case Engine::ScriptFieldType::Vector3:
 					{
-						field.SetBuffer(&buff);
+						auto& val = field.GetBufferValue<glm::vec3>();
+						glm::vec3 buff = val;
+
+						if (ImGui::DragFloat3(FieldName, glm::value_ptr(buff)))
+						{
+							field.SetBufferValue(&buff);
+						}
+					} break;
+					case Engine::ScriptFieldType::Vector4:
+					{
+						auto& val = field.GetBufferValue<glm::vec4>();
+						glm::vec4 buff = val;
+
+						if (ImGui::DragFloat4(FieldName, glm::value_ptr(buff)))
+						{
+							field.SetBufferValue(&buff);
+						}
+					} break;
+					case Engine::ScriptFieldType::Entity:
+						break;
+					default:
+						break;
 					}
-				} break;
-				case Engine::ScriptFieldType::Entity:
-					break;
-				default:
-					break;
 				}
 			}
 		});

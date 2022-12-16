@@ -21,11 +21,11 @@ namespace Engine
 		static void Stop();
 
 		static bool LoadCore();
-		static bool LoadApp();
+		static bool LoadApp(bool Reload = false);
 
-		static bool Load(bool LoadCoreAssembly = true);
+		static bool Load(bool Reload = false);
 
-		static void LoadAllScripts();
+		static void LoadAllScripts(bool Reload = false);
 
 		static ScriptData* GetScriptData(const std::string& ScriptNamespace, const std::string& ScriptName);
 		static Script* NewScript(const std::string& ScriptNamespace, const std::string& ScriptName);
@@ -33,7 +33,7 @@ namespace Engine
 
 		static bool ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName);
 
-		static const std::vector<ScriptData>& GetScriptDataList();
+		static std::vector<ScriptData>& GetScriptDataList();
 
 		static void Update(float DeltaTime);
 

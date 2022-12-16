@@ -2,6 +2,7 @@
 #include "Components.h"
 
 #include "Engine/Asset/AssetMetadata.h"
+#include "Engine/Scripting/ScriptEngine.h"
 
 namespace Engine
 {
@@ -95,12 +96,15 @@ namespace Engine
 		Metadata.SetStringField("Namespace", Namespace);
 
 		AssetMetadata fieldData;
-		for (auto& field : Fields)
+		if (Fields)
 		{
-			void* Data = field.GetBufferData();
-			size_t size = field.GetBufferSize();
+			for (auto& field : *Fields)
+			{
+				void* Data = field.GetBufferData();
+				size_t size = field.GetBufferSize();
 
-			fieldData.SetField(field.GetName(), Data, size);
+				fieldData.SetField(field.GetName(), Data, size);
+			}
 		}
 
 		Metadata.SetField("Fields", fieldData);
@@ -112,9 +116,22 @@ namespace Engine
 		Namespace = Metadata.GetStringField<char>("Namespace");
 
 		AssetMetadata& fieldData = Metadata.GetField<AssetMetadata>("Fields");
-		for (auto& [name, field] : fieldData)
+		Fields = &ScriptEngine::GetScriptData(Namespace, Name)->GetFields();
+
+		for (auto& tuple : fieldData)
 		{
-			// TODO: Implement Deserialization
+			auto& fieldName = tuple.first;
+			auto& field = tuple.second;
+
+			auto& it = std::find_if(Fields->begin(), Fields->end(), [fieldName](const ScriptField& field)
+			{
+				return field.GetName() == fieldName;
+			});
+
+			if (it != Fields->end())
+			{
+				(*it).SetBufferData(field.DataPtr, field.DataSize);
+			}
 		}
 	}
 

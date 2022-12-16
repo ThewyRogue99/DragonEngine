@@ -140,7 +140,7 @@ namespace Engine
 		std::string Name = "";
 		std::string Namespace = "";
 
-		std::vector<ScriptField> Fields = { };
+		std::vector<ScriptField>* Fields = nullptr;
 
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;

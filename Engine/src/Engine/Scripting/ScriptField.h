@@ -3,6 +3,8 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 
+#include <typeindex>
+
 extern "C" {
 	typedef struct _MonoClassField MonoClassField;
 	typedef struct _MonoObject MonoObject;
@@ -38,10 +40,10 @@ namespace Engine
 		void Set(MonoObject* Object);
 
 		template<typename T>
-		void Set(MonoObject* Object, T* value);
+		void SetValue(MonoObject* Object, T* value);
 
 		template<typename T>
-		void SetBuffer(T* value)
+		void SetBufferValue(T* value)
 		{
 			if (FieldBuffer)
 				delete (T*)FieldBuffer;
@@ -50,14 +52,19 @@ namespace Engine
 			FieldBuffer = new T(*value);
 		}
 
-		template<typename T>
-		const T& Get(MonoObject* Object);
+		void Get(MonoObject* Object);
 
 		template<typename T>
-		const T& GetBuffer()
+		const T& GetValue(MonoObject* Object);
+
+		template<typename T>
+		const T& GetBufferValue()
 		{
 			if (!FieldBuffer)
+			{
 				FieldBuffer = new T();
+				BufferSize = sizeof(T);
+			}
 
 			return *((T*)FieldBuffer);
 		}
@@ -65,18 +72,19 @@ namespace Engine
 		void* GetBufferData() const { return FieldBuffer; }
 		size_t GetBufferSize() const { return BufferSize; }
 
+		void SetBufferData(void* Data, size_t size);
+
 		bool IsSameField(const ScriptField& field);
 
 		friend class ScriptEngine;
 
 	private:
-		void* FieldBuffer = nullptr;
-		size_t BufferSize = 0;
-
-	private:
 		MonoClassField* ClassField = nullptr;
 
 		std::string Name;
+
+		void* FieldBuffer = nullptr;
+		size_t BufferSize = 0;
 
 		ScriptFieldType FieldType = ScriptFieldType::None;
 		ScriptFieldVisibility FieldVisibility = ScriptFieldVisibility::Hidden;

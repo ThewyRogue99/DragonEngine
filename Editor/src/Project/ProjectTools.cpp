@@ -28,6 +28,8 @@ namespace Engine
 		static std::filesystem::path CoreAssemblyPath;
 		static std::filesystem::path AppAssemblyPath;
 
+		static bool bShouldReload = false;
+
 		static std::filesystem::path GetSolutionPath()
 		{
 			return ProjectPath / TEXT("GameAssembly.sln");
@@ -99,7 +101,10 @@ namespace Engine
 				AppAssemblyPath
 			);
 
-			return ScriptEngine::Load();
+			bool result = ScriptEngine::Load(bShouldReload);
+			bShouldReload = true;
+
+			return result;
 		}
 
 		bool ScriptProjectExists()
@@ -121,6 +126,8 @@ namespace Engine
 
 			CoreAssemblyPath = ProjectPath / CORE_ASSEMBLY_RELATIVE_PATH;
 			AppAssemblyPath = ProjectPath / APP_ASSEMBLY_RELATIVE_PATH;
+
+			bShouldReload = false;
 		}
 
 		std::string GetScriptTemplateString(const std::string& ScriptName)

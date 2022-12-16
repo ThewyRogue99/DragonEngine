@@ -24,6 +24,7 @@ namespace Engine
 
 		friend class ScriptEngine;
 		friend class Scene;
+		friend class EditorScene;
 
 	private:
 		void Clear();
@@ -45,7 +46,12 @@ namespace Engine
 		const std::string& GetName() const { return Name; }
 		const std::string& GetNameSpace() const { return NameSpace; }
 		const MonoClass* GetClass() const { return Class; }
-		const std::vector<ScriptField>& GetFields() const { return Fields; }
+		std::vector<ScriptField>& GetFields() { return Fields; }
+
+		bool IsSame(const ScriptData& Data) const
+		{
+			return (Data.Name == Name) && (Data.NameSpace == NameSpace);
+		}
 
 		friend class ScriptEngine;
 

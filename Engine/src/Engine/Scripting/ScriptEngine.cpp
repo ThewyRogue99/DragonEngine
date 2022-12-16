@@ -162,7 +162,7 @@ namespace Engine
 		return false;
 	}
 
-	bool ScriptEngine::LoadApp()
+	bool ScriptEngine::LoadApp(bool Reload)
 	{
 		AppAssembly.Assembly = Utils::LoadAssembly(AppAssembly.Path);
 
@@ -170,7 +170,7 @@ namespace Engine
 		{
 			AppAssembly.Image = mono_assembly_get_image(AppAssembly.Assembly);
 
-			ScriptEngine::LoadAllScripts();
+			ScriptEngine::LoadAllScripts(Reload);
 
 			return true;
 		}
@@ -178,7 +178,7 @@ namespace Engine
 		return false;
 	}
 
-	bool ScriptEngine::Load(bool LoadCoreAssembly)
+	bool ScriptEngine::Load(bool Reload)
 	{
 		if (AppDomain)
 		{
@@ -189,12 +189,7 @@ namespace Engine
 		AppDomain = mono_domain_create_appdomain("DEScript_AppDomain", nullptr);
 		mono_domain_set(AppDomain, true);
 
-		bool result = true;
-
-		if (LoadCoreAssembly)
-			result = result && LoadCore();
-
-		return result && LoadApp();
+		return LoadCore() && LoadApp(Reload);
 	}
 
 	void ScriptEngine::GetFields(ScriptData& data)
@@ -210,7 +205,7 @@ namespace Engine
 			ScriptFieldVisibility visibility = ScriptFieldVisibility::Hidden;
 
 			if ((mono_field_get_flags(iterator) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK) == MONO_FIELD_ATTR_PUBLIC)
-				visibility = ScriptFieldVisibility::EditDefault;
+				visibility = ScriptFieldVisibility::Visible;
 
 			MonoCustomAttrInfo* inf = mono_custom_attrs_from_field(data.Class, iterator);
 			if (inf)
@@ -240,16 +235,27 @@ namespace Engine
 			{
 				ScriptField f(iterator);
 				f.FieldVisibility = visibility;
-				DE_CORE_LOG("Found Field on {0}.{1}: {2}", data.NameSpace, data.Name, f.GetName());
-				data.Fields.push_back(f);
+
+				auto& it = std::find_if(data.Fields.begin(), data.Fields.end(), [&f](const ScriptField& field)
+				{
+					return f.GetName() == field.GetName();
+				});
+
+				if (it != data.Fields.end())
+				{
+					(*it).FieldVisibility = visibility;
+					(*it).ClassField = iterator;
+				}
+				else
+				{
+					data.Fields.push_back(f);
+				}
 			}
 		}
 	}
 
-	void ScriptEngine::LoadAllScripts()
+	void ScriptEngine::LoadAllScripts(bool Reload)
 	{
-		ScriptDataList.clear();
-
 		MonoImage* CoreImage = CoreAssembly.Image;
 		MonoImage* AppImage = AppAssembly.Image;
 
@@ -276,9 +282,25 @@ namespace Engine
 				if (isScript)
 				{
 					ScriptData data(name, nameSpace, scriptClass);
-					GetFields(data);
+					
+					if (Reload)
+					{
+						auto& it = std::find_if(ScriptDataList.begin(), ScriptDataList.end(), [data](const ScriptData& d)
+						{
+							return data.IsSame(d);
+						});
 
-					ScriptDataList.push_back(data);
+						if (it != ScriptDataList.end())
+						{
+							(*it).Class = scriptClass;
+							GetFields(*it);
+						}
+					}
+					else
+					{
+						GetFields(data);
+						ScriptDataList.push_back(data);
+					}
 				}
 			}
 		}
@@ -346,7 +368,7 @@ namespace Engine
 		return GetScriptData(ScriptNamespace, ScriptName);
 	}
 
-	const std::vector<ScriptData>& ScriptEngine::GetScriptDataList()
+	std::vector<ScriptData>& ScriptEngine::GetScriptDataList()
 	{
 		return ScriptDataList;
 	}
