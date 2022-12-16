@@ -40,7 +40,7 @@ namespace Engine
 		void SetField(const std::string& field, AssetMetadata& data);
 
 		template<typename T>
-		T& GetField(const std::string& field)
+		T& GetField(const std::string& field) const
 		{
 			size_t size = 0;
 			void* DataPtr = GetField(field, size);
@@ -59,7 +59,7 @@ namespace Engine
 			return s;
 		}
 
-		void* GetField(const std::string& field, size_t size);
+		void* GetField(const std::string& field, size_t& size) const;
 
 		void Copy(AssetMetadata& CopyData);
 

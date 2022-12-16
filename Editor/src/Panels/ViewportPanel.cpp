@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "ViewportPanel.h"
 
+#include "PanelDragPayload.h"
+
 #include "Engine/Renderer/RenderCommand.h"
 
 #include <glm/glm.hpp>
@@ -88,11 +90,13 @@ namespace Engine
 
 			if (payload && payload->IsDelivery())
 			{
-				std::string id = (const char*)payload->Data;
+				PanelDragPayload::ContentBrowserItem Item;
+				Item.FromData((uint8_t*)payload->Data);
 
-				Asset asset = AssetManager::LoadAsset(id);
-				if (asset.GetAssetType() == AssetType::Scene)
+				if (Item.ItemType == AssetType::Scene)
 				{
+					Asset asset = AssetManager::LoadAsset(Item.GetID());
+
 					EditorScene* NewScene = new EditorScene();
 
 					SceneSerializer::Deserialize(NewScene, *asset.GetData());

@@ -243,10 +243,10 @@ namespace Engine
 		}
 	}
 
-	void* AssetMetadata::GetField(const std::string& field, size_t size)
+	void* AssetMetadata::GetField(const std::string& field, size_t& size) const
 	{
-		void* DataPtr = FieldTable[field].DataPtr;
-		size = FieldTable[field].DataSize;
+		void* DataPtr = FieldTable.at(field).DataPtr;
+		size = FieldTable.at(field).DataSize;
 
 		return DataPtr;
 	}

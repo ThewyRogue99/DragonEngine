@@ -1,11 +1,15 @@
 #include "depch.h"
 #include "SceneHierarchyPanel.h"
 
+#include "PanelDragPayload.h"
+#include "Engine/Asset/Serializer/Serializer.h"
+
 #include "Engine/Scene/Components.h"
 
 #include "Engine/Scripting/ScriptEngine.h"
 
 #include "Engine/Scene/SceneManager.h"
+#include "Engine/Asset/AssetManager.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
@@ -346,11 +350,18 @@ namespace Engine
 
 			if (ImGui::BeginDragDropTarget())
 			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
-				{
-					const wchar_t* path = (const wchar_t*)payload->Data;
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
 
-					component.Texture = Texture2D::Create(path);
+				if (payload && payload->IsDelivery())
+				{
+					PanelDragPayload::ContentBrowserItem Item;
+					Item.FromData((uint8_t*)payload->Data);
+
+					if (Item.ItemType == AssetType::Texture)
+					{
+						Asset TextureAsset = AssetManager::LoadAsset(Item.GetID());
+						component.Texture = Serializer::DeserializeTexture(*TextureAsset.GetData());
+					}
 				}
 
 				ImGui::EndDragDropTarget();

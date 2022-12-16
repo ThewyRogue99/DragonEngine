@@ -55,22 +55,22 @@ namespace Engine
 			return false;
 		}
 
-		Ref<Texture2D> DeserializeTexture(AssetMetadata& metadata)
+		Ref<Texture2D> DeserializeTexture(const AssetMetadata& metadata)
 		{
-			int width, height, channels, dataSize;
+			int width, height, channels;
 
 			width = metadata.GetField<int>("width");
 			height = metadata.GetField<int>("height");
 			channels = metadata.GetField<int>("channels");
 
-			dataSize = width * height * channels;
+			size_t dataSize = (size_t)(width * height * channels);
 
-			uint8_t* data = (uint8_t*)metadata.GetField("data", dataSize);
+			void* data = metadata.GetField("data", dataSize);
 
 			if (data)
 			{
 				Ref<Texture2D> result = Texture2D::Create(width, height);
-				result->SetData(data, dataSize);
+				result->SetData(data, dataSize, channels);
 
 				return result;
 			}

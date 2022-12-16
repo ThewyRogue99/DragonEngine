@@ -52,6 +52,7 @@
     <ClInclude Include="src\Scene\EditorScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Panels\PanelDragPayload.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Debug\EditorConsole.cpp">

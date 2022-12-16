@@ -38,21 +38,21 @@ namespace Engine
 
 		switch (channels)
 		{
-		case 3:
-		{
-			InternalFormat = GL_RGB8;
-			DataFormat = GL_RGB;
-		} break;
-		case 4:
-		{
-			InternalFormat = GL_RGBA8;
-			DataFormat = GL_RGBA;
-		} break;
-		default:
-		{
-			DE_CORE_ASSERT(false, "Failed to load texture image: Image format is not supported!");
-			stbi_image_free(data);
-		} return;
+			case 3:
+			{
+				InternalFormat = GL_RGB8;
+				DataFormat = GL_RGB;
+			} break;
+			case 4:
+			{
+				InternalFormat = GL_RGBA8;
+				DataFormat = GL_RGBA;
+			} break;
+			default:
+			{
+				DE_CORE_ASSERT(false, "Failed to load texture image: Image format is not supported!");
+				stbi_image_free(data);
+			} return;
 		}
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &TextureID);
@@ -74,8 +74,26 @@ namespace Engine
 		glDeleteTextures(1, &TextureID);
 	}
 
-	void OpenGLTexture2D::SetData(void* data, uint32_t size)
+	void OpenGLTexture2D::SetData(void* data, uint32_t size, uint32_t channels)
 	{
+		switch (channels)
+		{
+			case 3:
+			{
+				InternalFormat = GL_RGB8;
+				DataFormat = GL_RGB;
+			} break;
+			case 4:
+			{
+				InternalFormat = GL_RGBA8;
+				DataFormat = GL_RGBA;
+			} break;
+			default:
+			{
+				DE_CORE_ASSERT(false, "Failed to load texture image: Image format is not supported!");
+			} return;
+		}
+
 		uint32_t bpp = ((DataFormat == GL_RGBA) ? 4 : 3);
 		DE_CORE_ASSERT(size == Width * Height * bpp, "Data must be entire texture!");
 

@@ -16,6 +16,6 @@ namespace Engine
 
 		bool SerializeTexture(AssetMetadata& metadata, std::istream& stream);
 
-		Ref<Texture2D> DeserializeTexture(AssetMetadata& metadata);
+		Ref<Texture2D> DeserializeTexture(const AssetMetadata& metadata);
 	}
 }

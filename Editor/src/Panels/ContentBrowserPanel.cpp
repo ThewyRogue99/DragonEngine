@@ -3,6 +3,8 @@
 
 #pragma warning(disable : 4312)
 
+#include "PanelDragPayload.h"
+
 #include "Engine/Utils/PlatformUtils.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/SceneManager.h"
@@ -391,8 +393,16 @@ namespace Engine
 		{
 			if (!isDirectory)
 			{
-				std::string id = Entry.GetID();
-				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", id.c_str(), id.size() + 1);
+				PanelDragPayload::ContentBrowserItem Item;
+				Item.SetID(Entry.GetID());
+				Item.ItemType = Entry.GetType();
+
+				size_t size = 0;
+				uint8_t* data = Item.Data(size);
+
+				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", data, size);
+
+				delete[] data;
 			}
 
 			ImGui::EndDragDropSource();

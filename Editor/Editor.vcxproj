@@ -152,6 +152,7 @@
     <ClInclude Include="src\Panels\ConsolePanel.h" />
     <ClInclude Include="src\Panels\ContentBrowserPanel.h" />
     <ClInclude Include="src\Panels\EditorPanel.h" />
+    <ClInclude Include="src\Panels\PanelDragPayload.h" />
     <ClInclude Include="src\Panels\PanelManager.h" />
     <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Panels\ToolbarPanel.h" />

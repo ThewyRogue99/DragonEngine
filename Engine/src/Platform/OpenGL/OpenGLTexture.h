@@ -16,7 +16,7 @@ namespace Engine
 		inline virtual uint32_t GetWidth() const override { return Width; }
 		inline virtual uint32_t GetHeight() const override { return Height; }
 
-		virtual void SetData(void* data, uint32_t size) override;
+		virtual void SetData(void* data, uint32_t size, uint32_t channels = 4) override;
 
 		virtual void Bind(uint32_t slot = 0) const override;
 
