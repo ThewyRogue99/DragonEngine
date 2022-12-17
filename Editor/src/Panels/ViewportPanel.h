@@ -10,7 +10,7 @@
 #include "Engine/Events/MouseEvent.h"
 #include "Engine/Events/KeyEvent.h"
 
-#include <ImGuizmo/ImGuizmo.h>
+#include <ImGuizmo.h>
 
 namespace Engine
 {

@@ -3,7 +3,7 @@
 
 #include "Engine/Core/CommandSystem.h"
 
-#include <imgui/imgui_internal.h>
+#include <imgui_internal.h>
 
 static constexpr size_t DefaultBufferSize = 2046;
 

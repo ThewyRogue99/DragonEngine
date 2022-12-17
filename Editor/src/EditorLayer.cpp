@@ -4,8 +4,8 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Renderer/Renderer2D.h"
 
-#include <imgui/imgui.h>
-#include <ImGuizmo/ImGuizmo.h>
+#include <imgui.h>
+#include <ImGuizmo.h>
 
 #include <filesystem>
 #include <nfd.h>

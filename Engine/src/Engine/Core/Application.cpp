@@ -32,10 +32,6 @@ namespace Engine
 
 		Renderer2D::Init();
 		ScriptEngine::Init();
-
-		DE_PROFILE_SCOPE("UI Layer Attach");
-		AppImGuiLayer = new ImGuiLayer();
-		PushOverlay(AppImGuiLayer);
 	}
 
 	Application::~Application()
@@ -96,19 +92,14 @@ namespace Engine
 				}
 			}
 
-			{
-				DE_PROFILE_SCOPE("UI Render");
-
-				AppImGuiLayer->Begin();
-
-				for (Layer* layer : layerStack)
-					layer->OnImGuiRender(DeltaTime);
-
-				AppImGuiLayer->End();
-			}
+			OnUpdate(DeltaTime);
 
 			AppWindow->OnUpdate();
 		}
+	}
+
+	void Application::OnUpdate(float DeltaTime)
+	{
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& event)

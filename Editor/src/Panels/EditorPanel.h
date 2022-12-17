@@ -4,7 +4,7 @@
 #include "Engine/Types/Types.h"
 #include "Engine/Events/Event.h"
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <vector>
 
 namespace Engine

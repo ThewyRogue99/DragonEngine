@@ -17,9 +17,7 @@ project "Engine"
 		"vendor/stb_image/**.h",
 		"vendor/stb_image/**.cpp",
 		"vendor/glm/glm/**.hpp",
-		"vendor/glm/glm/**.inl",
-		"vendor/ImGuizmo/ImGuizmo.h",
-		"vendor/ImGuizmo/ImGuizmo.cpp"
+		"vendor/glm/glm/**.inl"
 	}
 
 	includedirs
@@ -28,12 +26,10 @@ project "Engine"
 		"vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
-		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.mono}",
 		"%{IncludeDir.uuid_v4}"
@@ -43,7 +39,6 @@ project "Engine"
 	{
 		"GLFW",
 		"GLAD",
-		"ImGui",
 		"yaml-cpp",
 		"Box2D",
 		"opengl32.lib",
@@ -56,9 +51,6 @@ project "Engine"
 		"GLFW_INCLUDE_NONE",
 		"YAML_CPP_STATIC_DEFINE"
 	}
-
-	filter "files:vendor/ImGuizmo/**.cpp"
-		flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"

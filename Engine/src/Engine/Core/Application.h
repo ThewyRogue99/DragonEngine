@@ -6,7 +6,6 @@
 #include "Engine/Core/Layer.h"
 #include "Window.h"
 #include "Engine/Events/ApplicationEvent.h"
-#include "Engine/ImGui/ImGuiLayer.h"
 #include "Engine/Core/LayerStack.h"
 
 namespace Engine
@@ -52,12 +51,15 @@ namespace Engine
 
 		const ApplicationSpecification& GetSpecification() const { return AppSpecification; }
 
+	protected:
+		virtual void OnUpdate(float DeltaTime);
+
 	private:
 		bool OnWindowClose(WindowCloseEvent& event);
 		bool OnWindowResize(WindowResizeEvent& event);
 
+	protected:
 		Scope<Window> AppWindow;
-		ImGuiLayer* AppImGuiLayer;
 
 		bool bIsRunning = false;
 

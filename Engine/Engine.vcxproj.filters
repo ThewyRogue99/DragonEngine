@@ -22,9 +22,6 @@
     <Filter Include="src\Engine\Events">
       <UniqueIdentifier>{B624EAB0-223B-E846-6BB2-7368D707B9CE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Engine\ImGui">
-      <UniqueIdentifier>{BC1B88A8-A814-A7FA-D146-8C7FBD9E8606}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Engine\Math">
       <UniqueIdentifier>{2B817A79-970C-E83D-A01D-6B320C28443E}</UniqueIdentifier>
     </Filter>
@@ -40,23 +37,14 @@
     <Filter Include="src\Engine\Types">
       <UniqueIdentifier>{366A56A9-2263-75FB-4B95-5A8037ED5407}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Engine\Utils">
-      <UniqueIdentifier>{F2A765A9-DEA0-84FB-07D3-6980F32A6407}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform\OpenGL">
       <UniqueIdentifier>{35A49437-A105-7245-2A73-B8F796D3A804}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Platform\Windows">
-      <UniqueIdentifier>{5B054582-4794-CE4B-F0B2-E246DC20DFF1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="vendor\ImGuizmo">
-      <UniqueIdentifier>{73BF7F4C-DF4A-ED10-E85B-700554664911}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
@@ -155,9 +143,6 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Events\MouseEvent.h">
       <Filter>src\Engine\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\ImGui\ImGuiLayer.h">
-      <Filter>src\Engine\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Math\Math.h">
       <Filter>src\Engine\Math</Filter>
@@ -263,9 +248,6 @@
     </ClInclude>
     <ClInclude Include="src\depch.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h">
-      <Filter>vendor\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1562,12 +1544,6 @@
     <ClCompile Include="src\Engine\Debug\Instrumentor.cpp">
       <Filter>src\Engine\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\ImGui\ImGuiBuild.cpp">
-      <Filter>src\Engine\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Engine\ImGui\ImGuiLayer.cpp">
-      <Filter>src\Engine\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="src\Engine\Math\Math.cpp">
       <Filter>src\Engine\Math</Filter>
     </ClCompile>
@@ -1663,9 +1639,6 @@
     </ClCompile>
     <ClCompile Include="src\depch.cpp">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
-      <Filter>vendor\ImGuizmo</Filter>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>

@@ -10,17 +10,22 @@ project "Editor"
 	files
 	{
 		"src/**.h",
-		"src/**.cpp"
+		"src/**.cpp",
+		"vendor/ImGuizmo/ImGuizmo.h",
+		"vendor/ImGuizmo/ImGuizmo.cpp"
 	}
 
 	includedirs
 	{
 		"%{wks.location}/Engine/vendor/spdlog/include",
 		"%{wks.location}/Engine/src",
-		"%{wks.location}/Engine/vendor",
+		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.nfd}"
 	}
 
 	postbuildcommands
@@ -30,19 +35,18 @@ project "Editor"
 
 	links
 	{
+		"ImGui",
 		"nfd",
 		"Engine"
-	}
-
-	includedirs
-	{
-		"%{IncludeDir.nfd}"
 	}
 
 	defines
 	{
 		"__EDITOR__"
 	}
+
+	filter "files:vendor/ImGuizmo/**.cpp"
+		flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"

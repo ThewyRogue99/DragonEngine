@@ -4,8 +4,8 @@
 [submodule "Engine/vendor/glm"]
 	path = Engine/vendor/glm
 	url = https://github.com/g-truc/glm
-[submodule "Engine/vendor/ImGuizmo"]
-	path = Engine/vendor/ImGuizmo
+[submodule "Editor/vendor/ImGuizmo"]
+	path = Editor/vendor/ImGuizmo
 	url = https://github.com/ThewyRogue99/ImGuizmo
 [submodule "Engine/vendor/Box2D"]
 	path = Engine/vendor/Box2D
@@ -16,8 +16,8 @@
 [submodule "Engine/vendor/yaml-cpp"]
 	path = Engine/vendor/yaml-cpp
 	url = https://github.com/ThewyRogue99/yaml-cpp
-[submodule "Engine/vendor/imgui"]
-	path = Engine/vendor/imgui
+[submodule "Editor/vendor/imgui"]
+	path = Editor/vendor/imgui
 	url = https://github.com/ThewyRogue99/imgui
 [submodule "Editor/vendor/nfd"]
 	path = Editor/vendor/nfd
