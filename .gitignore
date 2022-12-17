@@ -2,9 +2,13 @@
 .vs/
 bin/
 bin-int/
-
-# Files
-*.user
 vendor/premake/bin
 vendor/lib
 scripts/__pycache__
+
+# Files
+*.vcxproj
+*.sln
+*.user
+*.vcxproj
+DragonEngine.sln

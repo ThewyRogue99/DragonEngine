@@ -32,7 +32,9 @@ project "Engine"
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.mono}",
-		"%{IncludeDir.uuid_v4}"
+		"%{IncludeDir.uuid_v4}",
+		"%{IncludeDir.OpenAl_Soft}",
+		"%{IncludeDir.OpenAl_Soft_src}",
 	}
 
 	links
@@ -41,6 +43,7 @@ project "Engine"
 		"GLAD",
 		"yaml-cpp",
 		"Box2D",
+		"OpenAl-Soft",
 		"opengl32.lib",
 		"%{Library.mono}"
 	}

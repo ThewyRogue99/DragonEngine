@@ -22,3 +22,6 @@
 [submodule "Editor/vendor/nfd"]
 	path = Editor/vendor/nfd
 	url = https://github.com/ThewyRogue99/nativefiledialog
+[submodule "Engine/vendor/OpenAl-Soft"]
+	path = Engine/vendor/OpenAl-Soft
+	url = https://github.com/ThewyRogue99/openal-soft
