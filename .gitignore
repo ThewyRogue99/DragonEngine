@@ -8,7 +8,8 @@ scripts/__pycache__
 
 # Files
 *.vcxproj
+*.vcxproj.filters
+*.csproj
+*.csproj.filters
 *.sln
 *.user
-*.vcxproj
-DragonEngine.sln
