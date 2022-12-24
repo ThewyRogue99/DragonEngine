@@ -10,7 +10,8 @@ namespace Engine
 		Folder,
 		Texture,
 		Scene,
-		Script
+		Script,
+		Audio
 	};
 
 	namespace AssetUtils

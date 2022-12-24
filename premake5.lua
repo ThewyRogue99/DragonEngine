@@ -38,6 +38,7 @@ IncludeDir["OpenAl_Soft_src"] = "%{wks.location}/Engine/vendor/OpenAl-Soft/src"
 IncludeDir["nfd"] = "%{wks.location}/Editor/vendor/nfd/src/include"
 IncludeDir["ImGui"] = "%{wks.location}/Editor/vendor/imgui"
 IncludeDir["ImGuizmo"] = "%{wks.location}/Editor/vendor/ImGuizmo"
+IncludeDir["AudioToWav"] = "%{wks.location}/Editor/vendor/AudioToWav/include"
 
 LibraryDir = { }
 LibraryDir["mono"] = "%{wks.location}/vendor/lib/mono"
@@ -54,6 +55,7 @@ group "Dependencies"
 	
 	include "Editor/vendor/imgui"
 	include "Editor/vendor/nfd"
+	include "Editor/vendor/AudioToWav"
 group ""
 
 group "Core"

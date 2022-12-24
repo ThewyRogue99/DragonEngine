@@ -12,7 +12,7 @@
 #include "Engine/Scene/Components.h"
 
 #include "Engine/Scene/SceneManager.h"
-#include "Engine/Asset/Serializer/SceneSerializer.h"
+#include "../Asset/Serializer/SceneSerializer.h"
 #include "Engine/Asset/AssetManager.h"
 
 #pragma warning(disable : 4312)

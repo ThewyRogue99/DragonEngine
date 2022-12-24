@@ -22,6 +22,14 @@ namespace Engine
 			}
 			else if (Extension == L".cs")
 				return AssetType::Script;
+			else if (
+				Extension == L".aiff" ||
+				Extension == L".wav" ||
+				Extension == L".mp3" ||
+				Extension == L".ogg"
+				) {
+				return AssetType::Audio;
+			}
 			
 			return AssetType::Undefined;
 		}

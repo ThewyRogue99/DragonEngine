@@ -23,7 +23,6 @@ namespace Engine
 	    static void Load();
 	    static void Save();
 
-        static bool CreateAssetFromFile(const CString& TargetPath, const CString& DestinationPath, bool Overwrite = false);
         static bool CreateAsset(const CString& Path, const CString& Name, AssetMetadata& Data, AssetType Type, bool Overwrite = false);
 
         static bool RenameAsset(const std::string& AssetID, const CString& NewName);
@@ -41,6 +40,8 @@ namespace Engine
 	    static bool CreateFolder(const CString& Path, const CString& Name);
 	    static bool RemoveFolder(const CString& Path, const CString& Name);
         static bool RenameFolder(const CString& Path, const CString& Name, const CString& NewName);
+
+        static CString GetAvailableName(const CString& Path, const CString& Name);
 
         static AssetIterator GetIterator();
 
@@ -75,8 +76,6 @@ namespace Engine
 
 	    static bool AssetExists(const CString& Path, const CString& Name);
         static bool AssetExists(const std::string& ID);
-
-        static CString GetAvailableName(const CString& Path, const CString& Name);
 
         static std::string GetAssetID(const CString& Path, const CString& Name);
 

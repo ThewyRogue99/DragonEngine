@@ -3,7 +3,6 @@
 
 #include "Engine/Core/UUID.h"
 #include "AssetMetadata.h"
-#include "Serializer/Serializer.h"
 
 #include <algorithm>
 #include <filesystem>
@@ -165,60 +164,6 @@ namespace Engine
 	void AssetManager::Save()
 	{
 		SaveMetadata();
-	}
-
-	bool AssetManager::CreateAssetFromFile(const CString& TargetPath, const CString& DestinationPath, bool Overwrite)
-	{
-		if (bIsAssetManagerInit)
-		{
-			std::filesystem::path FPath = TargetPath;
-
-			CString ext = FPath.extension();
-
-			CString fname = FPath.filename();
-			size_t idx = fname.find_last_of(L'.');
-
-			CString name = fname.substr(0, idx);
-
-			AssetType type = AssetUtils::GetAssetTypeFromExtension(ext);
-
-			std::ifstream fi(FPath, std::ios::in | std::ios::binary);
-
-			if (fi.is_open())
-			{
-				AssetMetadata data;
-
-				if (Serializer::SerializeWithAssetType(data, fi, type))
-				{
-					std::string id = UUID().GetString();
-					CString w_id = TypeUtils::FromUTF8(id);
-
-					CString FullPath = (ContentPath / DestinationPath) / (w_id + L".deasset");
-
-					if (!Overwrite)
-						name = GetAvailableName(DestinationPath, name);
-
-					std::fstream fo(FullPath, std::ios::out | std::ios::binary);
-					if (fo.is_open())
-					{
-						Asset asset(name, id);
-						asset.SetData(data, type);
-
-						asset.Write(fo);
-
-						fo.close();
-
-						AssetList[id] = AssetData(name, DestinationPath, type);
-						SaveMetadata();
-
-						return true;
-					}
-				}
-				fi.close();
-			}
-		}
-
-		return false;
 	}
 
 	bool AssetManager::CreateAsset(const CString& Path, const CString& Name, AssetMetadata& Data, AssetType Type, bool Overwrite)

@@ -7,10 +7,11 @@
 
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/SceneManager.h"
-#include "Engine/Asset/Serializer/SceneSerializer.h"
 #include "Engine/Asset/AssetUtils.h"
 #include "Engine/Asset/AssetMetadata.h"
-#include "Engine/Asset/Serializer/Serializer.h"
+
+#include "../Asset/Serializer/SceneSerializer.h"
+#include "../Asset/Serializer/Serializer.h"
 
 #include "../Project/ProjectManager.h"
 
@@ -24,6 +25,7 @@ namespace Engine
 	static Ref<Texture2D> FileIcon = nullptr;
 	static Ref<Texture2D> SceneFileIcon = nullptr;
 	static Ref<Texture2D> ScriptFileIcon = nullptr;
+	static Ref<Texture2D> AudioFileIcon = nullptr;
 
 	ContentBrowserPanel::ContentBrowserPanel() : EditorPanel("Content Browser")
 	{
@@ -31,6 +33,7 @@ namespace Engine
 		FileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/FileIcon.png"));
 		SceneFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/SceneFileIcon.png"));
 		ScriptFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/ScriptFileIcon.png"));
+		AudioFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/AudioFileIcon.png"));
 		
 		ProjectManager::OnLoadProject().AddCallback(BIND_EVENT_FN(ContentBrowserPanel::OnLoadProject));
 	}
@@ -50,6 +53,9 @@ namespace Engine
 
 		if (!ScriptFileIcon)
 			ScriptFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/ScriptFileIcon.png"));
+
+		if (!AudioFileIcon)
+			AudioFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/AudioFileIcon.png"));
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 	}
@@ -259,7 +265,7 @@ namespace Engine
 
 					if (!std::filesystem::is_directory(FPath))
 					{
-						AssetManager::CreateAssetFromFile(FPath, CurrentDirectory);
+						Serializer::CreateAssetFromFile(FPath, CurrentDirectory);
 						Reload();
 					}
 				}
@@ -307,6 +313,9 @@ namespace Engine
 			break;
 		case AssetType::Script:
 			icon = ScriptFileIcon;
+			break;
+		case AssetType::Audio:
+			icon = AudioFileIcon;
 			break;
 		default:
 			icon = FileIcon;

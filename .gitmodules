@@ -25,3 +25,6 @@
 [submodule "Engine/vendor/OpenAl-Soft"]
 	path = Engine/vendor/OpenAl-Soft
 	url = https://github.com/ThewyRogue99/openal-soft
+[submodule "Editor/vendor/AudioToWav"]
+	path = Editor/vendor/AudioToWav
+	url = https://github.com/ThewyRogue99/AudioToWav

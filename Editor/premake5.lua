@@ -27,7 +27,8 @@ project "Editor"
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.ImGuizmo}",
-		"%{IncludeDir.nfd}"
+		"%{IncludeDir.nfd}",
+		"%{IncludeDir.AudioToWav}"
 	}
 
 	postbuildcommands
@@ -39,6 +40,7 @@ project "Editor"
 	{
 		"ImGui",
 		"nfd",
+		"AudioToWav",
 		"Engine"
 	}
 

@@ -2,7 +2,7 @@
 #include "SceneHierarchyPanel.h"
 
 #include "PanelDragPayload.h"
-#include "Engine/Asset/Serializer/Serializer.h"
+#include "../Asset/Serializer/Serializer.h"
 
 #include "Engine/Scene/Components.h"
 
