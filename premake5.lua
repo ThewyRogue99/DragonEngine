@@ -21,8 +21,6 @@ workspace "DragonEngine"
 		"MultiProcessorCompile"
 	}
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "%{wks.location}/Engine/vendor/GLFW/include"
@@ -41,10 +39,10 @@ IncludeDir["nfd"] = "%{wks.location}/Editor/vendor/nfd/src/include"
 IncludeDir["ImGui"] = "%{wks.location}/Editor/vendor/imgui"
 IncludeDir["ImGuizmo"] = "%{wks.location}/Editor/vendor/ImGuizmo"
 
-LibraryDir = {}
+LibraryDir = { }
 LibraryDir["mono"] = "%{wks.location}/vendor/lib/mono"
 
-Library = {}
+Library = { }
 Library["mono"] = "%{LibraryDir.mono}/mono-2.0-sgen.lib"
 
 group "Dependencies"

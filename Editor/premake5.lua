@@ -4,6 +4,8 @@ project "Editor"
 	cppdialect "C++17"
 	staticruntime "off"
 
+	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. outputdir)
 
