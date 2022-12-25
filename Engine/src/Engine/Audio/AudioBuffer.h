@@ -18,16 +18,32 @@ namespace Engine
 
 	class AudioBuffer
 	{
-	public:
-		static AudioBuffer* Get();
-
-		bool AddAudioEffect(AudioBufferData& BuffData);
-		bool RemoveAudioEffect(const unsigned int& buffer);
-
 	private:
-		AudioBuffer();
+		struct phold;
+
+	public:
+		static Ref<AudioBuffer> Create(AudioBufferData& Data = AudioBufferData());
+
+		bool SetAudioEffect(AudioBufferData& BuffData);
+		bool RemoveAudioEffect();
+
+		explicit AudioBuffer(const phold&) : AudioBuffer() { }
+
 		~AudioBuffer();
 
-		std::vector<unsigned int> AudioEffectBuffers;
+		friend class AudioSource;
+
+		AudioBuffer(const AudioBuffer&) = delete;
+		const AudioBuffer& operator =(const AudioBuffer&) = delete;
+
+	private:
+		AudioBuffer() = default;
+
+		struct phold {
+			explicit phold(int) {}
+		};
+
+	private:
+		unsigned int AudioEffectBuffer = 0;
 	};
 }

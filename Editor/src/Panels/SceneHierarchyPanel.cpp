@@ -6,6 +6,7 @@
 
 #include "Engine/Scene/Components.h"
 
+#include "Engine/Audio/AudioEngine.h"
 #include "Engine/Scripting/ScriptEngine.h"
 
 #include "Engine/Scene/SceneManager.h"
@@ -321,6 +322,15 @@ namespace Engine
 				}
 			}
 
+			if (!SelectedEntity.HasComponent<AudioComponent>())
+			{
+				if (ImGui::MenuItem("Audio Component"))
+				{
+					SelectedEntity.AddComponent<AudioComponent>();
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
 			if (!SelectedEntity.HasComponent<ScriptComponent>())
 			{
 				if (ImGui::MenuItem("Script"))
@@ -436,7 +446,7 @@ namespace Engine
 			ImGui::Checkbox("Primary", &component.Primary);
 		});
 
-		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component)
+		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](Rigidbody2DComponent& component)
 		{
 			const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };
 			const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
@@ -461,7 +471,7 @@ namespace Engine
 			ImGui::Checkbox("Fixed Rotation", &component.FixedRotation);
 		});
 
-		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component)
+		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](BoxCollider2DComponent& component)
 		{
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
 			ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
@@ -471,7 +481,7 @@ namespace Engine
 			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
 		});
 
-		DrawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](auto& component)
+		DrawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](CircleCollider2DComponent& component)
 		{
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
 			ImGui::DragFloat("Radius", &component.Radius);
@@ -608,6 +618,68 @@ namespace Engine
 					default:
 						break;
 					}
+				}
+			}
+		});
+
+		DrawComponent<AudioComponent>("Audio Component", entity, [](AudioComponent& component)
+		{
+			ImGui::Button("Audio", { 100.f, 0.f });
+			
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
+
+				if (payload && payload->IsDelivery())
+				{
+					PanelDragPayload::ContentBrowserItem Item;
+					Item.FromData((uint8_t*)payload->Data);
+
+					if (Item.ItemType == AssetType::Audio)
+					{
+						Asset AudioAsset = AssetManager::LoadAsset(Item.GetID());
+
+						component.AudioID = Item.GetID();
+						if(!component.Source)
+							component.Source = AudioSource::Create();
+
+						Ref<AudioBuffer> Buff = AudioBuffer::Create(Serializer::DeserializeAudio(*AudioAsset.GetData()));
+
+						component.Source->SetBuffer(Buff);
+					}
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+
+			if (component.Source)
+			{
+				ImGui::SameLine(0.f, 5.f);
+				if (ImGui::Button("Play", { 50.f, 0.f }))
+					AudioEngine::PlayAudio(component.Source);
+
+				ImGui::SameLine(0.f, 5.f);
+				if (ImGui::Button("Stop", { 50.f, 0.f }))
+					AudioEngine::StopAudio(component.Source);
+
+				ImGui::DragFloat3("Offset", glm::value_ptr(component.Offset));
+
+				float Gain = component.Source->GetGain();
+				if (ImGui::DragFloat("Gain", &Gain, 0.1f, 0.f, 1.f))
+				{
+					component.Source->SetGain(Gain);
+				}
+
+				float Pitch = component.Source->GetPitch();
+				if (ImGui::DragFloat("Pitch", &Pitch, 0.1f, 0.f, 1.f))
+				{
+					component.Source->SetPitch(Pitch);
+				}
+
+				bool Loop = component.Source->GetLoopSound();
+				if (ImGui::Checkbox("Loop Sound", &Loop))
+				{
+					component.Source->SetLoopSound(Loop);
 				}
 			}
 		});

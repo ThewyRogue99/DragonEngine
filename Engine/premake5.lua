@@ -35,8 +35,7 @@ project "Engine"
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.mono}",
 		"%{IncludeDir.uuid_v4}",
-		"%{IncludeDir.OpenAl_Soft}",
-		"%{IncludeDir.OpenAl_Soft_src}",
+		"%{IncludeDir.OpenAL_Soft}"
 	}
 
 	links
@@ -45,7 +44,7 @@ project "Engine"
 		"GLAD",
 		"yaml-cpp",
 		"Box2D",
-		"OpenAl-Soft",
+		"OpenAL-Soft",
 		"opengl32.lib",
 		"%{Library.mono}"
 	}
@@ -54,7 +53,8 @@ project "Engine"
 	{
 		"__ENGINE__",
 		"GLFW_INCLUDE_NONE",
-		"YAML_CPP_STATIC_DEFINE"
+		"YAML_CPP_STATIC_DEFINE",
+		"AL_LIBTYPE_STATIC"
 	}
 
 	filter "system:windows"

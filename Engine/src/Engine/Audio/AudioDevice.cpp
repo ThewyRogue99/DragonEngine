@@ -1,36 +1,68 @@
 #include "depch.h"
 #include "AudioDevice.h"
 
-#include "AL/al.h"
+#include <AL/al.h>
+#include <AL/alc.h>
 
 namespace Engine
 {
-	AudioDevice::AudioDevice()
+	Ref<AudioDevice> AudioDevice::OpenDevice(const char* DeviceName)
 	{
-		Device = alcOpenDevice(nullptr); // nullptr = get default device
-		DE_CORE_ASSERT(Device, "Failed to get audio device");
+		Ref<AudioDevice> result = CreateRef<AudioDevice>(phold{ 0 });
 
-		Context = alcCreateContext(Device, nullptr);
-		DE_CORE_ASSERT(Context, "Failed to set audio context");
+		result->Device = alcOpenDevice(DeviceName);
+		if (result->Device)
+		{
+			result->Context = alcCreateContext(result->Device, nullptr);
+			if (result->Context)
+			{
+				if (alcMakeContextCurrent(result->Context))
+				{
+					const ALCchar* name = nullptr;
+					if (alcIsExtensionPresent(result->Device, "ALC_ENUMERATE_ALL_EXT"))
+						name = alcGetString(result->Device, ALC_ALL_DEVICES_SPECIFIER);
+					if (!name || alcGetError(result->Device) != AL_NO_ERROR)
+						name = alcGetString(result->Device, ALC_DEVICE_SPECIFIER);
 
-		DE_CORE_ASSERT(alcMakeContextCurrent(Context), "Failed to make context current");
+					DE_CORE_INFO("Using audio source: {0}", name);
 
-		const ALCchar* name = nullptr;
-		if (alcIsExtensionPresent(Device, "ALC_ENUMERATE_ALL_EXT"))
-			name = alcGetString(Device, ALC_ALL_DEVICES_SPECIFIER);
-		if (!name || alcGetError(Device) != AL_NO_ERROR)
-			name = alcGetString(Device, ALC_DEVICE_SPECIFIER);
-		
-		DE_CORE_INFO("Using audio source: {0}", name);
+					return result;
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
-	AudioDevice::~AudioDevice()
+	bool AudioDevice::SetCurrentContext()
 	{
-		DE_CORE_ASSERT(alcMakeContextCurrent(nullptr), "Failed to set context to nullptr");
+		return alcMakeContextCurrent(Context);
+	}
+
+	bool AudioDevice::CloseDevice()
+	{
+		if (!alcMakeContextCurrent(nullptr))
+		{
+			DE_CORE_ERROR("Failed to set context to nullptr");
+			return false;
+		}
 
 		alcDestroyContext(Context);
-		DE_CORE_ASSERT(!Context, "Failed to destroy context");
 
-		DE_CORE_ASSERT(alcCloseDevice(Device), "Failed to close sound device");
+		ALCenum err = alcGetError(Device);
+		if (err != AL_NO_ERROR)
+		{
+			DE_CORE_ERROR("alcDestroyContext() error: {0}", alcGetString(Device, err));
+			return false;
+		}
+		Context = nullptr;
+
+		if (!alcCloseDevice(Device))
+		{
+			DE_CORE_ERROR("Failed to close sound device");
+			return false;
+		}
+
+		return true;
 	}
 }

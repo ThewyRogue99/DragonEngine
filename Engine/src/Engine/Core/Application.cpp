@@ -5,6 +5,7 @@
 #include "Engine/Renderer/RenderCommand.h"
 #include "Platform/Platform.h"
 
+#include "Engine/Audio/AudioEngine.h"
 #include "Engine/Scripting/ScriptEngine.h"
 
 #include <filesystem>
@@ -32,6 +33,7 @@ namespace Engine
 
 		Renderer2D::Init();
 		ScriptEngine::Init();
+		AudioEngine::Init();
 	}
 
 	Application::~Application()

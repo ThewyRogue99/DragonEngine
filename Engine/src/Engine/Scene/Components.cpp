@@ -90,6 +90,16 @@ namespace Engine
 		FixedAspectRatio = Metadata.GetField<bool>("FixedAspectRatio");
 	}
 
+	void AudioComponent::OnSerialize(AssetMetadata& Metadata)
+	{
+		Metadata.SetField("AudioID", AudioID);
+	}
+
+	void AudioComponent::OnDeserialize(AssetMetadata& Metadata)
+	{
+		AudioID = Metadata.GetStringField<char>("AudioID");
+	}
+
 	void ScriptComponent::OnSerialize(AssetMetadata& Metadata)
 	{
 		Metadata.SetStringField("Name", Name);

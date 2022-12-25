@@ -17,6 +17,8 @@ namespace Engine
 			{
 			case AssetType::Texture:
 				return SerializeTexture(FilePath, metadata);
+			case AssetType::Audio:
+				return SerializeAudio(FilePath, metadata);
 			default:
 				return false;
 			}
@@ -86,7 +88,7 @@ namespace Engine
 				size_t DataSize = res.GetDataSize();
 
 				metadata.SetField("Channels", Channels);
-				metadata.SetField("SampleSize", Channels);
+				metadata.SetField("SampleSize", SampleSize);
 				metadata.SetField("SampleRate", SampleRate);
 				metadata.SetField("Data", (void*)Data, DataSize);
 

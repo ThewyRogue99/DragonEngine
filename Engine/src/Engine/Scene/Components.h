@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Engine/Types/Types.h"
+
+#include "Engine/Audio/AudioSource.h"
+
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/SceneCamera.h"
 
@@ -129,6 +132,19 @@ namespace Engine
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
+
+		COMPONENT_CLASS_BODY()
+	);
+
+	COMPONENT_CLASS(AudioComponent,
+	public:
+		glm::vec3 Offset = glm::vec3(0.f);
+
+		std::string AudioID;
+		Ref<AudioSource> Source = nullptr;
+
+		AudioComponent() = default;
+		AudioComponent(const AudioComponent&) = default;
 
 		COMPONENT_CLASS_BODY()
 	);
