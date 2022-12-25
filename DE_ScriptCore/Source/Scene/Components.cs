@@ -83,6 +83,18 @@
 		{
 			InternalCalls.Rigidbody2DComponent_ApplyLinearImpulseToCenter(Entity.ID, ref impulse, wake);
 		}
-
 	}
+
+    public class AudioComponent : Component
+    {
+        public void PlayAudio()
+		{
+			InternalCalls.AudioComponent_PlayAudio(Entity.ID);
+		}
+
+		public void StopAudio()
+		{
+			InternalCalls.AudioComponent_StopAudio(Entity.ID);
+		}
+    }
 }

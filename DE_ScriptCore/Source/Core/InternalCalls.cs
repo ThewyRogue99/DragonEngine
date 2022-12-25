@@ -82,5 +82,15 @@ namespace DragonEngine
         internal extern static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(string EntityID, ref Vector2 Impulse, bool Wake);
 
         #endregion
+
+        #region AudioComponent
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool AudioComponent_PlayAudio(string EntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool AudioComponent_StopAudio(string EntityID);
+
+        #endregion
     }
 }

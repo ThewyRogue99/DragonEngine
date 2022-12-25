@@ -226,5 +226,6 @@ namespace Engine
 	using AllComponents =
 		ComponentGroup<TagComponent, TransformComponent, SpriteRendererComponent,
 			CircleRendererComponent, CameraComponent, ScriptComponent,
-			Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent>;
+			Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
+			AudioComponent>;
 }

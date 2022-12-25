@@ -4,6 +4,7 @@
 
 #include "Engine/Scene/SceneManager.h"
 
+#include "Engine/Audio/AudioEngine.h"
 #include "ScriptEngine.h"
 #include "ScriptInternals.h"
 
@@ -391,7 +392,7 @@ namespace Engine
 
 #pragma endregion
 
-#pragma region Rgidbody2DComponent
+#pragma region Rigidbody2DComponent
 
 	static void Rigidbody2DComponent_ApplyLinearImpulse(MonoString* EntityID, glm::vec2* Impulse, glm::vec2* Point, bool Wake)
 	{
@@ -447,6 +448,40 @@ namespace Engine
 
 #pragma endregion
 
+#pragma region AudioComponent
+
+	static bool AudioComponent_PlayAudio(MonoString* EntityID)
+	{
+		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+
+		if (entity.HasComponent<AudioComponent>())
+		{
+			auto& ac = entity.GetComponent<AudioComponent>();
+			AudioEngine::PlayAudio(ac.Source);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	static bool AudioComponent_StopAudio(MonoString* EntityID)
+	{
+		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+
+		if (entity.HasComponent<AudioComponent>())
+		{
+			auto& ac = entity.GetComponent<AudioComponent>();
+			AudioEngine::StopAudio(ac.Source);
+
+			return true;
+		}
+
+		return false;
+	}
+
+#pragma endregion
+
 	void ScriptInternals::RegisterFunctions()
 	{
 		// Log
@@ -479,5 +514,9 @@ namespace Engine
 		// Rigidbody2DComponent
 		DE_ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulse);
 		DE_ADD_INTERNAL_CALL(Rigidbody2DComponent_ApplyLinearImpulseToCenter);
+
+		// AudioComponent
+		DE_ADD_INTERNAL_CALL(AudioComponent_PlayAudio);
+		DE_ADD_INTERNAL_CALL(AudioComponent_StopAudio);
 	}
 }
