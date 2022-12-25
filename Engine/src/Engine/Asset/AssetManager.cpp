@@ -278,6 +278,38 @@ namespace Engine
 		return RemoveAsset(id);
 	}
 
+	bool AssetManager::MoveAsset(const std::string& AssetID, const CString& NewPath)
+	{
+		AssetData& data = AssetList[AssetID];
+
+		if (data.Type != AssetType::Folder)
+		{
+			std::filesystem::path p_OldPath = ContentPath / data.Path;
+			p_OldPath /= AssetID + ".deasset";
+
+			std::filesystem::path p_NewPath = ContentPath / NewPath;
+			p_NewPath /= AssetID + ".deasset";
+
+			std::filesystem::rename(p_OldPath, p_NewPath);
+
+			data.Path = NewPath;
+			SaveMetadata();
+
+			return true;
+		}
+
+		return false;
+	}
+
+	bool AssetManager::MoveAsset(const CString& Path, const CString& Name, const CString& NewPath)
+	{
+		if (!bIsAssetManagerInit) return false;
+
+		std::string id = GetAssetID(Path, Name);
+
+		return MoveAsset(id, NewPath);
+	}
+
 	void AssetManager::CloseAsset(Asset& asset)
 	{
 		asset.Metadata->Clear();

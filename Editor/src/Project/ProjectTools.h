@@ -14,8 +14,9 @@ namespace Engine
 		bool ScriptAssemblyExists();
 
 		bool LoadScriptProject();
+		void OpenScriptProject();
 
-		// For ProjectManager
+		// ** For ProjectManager **
 		void SetProjectPath(const CString& NewPath);
 
 		std::string GetScriptTemplateString(const std::string& ScriptName);

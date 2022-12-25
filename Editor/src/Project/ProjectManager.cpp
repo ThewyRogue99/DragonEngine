@@ -104,7 +104,8 @@ namespace Engine
 
 	bool ProjectManager::CreateScript(const std::string& Name)
 	{
-		if (Name != "Script")
+		bool IncludesSpace = Name.find_first_of(' ') != std::string::npos;
+		if (Name != "Script" && !IncludesSpace)
 		{
 			std::filesystem::path SourcePath = ProjectData.Path;
 			SourcePath /= TEXT("Source");

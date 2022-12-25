@@ -107,6 +107,14 @@ namespace Engine
 			return result;
 		}
 
+		void OpenScriptProject()
+		{
+			std::stringstream ss;
+			ss << "start " << GetSolutionPath().u8string();
+
+			system(ss.str().c_str());
+		}
+
 		bool ScriptProjectExists()
 		{
 			std::filesystem::path SolutionPath = GetSolutionPath();

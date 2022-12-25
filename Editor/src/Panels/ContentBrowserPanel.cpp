@@ -14,6 +14,7 @@
 #include "../Asset/Serializer/Serializer.h"
 
 #include "../Project/ProjectManager.h"
+#include "../Project/ProjectTools.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -109,6 +110,24 @@ namespace Engine
 
 				if (ImGui::TreeNodeEx(&idx, flags, name.c_str()))
 				{
+					if (ImGui::BeginDragDropTarget())
+					{
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
+
+						if (payload && payload->IsDelivery())
+						{
+							PanelDragPayload::ContentBrowserItem Item;
+							Item.FromData((uint8_t*)payload->Data);
+
+							if (Item.ItemType != AssetType::Folder)
+							{
+								AssetManager::MoveAsset(Item.GetID(), it.GetPathName());
+								Reload();
+							}
+						}
+						ImGui::EndDragDropTarget();
+					}
+
 					DrawDirectoryTree(PathName);
 
 					ImGui::TreePop();
@@ -138,6 +157,24 @@ namespace Engine
 
 			if (ImGui::TreeNodeEx(ProjectName.c_str(), flags))
 			{
+				if (ImGui::BeginDragDropTarget())
+				{
+					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
+
+					if (payload && payload->IsDelivery())
+					{
+						PanelDragPayload::ContentBrowserItem Item;
+						Item.FromData((uint8_t*)payload->Data);
+
+						if (Item.ItemType != AssetType::Folder)
+						{
+							AssetManager::MoveAsset(Item.GetID(), L"");
+							Reload();
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+
 				DrawDirectoryTree(L"");
 				ImGui::TreePop();
 			}
@@ -199,13 +236,16 @@ namespace Engine
 
 			int i = 0;
 
-			for (auto& it : ContentList)
+			for (size_t idx = 0; idx < ContentList.size(); idx++)
 			{
 				ImGui::PushID(i++);
 
-				it.Draw(thumbnailSize);
+				bool r = false;
+				ContentList[idx].Draw(thumbnailSize, r);
 
 				ImGui::PopID();
+
+				if (r) idx = 0;
 			}
 
 			ImGui::Columns(1);
@@ -300,7 +340,7 @@ namespace Engine
 		ImGui::PopStyleVar(3);
 	}
 
-	void ContentBrowserPanel::BrowserContent::Draw(float ThumbnailSize)
+	void ContentBrowserPanel::BrowserContent::Draw(float ThumbnailSize, bool& DidReload)
 	{
 		Ref<Texture2D> icon = nullptr;
 		switch (Type)
@@ -327,22 +367,25 @@ namespace Engine
 		ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.f, 0.f, 0.f, 0.f));
 
 		ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { ThumbnailSize, ThumbnailSize }, { 0.f, 1.f }, { 1.f, 0.f });
+		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered())
+		{
+			if (Type == AssetType::Script)
+				ProjectTools::OpenScriptProject();
+		}
 
 		ImGui::PopStyleColor(3);
 
 		if (bIsCreated)
 		{
-			DrawCreatedContent();
+			DrawCreatedContent(DidReload);
 		}
 		else
-		{
 			DrawUncreatedContent();
-		}
 	}
 
 	void ContentBrowserPanel::BrowserContent::DrawUncreatedContent()
 	{
-		bool isDirectory = Type == AssetType::Folder;
+		bool isDirectory = (Type == AssetType::Folder);
 
 		if (!RenameBuffer)
 		{
@@ -384,16 +427,21 @@ namespace Engine
 		}
 	}
 
-	void ContentBrowserPanel::BrowserContent::DrawCreatedContent()
+	void ContentBrowserPanel::BrowserContent::DrawCreatedContent(bool& DidReload)
 	{
-		bool isDirectory = Type == AssetType::Folder;
+		DidReload = false;
+
+		bool isDirectory = (Type == AssetType::Folder);
 		bool lastRenameState = bShouldRename;
 
 		if (ImGui::BeginPopupContextItem())
 		{
-			if (ImGui::MenuItem("Rename"))
+			if (Type != AssetType::Script)
 			{
-				StartRename();
+				if (ImGui::MenuItem("Rename"))
+				{
+					StartRename();
+				}
 			}
 			if (ImGui::MenuItem("Remove"))
 			{
@@ -401,36 +449,19 @@ namespace Engine
 				{
 					AssetManager::RemoveFolder(Entry.GetPath(), Entry.GetName());
 					Panel->Reload();
+					DidReload = true;
 				}
 				else
 				{
 					AssetManager::RemoveAsset(Entry.GetPath(), Entry.GetName());
-
 					Panel->Reload();
+					DidReload = true;
 				}
 			}
 
 			ImGui::EndPopup();
 		}
-
-		if (ImGui::BeginDragDropSource())
-		{
-			if (!isDirectory)
-			{
-				PanelDragPayload::ContentBrowserItem Item;
-				Item.SetID(Entry.GetID());
-				Item.ItemType = Entry.GetType();
-
-				size_t size = 0;
-				uint8_t* data = Item.Data(size);
-
-				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", data, size);
-
-				delete[] data;
-			}
-
-			ImGui::EndDragDropSource();
-		}
+		if (DidReload) return;
 
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 		{
@@ -438,10 +469,60 @@ namespace Engine
 			{
 				Panel->CurrentDirectory /= Entry.GetName();
 				Panel->Reload();
+				DidReload = true;
 			}
 		}
+		if (DidReload) return;
 
 		std::string cName = TypeUtils::FromUTF16(Entry.GetName());
+
+		bool beginDrag = ImGui::BeginDragDropSource();
+		if (beginDrag)
+		{
+			PanelDragPayload::ContentBrowserItem Item;
+
+			if (Type == AssetType::Folder)
+			{
+				Item.SetFolder(Entry.GetPath().c_str(), Entry.GetName().c_str());
+			}
+			else
+			{
+				Item.SetAsset(Entry.GetID().c_str());
+				Item.ItemType = Entry.GetType();
+			}
+
+			size_t size = 0;
+			uint8_t* data = Item.Data(size);
+
+			ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", data, size);
+
+			delete[] data;
+
+			ImGui::EndDragDropSource();
+		}
+
+		if (Type == AssetType::Folder && !beginDrag)
+		{
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
+
+				if (payload && payload->IsDelivery())
+				{
+					PanelDragPayload::ContentBrowserItem Item;
+					Item.FromData((uint8_t*)payload->Data);
+
+					if (Item.ItemType != AssetType::Folder)
+					{
+						AssetManager::MoveAsset(Item.GetID(), Entry.GetPathName());
+						Panel->Reload();
+						DidReload = true;
+					}
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+		}
 
 		if (bShouldRename)
 		{
@@ -452,11 +533,17 @@ namespace Engine
 
 			if (!ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
-				StopRename();
+				bool r = false;
+				StopRename(r);
+
+				DidReload |= r;
 			}
 			else if (ImGui::IsItemFocused() && ImGui::IsKeyDown(ImGuiKey_Enter))
 			{
-				StopRename();
+				bool r = false;
+				StopRename(r);
+
+				DidReload |= r;
 			}
 		}
 		else
@@ -484,8 +571,10 @@ namespace Engine
 		}
 	}
 
-	void ContentBrowserPanel::BrowserContent::StopRename()
+	void ContentBrowserPanel::BrowserContent::StopRename(bool& DidReload)
 	{
+		DidReload = false;
+
 		if (bShouldRename)
 		{
 			bShouldRename = false;
@@ -502,6 +591,7 @@ namespace Engine
 			}
 
 			Panel->Reload();
+			DidReload = true;
 
 			delete[] RenameBuffer;
 		}

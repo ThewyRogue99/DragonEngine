@@ -43,13 +43,13 @@ namespace Engine
 			BrowserContent(ContentBrowserPanel* panel, const DirectoryEntry& entry)
 				: Panel(panel), Entry(entry), Type(entry.GetType()) { }
 
-			void Draw(float ThumbnailSize);
+			void Draw(float ThumbnailSize, bool& DidReload);
 
 			void DrawUncreatedContent();
-			void DrawCreatedContent();
+			void DrawCreatedContent(bool &DidReload);
 
 			void StartRename();
-			void StopRename();
+			void StopRename(bool& DidReload);
 
 			DirectoryEntry Entry;
 			ContentBrowserPanel* Panel = nullptr;

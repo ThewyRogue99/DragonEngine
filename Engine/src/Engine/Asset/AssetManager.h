@@ -31,6 +31,9 @@ namespace Engine
         static bool RemoveAsset(const std::string& AssetID);
 	    static bool RemoveAsset(const CString& Path, const CString& Name);
 
+        static bool MoveAsset(const std::string& AssetID, const CString& NewPath);
+        static bool MoveAsset(const CString& Path, const CString& Name, const CString& NewPath);
+
         static void CloseAsset(Asset& asset);
 
         static Asset LoadAsset(const std::string& AssetID);
