@@ -16,14 +16,6 @@ namespace Engine
 	class Asset
 	{
 	public:
-		~Asset()
-		{
-			if (IncrementCounter)
-			{
-				IncrementCounter(ID);
-			}
-		}
-
 		const AssetMetadata* GetData() const { return Metadata; }
 
 		const CString& GetName() const { return Name; }
@@ -68,8 +60,6 @@ namespace Engine
 
 	private:
 		AssetMetadata* Metadata = nullptr;
-
-		std::function<void(std::string&)> IncrementCounter = nullptr;
 		
 		CString Name;
 		std::string ID;

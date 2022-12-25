@@ -159,7 +159,7 @@ namespace Engine
 			if (data.DataPtr)
 			{
 				if (data.IsMap)
-					delete (AssetMetadata*)(data.DataPtr);
+					((AssetMetadata*)(data.DataPtr))->Clear();
 				else
 					delete[] (uint8_t*)(data.DataPtr);
 

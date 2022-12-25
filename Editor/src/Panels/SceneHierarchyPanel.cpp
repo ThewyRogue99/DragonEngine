@@ -371,10 +371,19 @@ namespace Engine
 					{
 						Asset TextureAsset = AssetManager::LoadAsset(Item.GetID());
 						component.Texture = Serializer::DeserializeTexture(*TextureAsset.GetData());
+
+						AssetManager::CloseAsset(TextureAsset);
 					}
 				}
 
 				ImGui::EndDragDropTarget();
+			}
+
+			if (component.Texture)
+			{
+				ImGui::SameLine(0.f, 20.f);
+				if (ImGui::Button("Remove Texture"))
+					component.Texture = nullptr;
 			}
 		});
 
@@ -646,6 +655,8 @@ namespace Engine
 						Ref<AudioBuffer> Buff = AudioBuffer::Create(Serializer::DeserializeAudio(*AudioAsset.GetData()));
 
 						component.Source->SetBuffer(Buff);
+
+						AssetManager::CloseAsset(AudioAsset);
 					}
 				}
 
@@ -654,7 +665,7 @@ namespace Engine
 
 			if (component.Source)
 			{
-				ImGui::SameLine(0.f, 5.f);
+				ImGui::SameLine(0.f, 20.f);
 				if (ImGui::Button("Play", { 50.f, 0.f }))
 					AudioEngine::PlayAudio(component.Source);
 

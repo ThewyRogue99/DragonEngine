@@ -31,6 +31,8 @@ namespace Engine
         static bool RemoveAsset(const std::string& AssetID);
 	    static bool RemoveAsset(const CString& Path, const CString& Name);
 
+        static void CloseAsset(Asset& asset);
+
         static Asset LoadAsset(const std::string& AssetID);
         static Asset LoadAsset(const CString& Path, const CString& Name);
 
@@ -62,10 +64,6 @@ namespace Engine
             AssetType Type = AssetType::Undefined;
 
             AssetMetadata Metadata;
-
-            int RefCount = 0;
-
-            bool IsLoaded() { return RefCount > 0; }
 
             void Serialize(AssetMetadata& metadata);
             void Deserialize(AssetMetadata& metadata);

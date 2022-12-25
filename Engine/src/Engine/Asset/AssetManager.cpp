@@ -278,6 +278,11 @@ namespace Engine
 		return RemoveAsset(id);
 	}
 
+	void AssetManager::CloseAsset(Asset& asset)
+	{
+		asset.Metadata->Clear();
+	}
+
 	Asset AssetManager::LoadAsset(const std::string& AssetID)
 	{
 		if (!bIsAssetManagerInit) return Asset();
@@ -288,32 +293,18 @@ namespace Engine
 
 			Asset asset(data.Name, AssetID);
 
-			if (data.RefCount < 1)
+			CString w_id = TypeUtils::FromUTF8(AssetID);
+
+			CString FullPath = (ContentPath / data.Path) / (w_id + L".deasset");
+
+			std::ifstream f(FullPath, std::ios::in | std::ios::binary);
+			if (f.is_open())
 			{
-				CString w_id = TypeUtils::FromUTF8(AssetID);
+				asset.SetData(data.Metadata, data.Type, false);
 
-				CString FullPath = (ContentPath / data.Path) / (w_id + L".deasset");
+				asset.Read(f);
 
-				std::ifstream f(FullPath, std::ios::in | std::ios::binary);
-				if (f.is_open())
-				{
-					asset.SetData(data.Metadata, data.Type, false);
-
-					asset.Read(f);
-
-					asset.IncrementCounter = &AssetManager::IncrementCounterCallback;
-
-					data.RefCount = 2;
-
-					f.close();
-				}
-			}
-			else
-			{
-				asset.Metadata = &data.Metadata;
-				asset.IncrementCounter = &AssetManager::IncrementCounterCallback;
-
-				data.RefCount += 2;
+				f.close();
 			}
 
 			return asset;
@@ -359,21 +350,6 @@ namespace Engine
 		}
 
 		return true;
-	}
-
-	void AssetManager::IncrementCounterCallback(std::string& ID)
-	{
-		if (!bIsAssetManagerInit) return;
-
-		AssetData& data = AssetList[ID];
-
-		int& Counter = data.RefCount;
-
-		if (--Counter < 1)
-		{
-			data.Metadata.Clear();
-			Counter = 0;
-		}
 	}
 
 	bool AssetManager::CreateFolder(const CString& Path, const CString& Name)
