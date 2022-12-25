@@ -1,5 +1,6 @@
 #include "ToolbarPanel.h"
 
+#include "Engine/Audio/AudioEngine.h"
 #include "Engine/Scene/SceneManager.h"
 
 #include "../Project/ProjectTools.h"
@@ -71,6 +72,8 @@ namespace Engine
 					{
 						SceneManager::SetActiveScene(TEXT("Editor Scene"));
 						SceneManager::RemoveScene(TEXT("Copy Scene"));
+
+						AudioEngine::StopAllAudio();
 
 						ActiveSceneState = SceneState::Edit;
 					} break;

@@ -16,8 +16,11 @@ namespace Engine
 
 		static Ref<const AudioDevice> GetActiveAudioDevice();
 
+		static bool IsPlaying(Ref<AudioSource> Source);
+
 		static void PlayAudio(Ref<AudioSource> Source);
 
 		static void StopAudio(Ref<AudioSource> Source);
+		static void StopAllAudio();
 	};
 }
