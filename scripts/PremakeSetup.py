@@ -61,7 +61,3 @@ class PremakeSetup:
         print(f"Premake License file has been downloaded to '{self.premakeDirectory}'")
 
         return True
-
-pSetup = PremakeSetup()
-
-pSetup.InstallPremake()

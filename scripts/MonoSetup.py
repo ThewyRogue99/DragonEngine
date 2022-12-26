@@ -47,7 +47,3 @@ class MonoSetup:
         print("Finished")
 
         return True
-
-mSetup = MonoSetup()
-
-mSetup.InstallMono()
