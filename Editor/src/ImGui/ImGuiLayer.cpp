@@ -40,7 +40,7 @@ namespace Engine
 
 		ImGui::StyleColorsDark();
 
-		SetUITheme();
+		SetUIDarkBlueTheme();
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{

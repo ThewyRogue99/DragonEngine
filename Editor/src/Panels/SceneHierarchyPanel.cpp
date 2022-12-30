@@ -33,15 +33,7 @@ namespace Engine
 	{
 		EditorPanel::OnRender(DeltaTime);
 
-		Context->SceneRegistry.each([&](auto entityID)
-		{
-			DrawEntityNode({ entityID, Context });
-		});
-
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-			SetSelectedEntity({ });
-
-		if (ImGui::BeginPopupContextWindow(0, 1))
+		if (ImGui::BeginPopupContextWindow())
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
 			{
@@ -50,6 +42,14 @@ namespace Engine
 
 			ImGui::EndPopup();
 		}
+
+		Context->SceneRegistry.each([&](auto entityID)
+		{
+			DrawEntityNode({ entityID, Context });
+		});
+
+		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+			SetSelectedEntity({ });
 
 		ImGui::Begin("Properties");
 
@@ -99,7 +99,7 @@ namespace Engine
 			SetSelectedEntity(entity);
 		}
 
-		if (ImGui::BeginPopupContextItem())
+		if (ImGui::BeginPopupContextItem("##entity"))
 		{
 			if (ImGui::MenuItem("Delete Entity"))
 			{
