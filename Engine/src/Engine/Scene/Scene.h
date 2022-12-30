@@ -21,6 +21,7 @@ namespace Engine
 
 		Entity CreateEntity(const CString& name = CString());
 		Entity CreateEntityWithUUID(UUID uuid, const CString& name = CString());
+		Entity CopyEntity(Entity entity);
 
 		Entity GetEntityWithUUID(UUID uuid);
 

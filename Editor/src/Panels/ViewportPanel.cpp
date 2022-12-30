@@ -149,6 +149,19 @@ namespace Engine
 
 				if (ImGuizmo::IsUsing())
 				{
+					if (ImGui::IsKeyPressed(ImGuiKey_LeftAlt) && !bIsCopyingEntity)
+					{
+						bIsCopyingEntity = true;
+
+						Entity newEntity = ActiveScene->CopyEntity(SelectedEntity);
+						AddData(TEXT("SelectedEntity"), &newEntity, sizeof(newEntity));
+					}
+					else
+					{
+						if (ImGui::IsKeyReleased(ImGuiKey_LeftAlt))
+							bIsCopyingEntity = false;
+					}
+
 					glm::vec3 position, rotation, scale;
 					Math::DecomposeTransform(transform, position, rotation, scale);
 

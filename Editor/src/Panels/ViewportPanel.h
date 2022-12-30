@@ -47,5 +47,6 @@ namespace Engine
 		int GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
 		bool bIsViewportFocused = false, bIsViewportHovered = false;
+		bool bIsCopyingEntity = false;
 	};
 }

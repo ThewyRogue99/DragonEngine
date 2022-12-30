@@ -66,6 +66,16 @@ namespace Engine
 		return entity;
 	}
 
+	Entity Scene::CopyEntity(Entity entity)
+	{
+		Entity targetEntity = Entity(SceneRegistry.create(), this);
+
+		// Copy all components
+		CopyComponent(AllComponents(), targetEntity, entity);
+
+		return targetEntity;
+	}
+
 	Entity Scene::GetEntityWithUUID(UUID uuid)
 	{
 		auto view = SceneRegistry.view<IDComponent>();
