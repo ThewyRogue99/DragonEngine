@@ -202,7 +202,7 @@ namespace Engine
 					if (!Data.Empty() && Type != AssetType::Undefined)
 					{
 						Asset asset(Name, id);
-						asset.SetData(Data, Type);
+						asset.SetData(Data, Type, false);
 
 						asset.Write(f);
 					}

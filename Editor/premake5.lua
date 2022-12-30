@@ -24,6 +24,7 @@ project "Editor"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
+		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.ImGuizmo}",

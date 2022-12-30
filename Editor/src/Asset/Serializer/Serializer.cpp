@@ -1,10 +1,10 @@
 #include "depch.h"
 #include "Serializer.h"
 
-#include "../../Engine/vendor/stb_image/stb_image.h"
 #include "Engine/Asset/AssetManager.h"
 #include "Utils.h"
 
+#include <stb_image.h>
 #include <filesystem>
 
 namespace Engine
@@ -139,6 +139,7 @@ namespace Engine
 					name = AssetManager::GetAvailableName(DestinationPath, name);
 
 				AssetManager::CreateAsset(DestinationPath, name, data, type, Overwrite);
+				data.Clear();
 
 				return true;
 			}

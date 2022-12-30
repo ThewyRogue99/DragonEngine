@@ -9,7 +9,6 @@ namespace Engine
 	{
 	public:
 		OpenGLTexture2D(uint32_t width, uint32_t height);
-		OpenGLTexture2D(const wchar_t* path);
 
 		virtual ~OpenGLTexture2D();
 

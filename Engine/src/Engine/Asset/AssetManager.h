@@ -82,8 +82,6 @@ namespace Engine
 
 	    static bool AddAsset(const std::string& ID, const AssetData& data);
 
-        static void IncrementCounterCallback(std::string& ID);
-
         using AssetMap = std::unordered_map<std::string, AssetData>;
 
         static AssetMap AssetList;

@@ -14,6 +14,8 @@
 #include "../Asset/Serializer/SceneSerializer.h"
 #include "../Asset/Serializer/Serializer.h"
 
+#include "../Tools/ResourceTool.h"
+
 #include "../Project/ProjectManager.h"
 #include "../Project/ProjectTools.h"
 
@@ -31,11 +33,11 @@ namespace Engine
 
 	ContentBrowserPanel::ContentBrowserPanel() : EditorPanel("Content Browser")
 	{
-		DirectoryIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/DirectoryIcon.png"));
-		FileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/FileIcon.png"));
-		SceneFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/SceneFileIcon.png"));
-		ScriptFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/ScriptFileIcon.png"));
-		AudioFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/AudioFileIcon.png"));
+		DirectoryIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/DirectoryIcon"));
+		FileIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/FileIcon"));
+		SceneFileIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/SceneFileIcon"));
+		ScriptFileIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/ScriptFileIcon"));
+		AudioFileIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/AudioFileIcon"));
 		
 		ProjectManager::OnLoadProject().AddCallback(BIND_EVENT_FN(ContentBrowserPanel::OnLoadProject));
 	}
@@ -45,19 +47,19 @@ namespace Engine
 		EditorPanel::OnCreate();
 
 		if(!DirectoryIcon)
-			DirectoryIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/DirectoryIcon.png"));
+			DirectoryIcon = ResourceTool::GetIcon(TEXT("DirectoryIcon"));
 
 		if(!FileIcon)
-			FileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/FileIcon.png"));
+			FileIcon = ResourceTool::GetIcon(TEXT("FileIcon"));
 
 		if (!SceneFileIcon)
-			SceneFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/SceneFileIcon.png"));
+			SceneFileIcon = ResourceTool::GetIcon(TEXT("SceneFileIcon"));
 
 		if (!ScriptFileIcon)
-			ScriptFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/ScriptFileIcon.png"));
+			ScriptFileIcon = ResourceTool::GetIcon(TEXT("ScriptFileIcon"));
 
 		if (!AudioFileIcon)
-			AudioFileIcon = Texture2D::Create(TEXT("Resource/Icon/ContentBrowser/AudioFileIcon.png"));
+			AudioFileIcon = ResourceTool::GetIcon(TEXT("AudioFileIcon"));
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 	}

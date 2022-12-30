@@ -22,8 +22,6 @@ namespace Engine
 	class Texture2D : public Texture
 	{
 	public:
-		static Ref<Texture2D> Create(const wchar_t* path);
-
 		static Ref<Texture2D> Create(uint32_t width, uint32_t height);
 
 		virtual bool operator ==(Texture2D& texture) = 0;

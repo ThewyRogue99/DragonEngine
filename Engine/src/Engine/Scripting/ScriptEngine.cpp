@@ -12,7 +12,7 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/attrdefs.h>
 
-#ifdef ENGINE_BUILD_DEBUG
+#if defined(ENGINE_BUILD_DEBUG) | defined(ENGINE_BUILD_RELEASE)
 	#define MONO_PATH "../vendor/lib"
 #else
 	#define MONO_PATH "lib"

@@ -3,6 +3,7 @@
 #include "Engine/Audio/AudioEngine.h"
 #include "Engine/Scene/SceneManager.h"
 
+#include "../Tools/ResourceTool.h"
 #include "../Project/ProjectTools.h"
 
 #pragma warning(disable : 4312)
@@ -16,9 +17,9 @@ namespace Engine
 
 	void ToolbarPanel::OnCreate()
 	{
-		PlayIcon = Texture2D::Create(TEXT("Resource/Icon/PlayButton.png"));
-		StopIcon = Texture2D::Create(TEXT("Resource/Icon/StopButton.png"));
-		SimulateIcon = Texture2D::Create(TEXT("Resource/Icon/SimulateButton.png"));
+		PlayIcon =  ResourceTool::GetIcon(TEXT("PlayButton"));
+		StopIcon = ResourceTool::GetIcon(TEXT("StopButton"));
+		SimulateIcon = ResourceTool::GetIcon(TEXT("SimulateButton"));
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 2.f));
 		SetPanelStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0.f, 0.f));

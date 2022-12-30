@@ -10,6 +10,8 @@
 #include <filesystem>
 #include <nfd.h>
 
+#include "Tools/ResourceTool.h"
+
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 #include "Panels/ViewportPanel.h"
@@ -40,6 +42,8 @@ namespace Engine
 				serializer.Deserialize(path_wstring);
 			}
 		*/
+
+		ResourceTool::LoadResources();
 
 		PManager.AddPanels({
 			new ViewportPanel(),
