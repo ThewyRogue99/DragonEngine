@@ -4,6 +4,7 @@
 #pragma warning(disable : 4312)
 
 #include "PanelDragPayload.h"
+#include "ContentBrowserPanel/ContentBrowserTextures.h"
 
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/SceneManager.h"
@@ -137,8 +138,7 @@ namespace Engine
 
 				if (ImGui::IsItemHovered() && ImGui::IsItemClicked())
 				{
-					CurrentDirectory = PathName;
-					Reload();
+					ChangeCurrentDirectory(PathName);
 				}
 			}
 		}
@@ -180,7 +180,9 @@ namespace Engine
 			}
 
 			if (ImGui::IsItemHovered() && ImGui::IsItemClicked())
-				CurrentDirectory = L"";
+			{
+				ChangeCurrentDirectory(L"");
+			}
 		}
 		ImGui::EndChild();
 	}
@@ -284,8 +286,7 @@ namespace Engine
 			{
 				if (!CurrentDirectory.empty())
 				{
-					CurrentDirectory = CurrentDirectory.parent_path();
-					Reload();
+					ChangeCurrentDirectory(CurrentDirectory.parent_path());
 				}
 			}
 
@@ -356,6 +357,9 @@ namespace Engine
 			break;
 		case AssetType::Audio:
 			icon = AudioFileIcon;
+			break;
+		case AssetType::Texture:
+			icon = ContentBrowserTextures::GetTexture(Entry.GetID());
 			break;
 		default:
 			icon = FileIcon;
@@ -467,8 +471,7 @@ namespace Engine
 		{
 			if (isDirectory)
 			{
-				Panel->CurrentDirectory /= Entry.GetName();
-				Panel->Reload();
+				Panel->ChangeCurrentDirectory(Panel->CurrentDirectory / Entry.GetName());
 				DidReload = true;
 			}
 		}
@@ -607,6 +610,26 @@ namespace Engine
 		ContentList.push_back(content);
 	}
 
+	void ContentBrowserPanel::ChangeCurrentDirectory(const std::filesystem::path& NewDirectory)
+	{
+		CurrentDirectory = NewDirectory;
+		ReloadTexturesInCurrentDirectory();
+
+		Reload();
+	}
+
+	void ContentBrowserPanel::ReloadTexturesInCurrentDirectory()
+	{
+		ContentBrowserTextures::Clear();
+
+		AssetIterator it(CurrentDirectory);
+		for (auto& entry : it)
+		{
+			if (entry.GetType() == AssetType::Texture)
+				ContentBrowserTextures::LoadTexture(entry.GetID());
+		}
+	}
+
 	bool ContentBrowserPanel::OnCreateContent(BrowserContent* Content)
 	{
 		switch (Content->Type)
@@ -656,6 +679,7 @@ namespace Engine
 	void ContentBrowserPanel::OnLoadProject(const Project& project)
 	{
 		LoadedProject = &project;
+		ReloadTexturesInCurrentDirectory();
 		Reload();
 	}
 }

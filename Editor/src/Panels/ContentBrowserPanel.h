@@ -35,6 +35,10 @@ namespace Engine
 
 		void CreateContent(AssetType type);
 
+		void ChangeCurrentDirectory(const std::filesystem::path& NewDirectory);
+
+		void ReloadTexturesInCurrentDirectory();
+
 		class BrowserContent
 		{
 		public:
