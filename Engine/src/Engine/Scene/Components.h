@@ -102,7 +102,10 @@ namespace Engine
 	COMPONENT_CLASS(SpriteRendererComponent,
 	public:
 		glm::vec4 Color = glm::vec4(1.f);
+
+		std::string TextureID;
 		Ref<Texture2D> Texture = nullptr;
+
 		float TilingFactor = 1.f;
 
 		SpriteRendererComponent() = default;

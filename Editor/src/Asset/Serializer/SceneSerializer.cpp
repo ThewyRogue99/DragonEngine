@@ -89,6 +89,7 @@ if (Ent.HasComponent<ComponentName>()) \
 		SERIALIZE_COMPONENT_MACRO(BoxCollider2DComponent, entity, out)
 		SERIALIZE_COMPONENT_MACRO(CircleCollider2DComponent, entity, out)
 		SERIALIZE_COMPONENT_MACRO(ScriptComponent, entity, out)
+		SERIALIZE_COMPONENT_MACRO(AudioComponent, entity, out)
 	}
 
 #define DESERIALIZE_COMPONENT_MACRO(KeyName, ComponentName, Ent, DataPtr,...) \
@@ -135,6 +136,7 @@ if (KeyName == #ComponentName) \
 			DESERIALIZE_COMPONENT_MACRO(name, BoxCollider2DComponent, deserializedEntity, component.DataPtr)
 			DESERIALIZE_COMPONENT_MACRO(name, CircleCollider2DComponent, deserializedEntity, component.DataPtr)
 			DESERIALIZE_COMPONENT_MACRO(name, ScriptComponent, deserializedEntity, component.DataPtr)
+			DESERIALIZE_COMPONENT_MACRO(name, AudioComponent, deserializedEntity, component.DataPtr)
 		}
 
 		return deserializedEntity;

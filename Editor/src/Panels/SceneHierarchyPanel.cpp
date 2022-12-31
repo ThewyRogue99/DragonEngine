@@ -3,6 +3,7 @@
 
 #include "PanelDragPayload.h"
 #include "../Asset/Serializer/Serializer.h"
+#include "Engine/Asset/Serializer/Serializer.h"
 #include "ContentBrowserPanel/ContentBrowserTextures.h"
 
 #include "Engine/Scene/Components.h"
@@ -382,6 +383,8 @@ namespace Engine
 
 							AssetManager::CloseAsset(TextureAsset);
 						}
+
+						component.TextureID = Item.GetID();
 					}
 				}
 

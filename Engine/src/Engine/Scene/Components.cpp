@@ -1,7 +1,8 @@
 #include "depch.h"
 #include "Components.h"
 
-#include "Engine/Asset/AssetMetadata.h"
+#include "Engine/Asset/Serializer/Serializer.h"
+#include "Engine/Asset/AssetManager.h"
 #include "Engine/Scripting/ScriptEngine.h"
 
 namespace Engine
@@ -44,7 +45,7 @@ namespace Engine
 	{
 		Metadata.SetField("Color", Color);
 
-		//TODO: Implement texture serialize
+		Metadata.SetStringField("TextureID", TextureID);
 
 		Metadata.SetField("TilingFactor", TilingFactor);
 	}
@@ -54,6 +55,14 @@ namespace Engine
 		Color = Metadata.GetField<glm::vec4>("Color");
 
 		//TODO: Implement texture deserialize
+		TextureID = Metadata.GetStringField<char>("TextureID");
+		Asset TextureAsset = AssetManager::LoadAsset(TextureID);
+		if (TextureAsset.GetAssetType() == AssetType::Texture)
+		{
+			Texture = Serializer::DeserializeTexture(*TextureAsset.GetData());
+		}
+
+		AssetManager::CloseAsset(TextureAsset);
 
 		TilingFactor = Metadata.GetField<float>("TilingFactor");
 	}
@@ -92,12 +101,24 @@ namespace Engine
 
 	void AudioComponent::OnSerialize(AssetMetadata& Metadata)
 	{
-		Metadata.SetField("AudioID", AudioID);
+		Metadata.SetStringField("AudioID", AudioID);
 	}
 
 	void AudioComponent::OnDeserialize(AssetMetadata& Metadata)
 	{
 		AudioID = Metadata.GetStringField<char>("AudioID");
+
+		Asset AudioAsset = AssetManager::LoadAsset(AudioID);
+
+		if (AudioAsset.GetAssetType() == AssetType::Audio)
+		{
+			Source = AudioSource::Create();
+
+			Ref<AudioBuffer> Buff = AudioBuffer::Create(Serializer::DeserializeAudio(*AudioAsset.GetData()));
+
+			Source->SetBuffer(Buff);
+		}
+		AssetManager::CloseAsset(AudioAsset);
 	}
 
 	void ScriptComponent::OnSerialize(AssetMetadata& Metadata)

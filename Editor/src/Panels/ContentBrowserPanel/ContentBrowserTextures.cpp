@@ -1,6 +1,7 @@
 #include "ContentBrowserTextures.h"
 
 #include "Engine/Asset/AssetManager.h"
+#include "Engine/Asset/Serializer/Serializer.h"
 #include "../../Asset/Serializer/Serializer.h"
 
 #include <unordered_map>
