@@ -312,7 +312,8 @@ namespace Engine
 
 	void AssetManager::CloseAsset(Asset& asset)
 	{
-		asset.Metadata->Clear();
+		if(asset.Metadata)
+			asset.Metadata->Clear();
 	}
 
 	Asset AssetManager::LoadAsset(const std::string& AssetID)

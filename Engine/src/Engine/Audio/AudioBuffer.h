@@ -22,22 +22,22 @@ namespace Engine
 		struct phold;
 
 	public:
-		static Ref<AudioBuffer> Create(AudioBufferData& Data = AudioBufferData());
-
 		bool SetAudioEffect(AudioBufferData& BuffData);
 		bool RemoveAudioEffect();
 
 		explicit AudioBuffer(const phold&) : AudioBuffer() { }
 
-		~AudioBuffer();
-
 		friend class AudioSource;
-
-		AudioBuffer(const AudioBuffer&) = delete;
-		const AudioBuffer& operator =(const AudioBuffer&) = delete;
+		friend class AudioEngine;
 
 	private:
 		AudioBuffer() = default;
+		AudioBuffer(const AudioBuffer&) = default;
+
+		const AudioBuffer& operator =(const AudioBuffer& other)
+		{
+			AudioEffectBuffer = other.AudioEffectBuffer;
+		}
 
 		struct phold {
 			explicit phold(int) {}

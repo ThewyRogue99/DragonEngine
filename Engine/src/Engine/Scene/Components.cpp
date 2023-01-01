@@ -112,9 +112,9 @@ namespace Engine
 
 		if (AudioAsset.GetAssetType() == AssetType::Audio)
 		{
-			Source = AudioSource::Create();
+			Source = AudioEngine::CreateAudioSource();
 
-			Ref<AudioBuffer> Buff = AudioBuffer::Create(Serializer::DeserializeAudio(*AudioAsset.GetData()));
+			Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(*AudioAsset.GetData()));
 
 			Source->SetBuffer(Buff);
 		}

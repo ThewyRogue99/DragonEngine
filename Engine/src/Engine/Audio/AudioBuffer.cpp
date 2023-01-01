@@ -7,14 +7,6 @@
 
 namespace Engine
 {
-	Ref<AudioBuffer> AudioBuffer::Create(AudioBufferData& Data)
-	{
-		Ref<AudioBuffer> result = CreateRef<AudioBuffer>(phold{ 0 });
-		result->SetAudioEffect(Data);
-
-		return result;
-	}
-
 	bool AudioBuffer::SetAudioEffect(AudioBufferData& BuffData)
 	{
 		if (BuffData.Data && BuffData.DataSize > 0)
@@ -65,7 +57,7 @@ namespace Engine
 				return false;
 			}
 
-			AudioEffectBuffer = buffer;  // add to the list of known buffers
+			AudioEffectBuffer = buffer;
 
 			return true;
 		}
@@ -82,10 +74,5 @@ namespace Engine
 		}
 
 		return false;
-	}
-
-	AudioBuffer::~AudioBuffer()
-	{
-		RemoveAudioEffect();
 	}
 }

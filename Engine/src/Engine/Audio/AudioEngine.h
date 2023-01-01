@@ -13,6 +13,13 @@ namespace Engine
 	{
 	public:
 		static void Init();
+		static void Shutdown();
+
+		static Ref<AudioBuffer> CreateAudioBuffer(AudioBufferData& Data);
+		static Ref<AudioSource> CreateAudioSource(glm::vec3 Position = glm::vec3(0.f), float Pitch = 1.f, float Gain = 1.f);
+
+		static bool DestroyAudioBuffer(Ref<AudioBuffer> Buffer);
+		static bool DestroyAudioSource(Ref<AudioSource> Source);
 
 		static Ref<const AudioDevice> GetActiveAudioDevice();
 

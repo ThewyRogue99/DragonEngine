@@ -91,6 +91,9 @@ namespace DragonEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool AudioComponent_StopAudio(string EntityID);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool AudioComponent_IsPlaying(string EntityID);
+
         #endregion
     }
 }

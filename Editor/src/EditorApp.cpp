@@ -24,6 +24,7 @@ namespace Engine
 		{
 			{
 				DE_PROFILE_SCOPE("UI Render");
+				Application::OnUpdate(DeltaTime);
 
 				AppImGuiLayer->Begin();
 

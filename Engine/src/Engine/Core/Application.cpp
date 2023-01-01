@@ -69,6 +69,8 @@ namespace Engine
 	void Application::Close()
 	{
 		bIsRunning = false;
+
+		AudioEngine::Shutdown();
 	}
 
 	void Application::Run()
@@ -102,6 +104,7 @@ namespace Engine
 
 	void Application::OnUpdate(float DeltaTime)
 	{
+		
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& event)

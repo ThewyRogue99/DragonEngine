@@ -10,21 +10,9 @@ namespace Engine
 		alGenSources(1, &Source);
 	}
 
-	AudioSource::~AudioSource()
+	void AudioSource::Destroy()
 	{
 		alDeleteSources(1, &Source);
-	}
-
-	Ref<AudioSource> AudioSource::Create(glm::vec3 Position, float Pitch, float Gain)
-	{
-		Ref<AudioSource> result = CreateRef<AudioSource>(phold{ 0 });
-		result->SetPitch(Pitch);
-		result->SetGain(Gain);
-		result->SetPosition(Position);
-		result->SetVelocity(glm::vec3(0.f));
-		result->SetLoopSound(false);
-
-		return result;
 	}
 
 	void AudioSource::SetBuffer(Ref<AudioBuffer> Buff)

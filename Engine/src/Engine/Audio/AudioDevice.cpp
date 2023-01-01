@@ -24,7 +24,7 @@ namespace Engine
 					if (!name || alcGetError(result->Device) != AL_NO_ERROR)
 						name = alcGetString(result->Device, ALC_DEVICE_SPECIFIER);
 
-					DE_CORE_INFO("Using audio source: {0}", name);
+					result->DeviceName = name;
 
 					return result;
 				}

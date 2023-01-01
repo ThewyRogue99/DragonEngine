@@ -120,6 +120,21 @@ namespace Engine
 		}
 	}
 
+	template<typename T>
+	static void OnRemoveComponent(Entity entity)
+	{
+		entity.RemoveComponent<T>();
+	}
+
+	template<>
+	static void OnRemoveComponent<AudioComponent>(Entity entity)
+	{
+		AudioComponent& ac = entity.GetComponent<AudioComponent>();
+		AudioEngine::DestroyAudioSource(ac.Source);
+		AudioEngine::DestroyAudioBuffer(ac.Source->GetBuffer());
+		entity.RemoveComponent<AudioComponent>();
+	}
+
 	template<typename T, typename UIFunction>
 	static void DrawComponent(const char* name, Entity entity, UIFunction uiFunction, bool allowDelete = true)
 	{
@@ -170,7 +185,9 @@ namespace Engine
 			}
 
 			if (removeComponent)
-				entity.RemoveComponent<T>();
+			{
+				OnRemoveComponent<T>(entity);
+			}
 		}
 	}
 
@@ -662,9 +679,9 @@ namespace Engine
 
 						component.AudioID = Item.GetID();
 						if(!component.Source)
-							component.Source = AudioSource::Create();
+							component.Source = AudioEngine::CreateAudioSource();
 
-						Ref<AudioBuffer> Buff = AudioBuffer::Create(Serializer::DeserializeAudio(*AudioAsset.GetData()));
+						Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(*AudioAsset.GetData()));
 
 						component.Source->SetBuffer(Buff);
 

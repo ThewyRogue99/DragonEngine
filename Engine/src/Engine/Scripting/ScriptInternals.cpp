@@ -480,6 +480,19 @@ namespace Engine
 		return false;
 	}
 
+	static bool AudioComponent_IsPlaying(MonoString* EntityID)
+	{
+		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+
+		if (entity.HasComponent<AudioComponent>())
+		{
+			auto& ac = entity.GetComponent<AudioComponent>();
+			return AudioEngine::IsPlaying(ac.Source);
+		}
+
+		return false;
+	}
+
 #pragma endregion
 
 	void ScriptInternals::RegisterFunctions()

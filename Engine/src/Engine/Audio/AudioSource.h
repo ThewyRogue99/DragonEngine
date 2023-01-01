@@ -12,11 +12,9 @@ namespace Engine
 
 	public:
 		explicit AudioSource(const phold& hold) : AudioSource() { }
-		~AudioSource();
-
-		static Ref<AudioSource> Create(glm::vec3 Position = glm::vec3(0.f), float Pitch = 1.f, float Gain = 1.f);
 
 		void SetBuffer(Ref<AudioBuffer> Buff);
+		Ref<AudioBuffer> GetBuffer() const { return Buffer; }
 
 		float GetPitch() const { return Pitch; }
 		void SetPitch(float pitch);
@@ -40,6 +38,8 @@ namespace Engine
 
 	private:
 		AudioSource();
+
+		void Destroy();
 
 		struct phold {
 			explicit phold(int) {}

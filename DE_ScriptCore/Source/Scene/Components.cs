@@ -87,6 +87,14 @@
 
     public class AudioComponent : Component
     {
+		public bool IsPlaying
+		{
+			get
+			{
+				return InternalCalls.AudioComponent_IsPlaying(Entity.ID);
+			}
+		}
+
         public void PlayAudio()
 		{
 			InternalCalls.AudioComponent_PlayAudio(Entity.ID);

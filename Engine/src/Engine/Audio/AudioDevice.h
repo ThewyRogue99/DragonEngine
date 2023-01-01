@@ -25,6 +25,8 @@ namespace Engine
 
 		bool CloseDevice();
 
+		const std::string& GetName() const { return DeviceName; }
+
 		AudioDevice(const AudioDevice&) = delete;
 		const AudioDevice& operator =(const AudioDevice&) = delete;
 
@@ -38,5 +40,7 @@ namespace Engine
 	private:
 		ALCdevice* Device = nullptr;
 		ALCcontext* Context = nullptr;
+
+		std::string DeviceName;
 	};
 }
