@@ -16,9 +16,6 @@ namespace Engine
 	class Scene
 	{
 	public:
-		Scene(const CString& Name = TEXT("Scene"));
-		Scene(const Scene&) = default;
-
 		Entity CreateEntity(const CString& name = CString());
 		Entity CreateEntityWithUUID(UUID uuid, const CString& name = CString());
 		Entity CopyEntity(Entity entity);
@@ -34,13 +31,14 @@ namespace Engine
 		virtual void OnEvent(Event& event);
 
 		friend class Entity;
+		friend class SceneManager;
 		friend class SceneSerializer;
 		friend class SceneHierarchyPanel;
 
 		inline const CString& GetName() const { return SceneName; }
 		inline void SetName(const CString& Name) { SceneName = Name; }
 
-		Scene* Copy();
+		void Copy(Scene* SceneRef);
 
 		inline virtual Camera* GetPrimaryCamera() { return PrimaryCamera; }
 
@@ -48,13 +46,16 @@ namespace Engine
 		virtual void OnSceneEnd();
 
 	protected:
+		Scene(const CString& Name = TEXT("Scene"));
+		Scene(const Scene&) = default;
+
+		~Scene() = default;
+
 		void Render(float DeltaTime);
 
 		void OnPhysics2DStart();
 		void OnPhysics2DUpdate(float DeltaTime);
 		void OnPhysics2DEnd();
-
-		void CopyToRef(Scene* SceneRef);
 
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);

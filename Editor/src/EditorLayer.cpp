@@ -1,6 +1,8 @@
 #include "EditorLayer.h"
 
 #include "Engine/Types/Types.h"
+#include "Scene/EditorSceneManager.h"
+
 #include "Engine/Core/Application.h"
 #include "Engine/Renderer/Renderer2D.h"
 
@@ -10,6 +12,7 @@
 #include <filesystem>
 #include <nfd.h>
 
+#include "Tools/EditorTool.h"
 #include "Tools/ResourceTool.h"
 
 #include "Panels/SceneHierarchyPanel.h"
@@ -27,22 +30,6 @@ namespace Engine
 
 	void EditorLayer::OnAttach()
 	{
-		NewScene();
-
-		// TODO: Implement Scene Serialize
-		/*
-			auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
-			if (commandLineArgs.Count > 1)
-			{
-				auto sceneFilePath = commandLineArgs[1];
-
-				CString path_wstring = TypeUtils::FromUTF8(sceneFilePath);
-
-				SceneSerializer serializer(ActiveScene);
-				serializer.Deserialize(path_wstring);
-			}
-		*/
-
 		ResourceTool::LoadResources();
 
 		PManager.AddPanels({
@@ -56,7 +43,12 @@ namespace Engine
 		if (!ProjectManager::IsProjectLoaded())
 			PManager.DisableAllPanels();
 
-		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(EditorLayer::OnActiveSceneChange));
+		EditorScene* EScene = EditorSceneManager::CreateEditorScene(TEXT("Scene"));
+
+		EditorSceneManager::OnEditorSceneChange().AddCallback(BIND_CLASS_FN(EditorLayer::OnActiveSceneChange));
+		EditorTool::OnBeginPlay().AddCallback(BIND_CLASS_FN(EditorLayer::OnBeginPlay));
+		EditorTool::OnEndPlay().AddCallback(BIND_CLASS_FN(EditorLayer::OnEndPlay));
+
 		ProjectManager::OnLoadProject().AddCallback(BIND_CLASS_FN(EditorLayer::OnProjectLoad));
 	}
 
@@ -204,24 +196,25 @@ namespace Engine
 		PManager.OnEvent(event);
 	}
 
-	void EditorLayer::NewScene()
-	{
-		EditorScene* ref = new EditorScene();
-
-		if (SceneManager::AddScene(TEXT("Editor Scene"), ref, true))
-		{
-			SceneManager::SetActiveScene(TEXT("Editor Scene"));
-			ActiveScene = ref;
-		}
-	}
-
 	void EditorLayer::OnActiveSceneChange(Scene* scene)
 	{
-		ActiveScene->OnSceneEnd();
+		if(ActiveScene)
+			ActiveScene->OnSceneEnd();
 
-		ActiveScene = (EditorScene*)scene;
+		ActiveScene = scene;
 
 		ActiveScene->OnSceneBegin();
+	}
+
+	void EditorLayer::OnBeginPlay()
+	{
+		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(EditorLayer::OnActiveSceneChange));
+		OnActiveSceneChange(SceneManager::GetActiveScene());
+	}
+
+	void EditorLayer::OnEndPlay()
+	{
+		OnActiveSceneChange(EditorSceneManager::GetEditorScene());
 	}
 
 	void EditorLayer::OnProjectLoad(const Project& project)

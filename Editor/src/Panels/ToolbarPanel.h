@@ -18,7 +18,10 @@ namespace Engine
 		virtual void OnRender(float DeltaTime) override;
 
 	private:
-		void OnSetActiveScene(Scene* NewScene);
+		void OnEditorSceneChange(EditorScene* NewScene);
+
+		void OnBeginPlay();
+		void OnEndPlay();
 
 	private:
 		enum SceneState

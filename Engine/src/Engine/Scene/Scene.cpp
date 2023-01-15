@@ -129,7 +129,7 @@ namespace Engine
 
 	}
 
-	void Scene::CopyToRef(Scene* SceneRef)
+	void Scene::Copy(Scene* SceneRef)
 	{
 		SceneRegistry.each([this, SceneRef](const entt::entity entity)
 		{
@@ -139,15 +139,6 @@ namespace Engine
 		SceneRef->SceneName = SceneName;
 		SceneRef->ViewportHeight = ViewportHeight;
 		SceneRef->ViewportWidth = ViewportWidth;
-	}
-
-	Scene* Scene::Copy()
-	{
-		Scene* CopyScene = new Scene(SceneName);
-
-		CopyToRef(CopyScene);
-
-		return CopyScene;
 	}
 
 	void Scene::Render(float DeltaTime)

@@ -11,9 +11,11 @@
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Components.h"
 
-#include "Engine/Scene/SceneManager.h"
-#include "../Asset/Serializer/SceneSerializer.h"
+#include "Engine/Asset/Serializer/SceneSerializer.h"
 #include "Engine/Asset/AssetManager.h"
+
+#include "../Tools/EditorTool.h"
+#include "../Scene/EditorSceneManager.h"
 
 #pragma warning(disable : 4312)
 
@@ -43,9 +45,11 @@ namespace Engine
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f, 0.f });
 
-		ActiveScene = (EditorScene*)SceneManager::GetActiveScene();
+		ActiveScene = EditorSceneManager::GetEditorScene();
 
-		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(ViewportPanel::OnSetActiveScene));
+		EditorSceneManager::OnEditorSceneChange().AddCallback(BIND_CLASS_FN(ViewportPanel::OnSetActiveScene));
+		EditorTool::OnBeginPlay().AddCallback(BIND_CLASS_FN(ViewportPanel::OnBeginPlay));
+		EditorTool::OnEndPlay().AddCallback(BIND_CLASS_FN(ViewportPanel::OnEndPlay));
 	}
 
 	void ViewportPanel::OnUpdate(float DeltaTime)
@@ -93,15 +97,17 @@ namespace Engine
 				PanelDragPayload::ContentBrowserItem Item;
 				Item.FromData((uint8_t*)payload->Data);
 
-				if (Item.ItemType == AssetType::Scene)
+				bool ShouldAcceptScene = !EditorTool::IsPlaying() && !EditorTool::IsSimulating();
+
+				if (ShouldAcceptScene && Item.ItemType == AssetType::Scene)
 				{
 					Asset asset = AssetManager::LoadAsset(Item.GetID());
 
-					EditorScene* NewScene = new EditorScene();
+					EditorScene* NewScene = EditorSceneManager::CreateEditorScene(asset.GetName());
 
 					SceneSerializer::Deserialize(NewScene, *asset.GetData());
 
-					SceneManager::AddScene(NewScene->GetName(), NewScene, true);
+					AssetManager::CloseAsset(asset);
 				}
 
 			}
@@ -208,6 +214,17 @@ namespace Engine
 
 		ImVec2 size = GetSize();
 		ActiveScene->OnViewportResize((uint32_t)size.x, (uint32_t)size.y);
+	}
+
+	void ViewportPanel::OnBeginPlay()
+	{
+		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(ViewportPanel::OnSetActiveScene));
+		OnSetActiveScene(SceneManager::GetActiveScene());
+	}
+
+	void ViewportPanel::OnEndPlay()
+	{
+		OnSetActiveScene(EditorSceneManager::GetEditorScene());
 	}
 
 	bool ViewportPanel::OnMouseButtonPressedEvent(MouseButtonPressedEvent& event)

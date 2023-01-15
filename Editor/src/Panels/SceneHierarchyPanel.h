@@ -27,7 +27,10 @@ namespace Engine
 
 		void DrawComponents(Entity entity);
 
-		void OnSetActiveScene(Scene* NewScene);
+		void OnEditorSceneChange(EditorScene* NewScene);
+
+		void OnBeginPlay();
+		void OnEndPlay();
 
 	private:
 		Scene* Context = nullptr;

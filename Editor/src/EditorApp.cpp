@@ -8,10 +8,10 @@
 
 namespace Engine
 {
-	class EngineEditor : public Application
+	class EditorApp : public Application
 	{
 	public:
-		EngineEditor(const ApplicationSpecification& Specs) : Application(Specs)
+		EditorApp(const ApplicationSpecification& Specs) : Application(Specs)
 		{
 			PushLayer(new EditorLayer());
 
@@ -48,6 +48,6 @@ namespace Engine
 		Ref<EditorConsole> console = CreateRef<EditorConsole>();
 		Log::SetConsole(console);
 
-		return new EngineEditor(Specs);
+		return new EditorApp(Specs);
 	}
 }

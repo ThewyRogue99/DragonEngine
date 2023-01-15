@@ -9,7 +9,15 @@ namespace Engine
 	class SceneManager
 	{
 	public:
-		static bool AddScene(const CString& Tag, Scene* SceneRef, bool Replace = false);
+		static Scene* CreateScene(const CString& Tag);
+
+		static void AddScene(Scene* SceneRef);
+
+		// Load a scene asset with its ID
+		static Scene* LoadScene(const std::string& SceneAssetID);
+
+		// Load a scene asset with its Path and Name
+		static Scene* LoadScene(const CString& Path, const CString& Name);
 
 		static Scene* GetActiveScene();
 
@@ -19,28 +27,16 @@ namespace Engine
 
 		static bool RemoveScene(const CString& Tag);
 
+		static bool SetActiveScene(Scene* SceneRef);
 		static bool SetActiveScene(const CString& Tag);
 
+		static bool IsActiveScene(Scene* SceneRef);
 		static bool IsActiveScene(const CString& Tag);
 
-		static void RemoveActiveScene();
+		static void Clear();
 
-		using DispatcherType = CallbackDispatcher<Scene*>;
+		static void ClearCallbacks();
 
-		inline static DispatcherType::CallbackHandle OnSetActiveScene()
-			{ return OnSetActiveSceneDispatch.GetHandle(); }
-
-	private:
-		struct SceneData
-		{
-			CString Tag = CString();
-			Scene* SceneRef = nullptr;
-		};
-
-		static DispatcherType OnSetActiveSceneDispatch;
-
-		static std::vector<SceneData> SceneList;
-
-		static Scene* ActiveScene;
+		static CallbackDispatcher<Scene*>::CallbackHandle OnSetActiveScene();
 	};
 }

@@ -37,6 +37,9 @@ namespace Engine
 
 		void OnSetActiveScene(Scene* NewScene);
 
+		void OnBeginPlay();
+		void OnEndPlay();
+
 	private:
 		Scene* ActiveScene = nullptr;
 		Ref<Framebuffer> m_FrameBuffer = nullptr;

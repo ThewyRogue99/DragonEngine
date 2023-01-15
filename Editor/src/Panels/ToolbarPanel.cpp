@@ -1,9 +1,8 @@
 #include "ToolbarPanel.h"
 
-#include "Engine/Audio/AudioEngine.h"
-#include "Engine/Scene/SceneManager.h"
-
+#include "../Scene/EditorSceneManager.h"
 #include "../Tools/ResourceTool.h"
+#include "../Tools/EditorTool.h"
 #include "../Project/ProjectTools.h"
 
 #pragma warning(disable : 4312)
@@ -34,9 +33,11 @@ namespace Engine
 			ImGuiWindowFlags_NoScrollWithMouse
 		);
 
-		ActiveScene = SceneManager::GetActiveScene();
+		ActiveScene = EditorSceneManager::GetEditorScene();
 
-		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(ToolbarPanel::OnSetActiveScene));
+		EditorSceneManager::OnEditorSceneChange().AddCallback(BIND_CLASS_FN(ToolbarPanel::OnEditorSceneChange));
+		EditorTool::OnBeginPlay().AddCallback(BIND_CLASS_FN(ToolbarPanel::OnBeginPlay));
+		EditorTool::OnEndPlay().AddCallback(BIND_CLASS_FN(ToolbarPanel::OnEndPlay));
 	}
 
 	void ToolbarPanel::OnRender(float DeltaTime)
@@ -62,19 +63,13 @@ namespace Engine
 					{
 						ProjectTools::CompileScriptProject();
 
-						Scene* CopyScene = ActiveScene->Copy();
-
-						SceneManager::AddScene(TEXT("Copy Scene"), CopyScene, true);
-						SceneManager::SetActiveScene(TEXT("Copy Scene"));
+						EditorTool::BeginPlay();
 
 						ActiveSceneState = SceneState::Play;
 					} break;
 					case SceneState::Play:
 					{
-						SceneManager::SetActiveScene(TEXT("Editor Scene"));
-						SceneManager::RemoveScene(TEXT("Copy Scene"));
-
-						AudioEngine::StopAllAudio();
+						EditorTool::EndPlay();
 
 						ActiveSceneState = SceneState::Edit;
 					} break;
@@ -103,21 +98,13 @@ namespace Engine
 				{
 					case SceneState::Edit:
 					{
-						EditorScene* CopyScene = ((EditorScene*)ActiveScene)->CopyEditorScene();
-
-						CopyScene->BeginSimulation();
-
-						SceneManager::AddScene(TEXT("Copy Scene"), CopyScene, true);
-						SceneManager::SetActiveScene(TEXT("Copy Scene"));
+						EditorTool::BeginSimulation();
 
 						ActiveSceneState = SceneState::Simulate;
 					} break;
 					case SceneState::Simulate:
 					{
-						((EditorScene*)ActiveScene)->EndSimulation();
-
-						SceneManager::SetActiveScene(TEXT("Editor Scene"));
-						SceneManager::RemoveScene(TEXT("Copy Scene"));
+						EditorTool::EndSimulation();
 
 						ActiveSceneState = SceneState::Edit;
 					} break;
@@ -130,8 +117,20 @@ namespace Engine
 		}
 	}
 
-	void ToolbarPanel::OnSetActiveScene(Scene* NewScene)
+	void ToolbarPanel::OnEditorSceneChange(EditorScene* NewScene)
 	{
-		ActiveScene = (EditorScene*)NewScene;
+		if (!EditorTool::IsPlaying())
+			ActiveScene = NewScene;
+	}
+
+	void ToolbarPanel::OnBeginPlay()
+	{
+		SceneManager::OnSetActiveScene().AddCallback([&] (Scene* NewScene) { ActiveScene = NewScene; });
+		ActiveScene = SceneManager::GetActiveScene();
+	}
+
+	void ToolbarPanel::OnEndPlay()
+	{
+		ActiveScene = EditorSceneManager::GetEditorScene();
 	}
 }

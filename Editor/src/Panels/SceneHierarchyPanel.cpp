@@ -11,8 +11,10 @@
 #include "Engine/Audio/AudioEngine.h"
 #include "Engine/Scripting/ScriptEngine.h"
 
-#include "Engine/Scene/SceneManager.h"
+#include "../Scene/EditorSceneManager.h"
 #include "Engine/Asset/AssetManager.h"
+
+#include "../Tools/EditorTool.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -26,9 +28,11 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnCreate()
 	{
-		Context = SceneManager::GetActiveScene();
+		Context = EditorSceneManager::GetEditorScene();
 
-		SceneManager::OnSetActiveScene().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnSetActiveScene));
+		EditorSceneManager::OnEditorSceneChange().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnEditorSceneChange));
+		EditorTool::OnBeginPlay().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnBeginPlay));
+		EditorTool::OnEndPlay().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnEndPlay));
 	}
 
 	void SceneHierarchyPanel::OnRender(float DeltaTime)
@@ -725,8 +729,21 @@ namespace Engine
 		});
 	}
 
-	void SceneHierarchyPanel::OnSetActiveScene(Scene* NewScene)
+	void SceneHierarchyPanel::OnEditorSceneChange(EditorScene* NewScene)
 	{
-		Context = NewScene;
+		if (!EditorTool::IsPlaying())
+			Context = NewScene;
+	}
+
+	void SceneHierarchyPanel::OnBeginPlay()
+	{
+		SceneManager::OnSetActiveScene().AddCallback([&] (Scene* NewScene) { Context = NewScene; });
+
+		Context = SceneManager::GetActiveScene();
+	}
+
+	void SceneHierarchyPanel::OnEndPlay()
+	{
+		Context = EditorSceneManager::GetEditorScene();
 	}
 }

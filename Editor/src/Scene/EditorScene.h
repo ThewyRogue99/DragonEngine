@@ -9,11 +9,6 @@ namespace Engine
 	class EditorScene : public Scene
 	{
 	public:
-		EditorScene(const CString& Name = TEXT("Editor Scene"));
-		EditorScene(const EditorScene&) = default;
-
-		~EditorScene();
-
 		virtual void OnUpdate(float DeltaTime) override;
 
 		virtual void OnEvent(Event& event) override;
@@ -23,12 +18,21 @@ namespace Engine
 		virtual void OnSceneBegin() override;
 		virtual void OnSceneEnd() override;
 
-		EditorScene* CopyEditorScene();
+		void CopyEditorScene(EditorScene* SceneRef);
 
 		void BeginSimulation() { bShouldSimulate = true; }
 		void EndSimulation() { bShouldSimulate = false; }
 
 		inline void SetShouldBlockEvents(bool state) { bShouldBlockEvents = state; }
+
+		friend class EditorSceneManager;
+		friend class ContentBrowserPanel;
+
+	private:
+		EditorScene(const CString& Name = TEXT("Editor Scene"));
+		EditorScene(const EditorScene&) = default;
+
+		~EditorScene() = default;
 
 	private:
 		bool bShouldSimulate = false;

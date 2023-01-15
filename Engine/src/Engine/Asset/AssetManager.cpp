@@ -202,7 +202,7 @@ namespace Engine
 					if (!Data.Empty() && Type != AssetType::Undefined)
 					{
 						Asset asset(Name, id);
-						asset.SetData(Data, Type, false);
+						asset.SetData(&Data, Type, false);
 
 						asset.Write(f);
 					}
@@ -312,8 +312,12 @@ namespace Engine
 
 	void AssetManager::CloseAsset(Asset& asset)
 	{
-		if(asset.Metadata)
+		if (asset.Metadata)
+		{
 			asset.Metadata->Clear();
+			delete asset.Metadata;
+			asset.Metadata = nullptr;
+		}
 	}
 
 	Asset AssetManager::LoadAsset(const std::string& AssetID)
@@ -333,7 +337,7 @@ namespace Engine
 			std::ifstream f(FullPath, std::ios::in | std::ios::binary);
 			if (f.is_open())
 			{
-				asset.SetData(data.Metadata, data.Type, false);
+				asset.SetData(new AssetMetadata(), data.Type, false);
 
 				asset.Read(f);
 

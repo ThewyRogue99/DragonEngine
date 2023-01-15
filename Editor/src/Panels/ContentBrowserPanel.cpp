@@ -7,13 +7,14 @@
 #include "ContentBrowserPanel/ContentBrowserTextures.h"
 
 #include "Engine/Renderer/Texture.h"
-#include "Engine/Scene/SceneManager.h"
+#include "../Scene/EditorSceneManager.h"
 #include "Engine/Asset/AssetUtils.h"
 #include "Engine/Asset/AssetMetadata.h"
 
-#include "../Asset/Serializer/SceneSerializer.h"
+#include "Engine/Asset/Serializer/SceneSerializer.h"
 #include "../Asset/Serializer/Serializer.h"
 
+#include "../Tools/EditorTool.h"
 #include "../Tools/ResourceTool.h"
 
 #include "../Project/ProjectManager.h"
@@ -219,6 +220,10 @@ namespace Engine
 				{
 					Reload();
 				}
+				if (ImGui::MenuItem("New Scene"))
+				{
+					CreateContent(AssetType::Scene);
+				}
 				if (ImGui::MenuItem("New C# Script"))
 				{
 					CreateContent(AssetType::Script);
@@ -326,13 +331,16 @@ namespace Engine
 
 			if (TopBarUtils::DrawTextButton("Save"))
 			{
-				Scene* ActiveScene = SceneManager::GetActiveScene();
-				AssetMetadata data;
+				Scene* ActiveScene = EditorSceneManager::GetEditorScene();
+				if (ActiveScene && !EditorTool::IsSimulating())
+				{
+					AssetMetadata data;
 
-				SceneSerializer::Serialize(ActiveScene, data);
+					SceneSerializer::Serialize(ActiveScene, data);
 
-				AssetManager::CreateAsset(CurrentDirectory, ActiveScene->GetName(), data, AssetType::Scene, true);
-				Reload();
+					AssetManager::CreateAsset(CurrentDirectory, ActiveScene->GetName(), data, AssetType::Scene, true);
+					Reload();
+				}
 			}
 
 			ImGui::SameLine(0.f, 5.f);
@@ -590,6 +598,27 @@ namespace Engine
 			{
 				AssetManager::RenameFolder(Entry.GetPath(), Entry.GetName(), NewName);
 			}
+			else if (Type == AssetType::Scene)
+			{
+				if (AssetManager::RenameAsset(Entry.GetID(), NewName))
+				{
+					// Rename Scene
+					Asset SceneAsset = AssetManager::LoadAsset(Entry.GetID());
+
+					EditorScene* NewScene = new EditorScene(NewName);
+					SceneSerializer::Deserialize(NewScene, *(SceneAsset.GetData()));
+					NewScene->SetName(NewName);
+
+					AssetManager::CloseAsset(SceneAsset);
+
+					AssetMetadata SceneData;
+					SceneSerializer::Serialize(NewScene, SceneData);
+
+					AssetManager::CreateAsset(Entry.GetPath(), Entry.GetName(), SceneData, AssetType::Scene, true);
+
+					delete NewScene;
+				}
+			}
 			else
 			{
 				AssetManager::RenameAsset(Entry.GetID(), NewName);
@@ -658,6 +687,24 @@ namespace Engine
 			}
 
 			return false;
+		}
+		case AssetType::Scene:
+		{
+			CString SceneName = TypeUtils::FromUTF8(Content->RenameBuffer);
+			EditorScene* NewScene = new EditorScene(SceneName);
+
+			AssetMetadata data;
+			SceneSerializer::Serialize(NewScene, data);
+
+			bool result = AssetManager::CreateAsset(
+				CurrentDirectory,
+				SceneName,
+				data,
+				AssetType::Scene
+			);
+
+			delete NewScene;
+			return result;
 		}
 		default:
 			return false;

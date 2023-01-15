@@ -15,6 +15,8 @@ namespace Engine
 		std::string Name;
 		CString Path;
 
+		std::string StartSceneID;
+
 		friend class ProjectManager;
 
 	private:

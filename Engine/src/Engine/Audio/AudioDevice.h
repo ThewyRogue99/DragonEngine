@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
+#include "Engine/Types/Types.h"
 
 struct ALCdevice;
 struct ALCcontext;

@@ -3,6 +3,8 @@
 #include "Engine/Core/Core.h"
 #include "AudioBuffer.h"
 
+#include <glm/glm.hpp>
+
 namespace Engine
 {
 	class AudioSource

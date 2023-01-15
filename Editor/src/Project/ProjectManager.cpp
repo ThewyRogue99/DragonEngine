@@ -1,5 +1,8 @@
 #include "ProjectManager.h"
 
+#include "Engine/Asset/Serializer/SceneSerializer.h"
+#include "../Scene/EditorSceneManager.h"
+
 #include "ProjectTools.h"
 #include "Engine/Scripting/ScriptEngine.h"
 #include "Engine/Asset/AssetManager.h"
@@ -36,24 +39,6 @@ namespace Engine
 
 		if (std::filesystem::is_directory(Path) && std::filesystem::exists(Path))
 		{
-			// Set Project
-			ProjectData.Name = ProjectName;
-			ProjectData.Path = Path;
-
-			// Create Project File
-			CString ProjectPath = Path / (ProjectName + ".deproject");
-
-			std::ofstream pf(ProjectPath, std::ios::out | std::ios::binary);
-			if (pf.is_open())
-			{
-				AssetMetadata data;
-				ProjectData.Serialize(data);
-
-				data.Write(pf);
-
-				pf.close();
-			}
-
 			// Create Directories
 			std::filesystem::create_directories(Path / TEXT("Binary/Scripts"));
 
@@ -61,12 +46,44 @@ namespace Engine
 
 			std::filesystem::create_directory(Path / TEXT("Source"));
 
-			bIsProjectLoaded = true;
 			SetAssetManager(Path);
 
-			Dispatcher.Run(ProjectData);
+			// Create Project File
+			CString ProjectPath = Path / (ProjectName + ".deproject");
 
-			return true;
+			std::ofstream pf(ProjectPath, std::ios::out | std::ios::binary);
+			if (pf.is_open())
+			{
+				// Create a scene
+				EditorScene* EScene = EditorSceneManager::CreateEditorScene(TEXT("Scene"));
+
+				AssetMetadata sceneData;
+				SceneSerializer::Serialize(EScene, sceneData);
+
+				AssetManager::CreateAsset(TEXT(""), TEXT("Scene"), sceneData, AssetType::Scene);
+				Asset SceneAsset = AssetManager::LoadAsset(TEXT(""), TEXT("Scene"));
+
+				// Set Project
+				ProjectData.Name = ProjectName;
+				ProjectData.Path = Path;
+				ProjectData.StartSceneID = SceneAsset.GetID();
+
+				AssetManager::CloseAsset(SceneAsset);
+
+				AssetMetadata projectData;
+				ProjectData.Serialize(projectData);
+
+				projectData.Write(pf);
+
+				pf.close();
+
+				bIsProjectLoaded = true;
+				Dispatcher.Run(ProjectData);
+
+				return true;
+			}
+
+			return false;
 		}
 
 		return false;
@@ -89,9 +106,39 @@ namespace Engine
 				std::filesystem::path ParentPath = Path.parent_path();
 				ProjectData.Path = ParentPath;
 
-				bIsProjectLoaded = true;
 				SetAssetManager(ParentPath);
 
+				// Set Default Scene
+				Asset SceneAsset = AssetManager::LoadAsset(ProjectData.StartSceneID);
+
+				const AssetMetadata* SceneData = SceneAsset.GetData();
+				if (SceneAsset.GetAssetType() == AssetType::Scene && SceneData)
+				{
+					EditorScene* EScene = EditorSceneManager::CreateEditorScene(SceneAsset.GetName());
+					SceneSerializer::Deserialize(EScene, *SceneData);
+
+					AssetManager::CloseAsset(SceneAsset);
+				}
+				else
+				{
+					// Create a scene
+					EditorScene* EScene = EditorSceneManager::CreateEditorScene(TEXT("Scene"));
+
+					AssetMetadata data;
+					SceneSerializer::Serialize(EScene, data);
+
+					if (AssetManager::CreateAsset(TEXT(""), TEXT("Scene"), data, AssetType::Scene))
+					{
+						Asset NewSceneAsset = AssetManager::LoadAsset(TEXT(""), TEXT("Scene"));
+
+						ProjectData.StartSceneID = NewSceneAsset.GetID();
+
+						AssetManager::CloseAsset(NewSceneAsset);
+					}
+					else return false;
+				}
+
+				bIsProjectLoaded = true;
 				Dispatcher.Run(ProjectData);
 
 				return true;
@@ -147,10 +194,12 @@ namespace Engine
 	void Project::Serialize(AssetMetadata& data)
 	{
 		data.SetStringField("Name", Name);
+		data.SetStringField("StartSceneID", StartSceneID);
 	}
 
 	void Project::Deserialize(AssetMetadata& data)
 	{
 		Name = data.GetStringField<char>("Name");
+		StartSceneID = data.GetStringField<char>("StartSceneID");
 	}
 }

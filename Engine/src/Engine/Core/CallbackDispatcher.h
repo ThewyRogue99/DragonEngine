@@ -33,7 +33,7 @@ namespace Engine
                 : Manager(manager) { }
 
         private:
-            CallbackDispatcher* Manager;
+            CallbackDispatcher* Manager = nullptr;
         };
 
         CallbackHandle GetHandle() { return CallbackHandle(this); }
@@ -42,6 +42,11 @@ namespace Engine
         {
             for (auto& Callback : CallbackList)
                 Callback(args...);
+        }
+
+        void Clear()
+        {
+            CallbackList.clear();
         }
 
         friend class CallbackHandle;

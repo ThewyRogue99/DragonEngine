@@ -6,7 +6,6 @@
 #include "Engine/Core/Layer.h"
 #include "Panels/PanelManager.h"
 #include "Scene/EditorScene.h"
-#include "Engine/Scene/SceneManager.h"
 
 namespace Engine
 {
@@ -25,14 +24,15 @@ namespace Engine
 		virtual void OnEvent(Event& event) override;
 
 	private:
-		void NewScene();
-
 		void OnActiveSceneChange(Scene* scene);
+
+		void OnBeginPlay();
+		void OnEndPlay();
 
 		void OnProjectLoad(const Project& project);
 
 	private:
-		EditorScene* ActiveScene = nullptr;
+		Scene* ActiveScene = nullptr;
 
 		// Panels
 		PanelManager PManager;

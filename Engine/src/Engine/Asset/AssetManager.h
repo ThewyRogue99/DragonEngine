@@ -66,8 +66,6 @@ namespace Engine
 
             AssetType Type = AssetType::Undefined;
 
-            AssetMetadata Metadata;
-
             void Serialize(AssetMetadata& metadata);
             void Deserialize(AssetMetadata& metadata);
         };

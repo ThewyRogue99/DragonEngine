@@ -10,11 +10,6 @@ namespace Engine
 		PrimaryCamera = new EditorCamera(60.f, 16 / 9, 0.1f, 1000.f);
 	}
 
-	EditorScene::~EditorScene()
-	{
-
-	}
-
 	void EditorScene::OnUpdate(float DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
@@ -52,18 +47,14 @@ namespace Engine
 			OnPhysics2DEnd();
 	}
 
-	EditorScene* EditorScene::CopyEditorScene()
+	void EditorScene::CopyEditorScene(EditorScene* SceneRef)
 	{
-		EditorScene* CopyScene = new EditorScene();
+		Copy(SceneRef);
 
-		CopyToRef(CopyScene);
+		if (SceneRef->PrimaryCamera)
+			delete SceneRef->PrimaryCamera;
 
-		if (CopyScene->PrimaryCamera)
-			delete CopyScene->PrimaryCamera;
-
-		CopyScene->PrimaryCamera = PrimaryCamera;
-		CopyScene->bShouldBlockEvents = bShouldBlockEvents;
-
-		return CopyScene;
+		SceneRef->PrimaryCamera = PrimaryCamera;
+		SceneRef->bShouldBlockEvents = bShouldBlockEvents;
 	}
 }

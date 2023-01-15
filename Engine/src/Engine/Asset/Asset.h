@@ -38,7 +38,7 @@ namespace Engine
 		void Write(std::ostream& ss);
 		void Read(std::istream& ss);
 
-		void SetData(AssetMetadata& data, AssetType dataType = AssetType::Undefined, bool CopyData = true)
+		void SetData(AssetMetadata* data, AssetType dataType = AssetType::Undefined, bool CopyData = true)
 		{
 			if (Metadata)
 			{
@@ -49,10 +49,10 @@ namespace Engine
 			if (CopyData)
 			{
 				Metadata = new AssetMetadata();
-				data.Copy(*Metadata);
+				data->Copy(*Metadata);
 			}
 			else
-				Metadata = &data;
+				Metadata = data;
 
 			if (dataType != AssetType::Undefined)
 				Type = dataType;

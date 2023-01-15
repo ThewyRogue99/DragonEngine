@@ -2,34 +2,115 @@
 #include "SceneManager.h"
 
 #include "Engine/Core/Log.h"
+#include "Engine/Asset/AssetManager.h"
+#include "Engine/Asset/Serializer/SceneSerializer.h"
 
 #include <algorithm>
 
 namespace Engine
 {
-	SceneManager::DispatcherType SceneManager::OnSetActiveSceneDispatch = SceneManager::DispatcherType();
+	static CallbackDispatcher<Scene*> OnSetActiveSceneDispatch;
+	static std::vector<Scene*> SceneList = { };
+	static Scene* ActiveScene = nullptr;
 
-	std::vector<SceneManager::SceneData> SceneManager::SceneList = { };
-
-	Scene* SceneManager::ActiveScene = nullptr;
-
-	bool SceneManager::AddScene(const CString& Tag, Scene* SceneRef, bool Replace)
+	Scene* SceneManager::CreateScene(const CString& Tag)
 	{
 		Scene* cpy = GetScene(Tag);
 
 		if (!cpy)
 		{
-			SceneList.push_back({ Tag, SceneRef });
+			Scene* NewScene = new Scene(Tag);
 
-			return true;
+			SceneList.push_back(NewScene);
+
+			return NewScene;
 		}
-		else if (Replace)
+
+		std::string DebugName = TypeUtils::FromUTF16(cpy->GetName());
+		DE_CORE_ERROR("Cannot create {0} scene.(A scene with same tag already exists)", DebugName.c_str());
+		return nullptr;
+	}
+
+	void SceneManager::AddScene(Scene* SceneRef)
+	{
+		Scene* cpy = GetScene(SceneRef->GetName());
+
+		if (!cpy)
 		{
-			return ReplaceScene(Tag, SceneRef);
+			SceneList.push_back(SceneRef);
+		}
+		else
+		{
+			std::string DebugName = TypeUtils::FromUTF16(cpy->GetName());
+			DE_CORE_ERROR("Cannot add {0} scene.(A scene with same tag already exists)", DebugName.c_str());
+		}
+	}
+
+	static void RunSetActiveScene(Scene* SceneRef)
+	{
+		OnSetActiveSceneDispatch.Run(SceneRef);
+	}
+
+	Scene* SceneManager::LoadScene(const std::string& SceneAssetID)
+	{
+		Asset SceneAsset = AssetManager::LoadAsset(SceneAssetID);
+
+		if (SceneAsset.GetAssetType() == AssetType::Scene)
+		{
+			Scene* NewScene = new Scene();
+
+			SceneSerializer::Deserialize(NewScene, *(SceneAsset.GetData()));
+
+			if (!GetScene(NewScene->GetName()))
+			{
+				SceneList.push_back(NewScene);
+
+				AssetManager::CloseAsset(SceneAsset);
+
+				return NewScene;
+			}
+
+			std::string DebugName = TypeUtils::FromUTF16(NewScene->GetName());
+			DE_CORE_ERROR("Cannot load {0} scene.(A scene with same tag already exists)", DebugName.c_str());
+
+			AssetManager::CloseAsset(SceneAsset);
+			delete NewScene;
+
+			return nullptr;
 		}
 
-		DE_CORE_WARN("Scene with the given tag already exists");
-		return false;
+		return nullptr;
+	}
+
+	Scene* SceneManager::LoadScene(const CString& Path, const CString& Name)
+	{
+		Asset SceneAsset = AssetManager::LoadAsset(Path, Name);
+
+		if (SceneAsset.GetAssetType() == AssetType::Scene)
+		{
+			Scene* NewScene = new Scene();
+
+			SceneSerializer::Deserialize(NewScene, *(SceneAsset.GetData()));
+
+			if (!GetScene(NewScene->GetName()))
+			{
+				SceneList.push_back(NewScene);
+
+				AssetManager::CloseAsset(SceneAsset);
+
+				return NewScene;
+			}
+
+			std::string DebugName = TypeUtils::FromUTF16(NewScene->GetName());
+			DE_CORE_ERROR("Cannot load {0} scene.(A scene with same tag already exists)", DebugName.c_str());
+
+			AssetManager::CloseAsset(SceneAsset);
+			delete NewScene;
+
+			return nullptr;
+		}
+
+		return nullptr;
 	}
 
 	Scene* SceneManager::GetActiveScene()
@@ -39,34 +120,36 @@ namespace Engine
 
 	Scene* SceneManager::GetScene(const CString& Tag)
 	{
-		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](SceneData& Data)
+		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](Scene* Data)
 		{
-			return Data.Tag == Tag;
+			return Data->GetName() == Tag;
 		});
 
 		if (it != SceneList.end())
-			return (*it).SceneRef;
+			return *it;
 
 		return nullptr;
 	}
 
 	bool SceneManager::ReplaceScene(const CString& Tag, Scene* SceneRef)
 	{
-		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](SceneData& Data)
+		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](Scene* Data)
 		{
-			return Data.Tag == Tag;
+			return Data->GetName() == Tag;
 		});
 
 		if (it != SceneList.end())
 		{
-			bool isActive = IsActiveScene(it->Tag);
+			const CString& Tag = (*it)->GetName();
 
-			Scene* copyRef = it->SceneRef;
+			bool isActive = IsActiveScene(Tag);
 
-			it->SceneRef = SceneRef;
+			Scene* copyRef = *it;
+
+			(*it) = SceneRef;
 
 			if (isActive)
-				SetActiveScene(it->Tag);
+				SetActiveScene(Tag);
 
 			delete copyRef;
 
@@ -79,17 +162,17 @@ namespace Engine
 
 	bool SceneManager::RemoveScene(const CString& Tag)
 	{
-		auto it = std::remove_if(SceneList.begin(), SceneList.end(), [Tag](SceneData& Data)
+		auto it = std::remove_if(SceneList.begin(), SceneList.end(), [Tag](Scene* Data)
 		{
-			return Data.Tag == Tag;
+			return Data->GetName() == Tag;
 		});
 
 		if (it != SceneList.end())
 		{
-			if (IsActiveScene(it->Tag))
-				RemoveActiveScene();
+			if (IsActiveScene(*it))
+				SetActiveScene(nullptr);
 
-			delete it->SceneRef;
+			delete (*it);
 			SceneList.erase(it);
 			return true;
 		}
@@ -98,40 +181,64 @@ namespace Engine
 		return false;
 	}
 
-	bool SceneManager::SetActiveScene(const CString& Tag)
+	bool SceneManager::SetActiveScene(Scene* SceneRef)
 	{
-		Scene* NewActiveScene = GetScene(Tag);
-
-		if (NewActiveScene)
+		if (SceneRef)
 		{
-			if (ActiveScene != NewActiveScene)
+			if (ActiveScene != SceneRef)
 			{
-				ActiveScene = NewActiveScene;
+				ActiveScene = SceneRef;
 
-				OnSetActiveSceneDispatch.Run(ActiveScene);
+				RunSetActiveScene(ActiveScene);
 			}
 
 			return true;
 		}
 
+		return false;
+	}
+
+	bool SceneManager::SetActiveScene(const CString& Tag)
+	{
+		Scene* NewActiveScene = GetScene(Tag);
+
+		if (NewActiveScene)
+			return SetActiveScene(NewActiveScene);
+
 		DE_CORE_WARN("Scene with the given tag doesn't exist");
 		return false;
+	}
+
+	bool SceneManager::IsActiveScene(Scene* SceneRef)
+	{
+		return ActiveScene == SceneRef;
 	}
 
 	bool SceneManager::IsActiveScene(const CString& Tag)
 	{
 		Scene* ref = GetScene(Tag);
 
-		return ActiveScene == ref;
+		return IsActiveScene(ref);
 	}
 
-	void SceneManager::RemoveActiveScene()
+	void SceneManager::Clear()
 	{
-		if (ActiveScene)
-		{
-			ActiveScene = nullptr;
+		ClearCallbacks();
 
-			OnSetActiveSceneDispatch.Run(ActiveScene);
-		}
+		for (Scene* scene : SceneList)
+			delete scene;
+
+		ActiveScene = nullptr;
+		SceneList.clear();
+	}
+
+	void SceneManager::ClearCallbacks()
+	{
+		OnSetActiveSceneDispatch.Clear();
+	}
+
+	CallbackDispatcher<Scene*>::CallbackHandle SceneManager::OnSetActiveScene()
+	{
+		return OnSetActiveSceneDispatch.GetHandle();
 	}
 }
