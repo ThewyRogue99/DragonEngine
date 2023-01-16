@@ -71,7 +71,7 @@ namespace Engine
 			return !(*this == other);
 		}
 
-		UUID GetUUID();
+		UUID& GetUUID();
 
 		friend class Scene;
 

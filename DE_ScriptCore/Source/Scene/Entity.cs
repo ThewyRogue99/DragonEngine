@@ -41,5 +41,23 @@ namespace DragonEngine
             T component = new T() { Entity = this };
             return component;
         }
+
+        public override bool Equals(object obj)
+        {
+            if(obj != null)
+            {
+                if(obj is Entity)
+                {
+                    return ID == (obj as Entity).ID;
+                }
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

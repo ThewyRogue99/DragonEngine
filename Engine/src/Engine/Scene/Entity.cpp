@@ -22,7 +22,7 @@ namespace Engine
 		return true;
 	}
 
-	UUID Entity::GetUUID()
+	UUID& Entity::GetUUID()
 	{
 		return GetComponent<IDComponent>().ID;
 	}

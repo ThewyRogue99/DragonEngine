@@ -22,6 +22,35 @@ namespace DragonEngine
 
         #endregion
 
+        #region SceneManager
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static string SceneManager_LoadScene(string Path, string Name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static string SceneManager_GetActiveSceneName();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool SceneManager_SetActiveScene(string SceneName);
+
+        #endregion
+
+        #region Scene
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static string Scene_CreateEntity(string SceneName, string EntityTag);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Scene_DestroyEntity(string SceneName, string EntityID);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static int Scene_GetEntityCount(string SceneName);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static void Scene_GetEntityIDList(string SceneName, ref string[] IDArray);
+
+        #endregion
+
         #region Entity
 
         [MethodImpl(MethodImplOptions.InternalCall)]

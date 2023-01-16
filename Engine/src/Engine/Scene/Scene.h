@@ -9,6 +9,8 @@
 
 #include "Components.h"
 
+#include <vector>
+
 class b2World;
 
 namespace Engine
@@ -29,6 +31,9 @@ namespace Engine
 		virtual void OnViewportResize(uint32_t width, uint32_t height);
 
 		virtual void OnEvent(Event& event);
+
+		size_t GetEntityCount() const { return SceneRegistry.size(); }
+		std::vector<Entity> GetEntities();
 
 		friend class Entity;
 		friend class SceneManager;
