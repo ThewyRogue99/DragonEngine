@@ -26,7 +26,7 @@ namespace Engine
 			ProjectTools::CompileScriptProject();
 	}
 
-	static DispatcherType Dispatcher = { OnProjectLoad };
+	static DispatcherType Dispatcher;
 
 	static void SetAssetManager(const std::filesystem::path& ProjectPath)
 	{
@@ -78,6 +78,7 @@ namespace Engine
 				pf.close();
 
 				bIsProjectLoaded = true;
+				OnProjectLoad(ProjectData);
 				Dispatcher.Run(ProjectData);
 
 				return true;
@@ -107,6 +108,7 @@ namespace Engine
 				ProjectData.Path = ParentPath;
 
 				SetAssetManager(ParentPath);
+				OnProjectLoad(ProjectData);
 
 				// Set Default Scene
 				Asset SceneAsset = AssetManager::LoadAsset(ProjectData.StartSceneID);
