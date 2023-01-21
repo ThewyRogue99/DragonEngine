@@ -53,19 +53,17 @@ namespace Engine
 
 	Scene* SceneManager::LoadScene(const std::string& SceneAssetID)
 	{
-		Asset SceneAsset = AssetManager::LoadAsset(SceneAssetID);
+		Ref<Asset> SceneAsset = AssetManager::LoadAsset(SceneAssetID);
 
-		if (SceneAsset.GetAssetType() == AssetType::Scene)
+		if (SceneAsset->GetAssetType() == AssetType::Scene)
 		{
 			Scene* NewScene = new Scene();
 
-			SceneSerializer::Deserialize(NewScene, *(SceneAsset.GetData()));
+			SceneSerializer::Deserialize(NewScene, SceneAsset->GetData());
 
 			if (!GetScene(NewScene->GetName()))
 			{
 				SceneList.push_back(NewScene);
-
-				AssetManager::CloseAsset(SceneAsset);
 
 				return NewScene;
 			}
@@ -73,7 +71,6 @@ namespace Engine
 			std::string DebugName = TypeUtils::FromUTF16(NewScene->GetName());
 			DE_CORE_ERROR("Cannot load {0} scene.(A scene with same tag already exists)", DebugName.c_str());
 
-			AssetManager::CloseAsset(SceneAsset);
 			delete NewScene;
 
 			return nullptr;
@@ -84,19 +81,17 @@ namespace Engine
 
 	Scene* SceneManager::LoadScene(const CString& Path, const CString& Name)
 	{
-		Asset SceneAsset = AssetManager::LoadAsset(Path, Name);
+		Ref<Asset> SceneAsset = AssetManager::LoadAsset(Path, Name);
 
-		if (SceneAsset.GetAssetType() == AssetType::Scene)
+		if (SceneAsset->GetAssetType() == AssetType::Scene)
 		{
 			Scene* NewScene = new Scene();
 
-			SceneSerializer::Deserialize(NewScene, *(SceneAsset.GetData()));
+			SceneSerializer::Deserialize(NewScene, SceneAsset->GetData());
 
 			if (!GetScene(NewScene->GetName()))
 			{
 				SceneList.push_back(NewScene);
-
-				AssetManager::CloseAsset(SceneAsset);
 
 				return NewScene;
 			}
@@ -104,7 +99,6 @@ namespace Engine
 			std::string DebugName = TypeUtils::FromUTF16(NewScene->GetName());
 			DE_CORE_ERROR("Cannot load {0} scene.(A scene with same tag already exists)", DebugName.c_str());
 
-			AssetManager::CloseAsset(SceneAsset);
 			delete NewScene;
 
 			return nullptr;

@@ -61,14 +61,12 @@ namespace Engine
 				SceneSerializer::Serialize(EScene, sceneData);
 
 				AssetManager::CreateAsset(TEXT(""), TEXT("Scene"), sceneData, AssetType::Scene);
-				Asset SceneAsset = AssetManager::LoadAsset(TEXT(""), TEXT("Scene"));
+				Ref<Asset> SceneAsset = AssetManager::LoadAsset(TEXT(""), TEXT("Scene"));
 
 				// Set Project
 				ProjectData.Name = ProjectName;
 				ProjectData.Path = Path;
-				ProjectData.StartSceneID = SceneAsset.GetID();
-
-				AssetManager::CloseAsset(SceneAsset);
+				ProjectData.StartSceneID = SceneAsset->GetID();
 
 				AssetMetadata projectData;
 				ProjectData.Serialize(projectData);
@@ -111,15 +109,12 @@ namespace Engine
 				OnProjectLoad(ProjectData);
 
 				// Set Default Scene
-				Asset SceneAsset = AssetManager::LoadAsset(ProjectData.StartSceneID);
+				Ref<Asset> SceneAsset = AssetManager::LoadAsset(ProjectData.StartSceneID);
 
-				const AssetMetadata* SceneData = SceneAsset.GetData();
-				if (SceneAsset.GetAssetType() == AssetType::Scene && SceneData)
+				if (SceneAsset->GetAssetType() == AssetType::Scene)
 				{
-					EditorScene* EScene = EditorSceneManager::CreateEditorScene(SceneAsset.GetName());
-					SceneSerializer::Deserialize(EScene, *SceneData);
-
-					AssetManager::CloseAsset(SceneAsset);
+					EditorScene* EScene = EditorSceneManager::CreateEditorScene(SceneAsset->GetName());
+					SceneSerializer::Deserialize(EScene, SceneAsset->GetData());
 				}
 				else
 				{
@@ -131,11 +126,9 @@ namespace Engine
 
 					if (AssetManager::CreateAsset(TEXT(""), TEXT("Scene"), data, AssetType::Scene))
 					{
-						Asset NewSceneAsset = AssetManager::LoadAsset(TEXT(""), TEXT("Scene"));
+						Ref<Asset> NewSceneAsset = AssetManager::LoadAsset(TEXT(""), TEXT("Scene"));
 
-						ProjectData.StartSceneID = NewSceneAsset.GetID();
-
-						AssetManager::CloseAsset(NewSceneAsset);
+						ProjectData.StartSceneID = NewSceneAsset->GetID();
 					}
 					else return false;
 				}

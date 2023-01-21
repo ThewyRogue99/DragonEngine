@@ -54,15 +54,12 @@ namespace Engine
 	{
 		Color = Metadata.GetField<glm::vec4>("Color");
 
-		//TODO: Implement texture deserialize
 		TextureID = Metadata.GetStringField<char>("TextureID");
-		Asset TextureAsset = AssetManager::LoadAsset(TextureID);
-		if (TextureAsset.GetAssetType() == AssetType::Texture)
+		Ref<Asset> TextureAsset = AssetManager::LoadAsset(TextureID);
+		if (TextureAsset && TextureAsset->GetAssetType() == AssetType::Texture)
 		{
-			Texture = Serializer::DeserializeTexture(*TextureAsset.GetData());
+			Texture = Serializer::DeserializeTexture(TextureAsset->GetData());
 		}
-
-		AssetManager::CloseAsset(TextureAsset);
 
 		TilingFactor = Metadata.GetField<float>("TilingFactor");
 	}
@@ -108,17 +105,16 @@ namespace Engine
 	{
 		AudioID = Metadata.GetStringField<char>("AudioID");
 
-		Asset AudioAsset = AssetManager::LoadAsset(AudioID);
+		Ref<Asset> AudioAsset = AssetManager::LoadAsset(AudioID);
 
-		if (AudioAsset.GetAssetType() == AssetType::Audio)
+		if (AudioAsset->GetAssetType() == AssetType::Audio)
 		{
 			Source = AudioEngine::CreateAudioSource();
 
-			Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(*AudioAsset.GetData()));
+			Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(AudioAsset->GetData()));
 
 			Source->SetBuffer(Buff);
 		}
-		AssetManager::CloseAsset(AudioAsset);
 	}
 
 	void ScriptComponent::OnSerialize(AssetMetadata& Metadata)

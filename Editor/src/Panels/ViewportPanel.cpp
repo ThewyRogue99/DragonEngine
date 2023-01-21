@@ -101,13 +101,11 @@ namespace Engine
 
 				if (ShouldAcceptScene && Item.ItemType == AssetType::Scene)
 				{
-					Asset asset = AssetManager::LoadAsset(Item.GetID());
+					Ref<Asset> asset = AssetManager::LoadAsset(Item.GetID());
 
-					EditorScene* NewScene = EditorSceneManager::CreateEditorScene(asset.GetName());
+					EditorScene* NewScene = EditorSceneManager::CreateEditorScene(asset->GetName());
 
-					SceneSerializer::Deserialize(NewScene, *asset.GetData());
-
-					AssetManager::CloseAsset(asset);
+					SceneSerializer::Deserialize(NewScene, asset->GetData());
 				}
 
 			}

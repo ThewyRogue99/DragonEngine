@@ -34,13 +34,13 @@ namespace Engine
         static bool MoveAsset(const std::string& AssetID, const CString& NewPath);
         static bool MoveAsset(const CString& Path, const CString& Name, const CString& NewPath);
 
-        static void CloseAsset(Asset& asset);
-
-        static Asset LoadAsset(const std::string& AssetID);
-        static Asset LoadAsset(const CString& Path, const CString& Name);
+        static Ref<Asset> LoadAsset(const std::string& AssetID);
+        static Ref<Asset> LoadAsset(const CString& Path, const CString& Name);
 
 	    static CString GetFullPath(const CString& Path);
         static CString GetFullPath(const CString& Path, const CString& Name);
+
+        static std::string GetAssetID(const CString& Path, const CString& Name);
 
 	    static bool CreateFolder(const CString& Path, const CString& Name);
 	    static bool RemoveFolder(const CString& Path, const CString& Name);
@@ -66,6 +66,8 @@ namespace Engine
 
             AssetType Type = AssetType::Undefined;
 
+            WeakRef<Asset> AssetRef;
+
             void Serialize(AssetMetadata& metadata);
             void Deserialize(AssetMetadata& metadata);
         };
@@ -75,8 +77,6 @@ namespace Engine
 
 	    static bool AssetExists(const CString& Path, const CString& Name);
         static bool AssetExists(const std::string& ID);
-
-        static std::string GetAssetID(const CString& Path, const CString& Name);
 
 	    static bool AddAsset(const std::string& ID, const AssetData& data);
 

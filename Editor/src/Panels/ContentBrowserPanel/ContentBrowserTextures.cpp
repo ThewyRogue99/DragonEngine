@@ -15,13 +15,11 @@ namespace Engine
 		Ref<Texture2D> texture = GetTexture(AssetID);
 		if (!texture)
 		{
-			Asset TextureAsset = AssetManager::LoadAsset(AssetID);
+			Ref<Asset> TextureAsset = AssetManager::LoadAsset(AssetID);
 
-			if (TextureAsset.GetAssetType() == AssetType::Texture)
+			if (TextureAsset->GetAssetType() == AssetType::Texture)
 			{
-				texture = Serializer::DeserializeTexture(*TextureAsset.GetData());
-
-				AssetManager::CloseAsset(TextureAsset);
+				texture = Serializer::DeserializeTexture(TextureAsset->GetData());
 
 				if (texture)
 				{

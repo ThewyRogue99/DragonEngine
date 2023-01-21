@@ -12,7 +12,7 @@ namespace Engine
 
 		ss.write((char*)Name.c_str(), NameLength * sizeof(wchar_t));
 
-		Metadata->Write(ss);
+		Metadata.Write(ss);
 	}
 
 	void Asset::Read(std::istream& ss)
@@ -29,6 +29,6 @@ namespace Engine
 
 		delete[] str;
 
-		Metadata->Read(ss);
+		Metadata.Read(ss);
 	}
 }

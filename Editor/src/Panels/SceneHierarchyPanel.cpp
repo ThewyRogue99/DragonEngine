@@ -399,10 +399,8 @@ namespace Engine
 						}
 						else
 						{
-							Asset TextureAsset = AssetManager::LoadAsset(Item.GetID());
-							component.Texture = Serializer::DeserializeTexture(*TextureAsset.GetData());
-
-							AssetManager::CloseAsset(TextureAsset);
+							Ref<Asset> TextureAsset = AssetManager::LoadAsset(Item.GetID());
+							component.Texture = Serializer::DeserializeTexture(TextureAsset->GetData());
 						}
 
 						component.TextureID = Item.GetID();
@@ -679,17 +677,15 @@ namespace Engine
 
 					if (Item.ItemType == AssetType::Audio)
 					{
-						Asset AudioAsset = AssetManager::LoadAsset(Item.GetID());
+						Ref<Asset> AudioAsset = AssetManager::LoadAsset(Item.GetID());
 
 						component.AudioID = Item.GetID();
 						if(!component.Source)
 							component.Source = AudioEngine::CreateAudioSource();
 
-						Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(*AudioAsset.GetData()));
+						Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(AudioAsset->GetData()));
 
 						component.Source->SetBuffer(Buff);
-
-						AssetManager::CloseAsset(AudioAsset);
 					}
 				}
 

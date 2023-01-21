@@ -16,7 +16,7 @@ namespace Engine
 	class Asset
 	{
 	public:
-		const AssetMetadata* GetData() const { return Metadata; }
+		const AssetMetadata& GetData() const { return Metadata; }
 
 		const CString& GetName() const { return Name; }
 
@@ -30,6 +30,10 @@ namespace Engine
 		Asset& operator=(Asset&) = delete;
 
 	private:
+		struct phold {
+			explicit phold(int) {}
+		};
+
 		Asset(const CString& Name, UUID id = UUID()) : Name(Name), ID(id.GetString()) { }
 		Asset(UUID id = UUID()) : ID(id.GetString()) { }
 
@@ -38,28 +42,11 @@ namespace Engine
 		void Write(std::ostream& ss);
 		void Read(std::istream& ss);
 
-		void SetData(AssetMetadata* data, AssetType dataType = AssetType::Undefined, bool CopyData = true)
-		{
-			if (Metadata)
-			{
-				delete Metadata;
-				Metadata = nullptr;
-			}
-
-			if (CopyData)
-			{
-				Metadata = new AssetMetadata();
-				data->Copy(*Metadata);
-			}
-			else
-				Metadata = data;
-
-			if (dataType != AssetType::Undefined)
-				Type = dataType;
-		}
+	public:
+		explicit Asset(const phold&, const CString& Name, UUID id = UUID()) : Asset(Name, id) { }
 
 	private:
-		AssetMetadata* Metadata = nullptr;
+		AssetMetadata Metadata;
 		
 		CString Name;
 		std::string ID;

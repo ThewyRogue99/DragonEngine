@@ -603,13 +603,11 @@ namespace Engine
 				if (AssetManager::RenameAsset(Entry.GetID(), NewName))
 				{
 					// Rename Scene
-					Asset SceneAsset = AssetManager::LoadAsset(Entry.GetID());
+					Ref<Asset> SceneAsset = AssetManager::LoadAsset(Entry.GetID());
 
 					EditorScene* NewScene = new EditorScene(NewName);
-					SceneSerializer::Deserialize(NewScene, *(SceneAsset.GetData()));
+					SceneSerializer::Deserialize(NewScene, SceneAsset->GetData());
 					NewScene->SetName(NewName);
-
-					AssetManager::CloseAsset(SceneAsset);
 
 					AssetMetadata SceneData;
 					SceneSerializer::Serialize(NewScene, SceneData);

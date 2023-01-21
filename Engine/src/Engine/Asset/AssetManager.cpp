@@ -202,7 +202,8 @@ namespace Engine
 					if (!Data.Empty() && Type != AssetType::Undefined)
 					{
 						Asset asset(Name, id);
-						asset.SetData(&Data, Type, false);
+						asset.Metadata = Data;
+						asset.Type = Type;
 
 						asset.Write(f);
 					}
@@ -310,52 +311,52 @@ namespace Engine
 		return MoveAsset(id, NewPath);
 	}
 
-	void AssetManager::CloseAsset(Asset& asset)
+	Ref<Asset> AssetManager::LoadAsset(const std::string& AssetID)
 	{
-		if (asset.Metadata)
+		if (!bIsAssetManagerInit) return nullptr;
+
+		auto& it = AssetList.find(AssetID);
+		if (it != AssetList.end())
 		{
-			asset.Metadata->Clear();
-			delete asset.Metadata;
-			asset.Metadata = nullptr;
-		}
-	}
+			AssetData& data = it->second;
 
-	Asset AssetManager::LoadAsset(const std::string& AssetID)
-	{
-		if (!bIsAssetManagerInit) return Asset();
-
-		try
-		{
-			AssetData& data = AssetList[AssetID];
-
-			Asset asset(data.Name, AssetID);
-
-			CString w_id = TypeUtils::FromUTF8(AssetID);
-
-			CString FullPath = (ContentPath / data.Path) / (w_id + L".deasset");
-
-			std::ifstream f(FullPath, std::ios::in | std::ios::binary);
-			if (f.is_open())
+			// Check if an asset is already loaded
+			if (data.AssetRef.expired())
 			{
-				asset.SetData(new AssetMetadata(), data.Type, false);
+				// Asset is not loaded
+				CString w_id = TypeUtils::FromUTF8(AssetID);
 
-				asset.Read(f);
+				CString FullPath = (ContentPath / data.Path) / (w_id + L".deasset");
 
-				f.close();
+				std::ifstream f(FullPath, std::ios::in | std::ios::binary);
+				if (f.is_open())
+				{
+					Ref<Asset> asset = CreateRef<Asset>(Asset::phold{ 0 }, data.Name, AssetID);
+					data.AssetRef = asset;
+
+					asset->Type = data.Type;
+
+					asset->Read(f);
+
+					f.close();
+
+					return asset;
+				}
+
+				return nullptr;
 			}
+			else
+			{
+				// Asset is loaded
+				return data.AssetRef.lock();
+			}
+		}
 
-			return asset;
-		}
-		catch (const std::out_of_range&)
-		{
-			return Asset();
-		}
+		return nullptr;
 	}
 
-	Asset AssetManager::LoadAsset(const CString& Path, const CString& Name)
+	Ref<Asset> AssetManager::LoadAsset(const CString& Path, const CString& Name)
 	{
-		if (!bIsAssetManagerInit) return Asset();
-
 		std::string id = GetAssetID(Path, Name);
 
 		return LoadAsset(id);
