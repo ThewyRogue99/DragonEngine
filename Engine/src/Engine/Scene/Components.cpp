@@ -1,6 +1,7 @@
 #include "depch.h"
 #include "Components.h"
 
+#include "Engine/Asset/TextureManager.h"
 #include "Engine/Asset/Serializer/Serializer.h"
 #include "Engine/Asset/AssetManager.h"
 #include "Engine/Scripting/ScriptEngine.h"
@@ -55,11 +56,8 @@ namespace Engine
 		Color = Metadata.GetField<glm::vec4>("Color");
 
 		TextureID = Metadata.GetStringField<char>("TextureID");
-		Ref<Asset> TextureAsset = AssetManager::LoadAsset(TextureID);
-		if (TextureAsset && TextureAsset->GetAssetType() == AssetType::Texture)
-		{
-			Texture = Serializer::DeserializeTexture(TextureAsset->GetData());
-		}
+
+		Texture = TextureManager::LoadTexture(TextureID);
 
 		TilingFactor = Metadata.GetField<float>("TilingFactor");
 	}

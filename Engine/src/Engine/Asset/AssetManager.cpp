@@ -202,7 +202,7 @@ namespace Engine
 					if (!Data.Empty() && Type != AssetType::Undefined)
 					{
 						Asset asset(Name, id);
-						asset.Metadata = Data;
+						Data.Copy(asset.Metadata);
 						asset.Type = Type;
 
 						asset.Write(f);

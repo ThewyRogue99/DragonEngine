@@ -3,6 +3,8 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 
+#include "Engine/Renderer/Texture.h"
+
 #include "../Project/ProjectManager.h"
 #include "EditorPanel.h"
 #include "Engine/Asset/AssetManager.h"
@@ -37,8 +39,6 @@ namespace Engine
 
 		void ChangeCurrentDirectory(const std::filesystem::path& NewDirectory);
 
-		void ReloadTexturesInCurrentDirectory();
-
 		class BrowserContent
 		{
 		public:
@@ -65,6 +65,8 @@ namespace Engine
 			bool bIsError = false;
 
 			char* RenameBuffer = nullptr;
+
+			Ref<Texture2D> ContentIcon = nullptr;
 
 			static const size_t RenameBufferSize = 256;
 		};

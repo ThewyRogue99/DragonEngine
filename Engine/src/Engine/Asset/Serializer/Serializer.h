@@ -11,8 +11,6 @@ namespace Engine
 {
 	namespace Serializer
 	{
-		Ref<Texture2D> DeserializeTexture(const AssetMetadata& metadata);
-
 		AudioBufferData DeserializeAudio(const AssetMetadata& metadata);
 	}
 }

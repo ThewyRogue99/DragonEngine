@@ -4,7 +4,6 @@
 #include "PanelDragPayload.h"
 #include "../Asset/Serializer/Serializer.h"
 #include "Engine/Asset/Serializer/Serializer.h"
-#include "ContentBrowserPanel/ContentBrowserTextures.h"
 
 #include "Engine/Scene/Components.h"
 
@@ -13,6 +12,7 @@
 
 #include "../Scene/EditorSceneManager.h"
 #include "Engine/Asset/AssetManager.h"
+#include "Engine/Asset/TextureManager.h"
 
 #include "../Tools/EditorTool.h"
 
@@ -392,18 +392,8 @@ namespace Engine
 
 					if (Item.ItemType == AssetType::Texture)
 					{
-						Ref<Texture2D> loadedTexture = ContentBrowserTextures::GetTexture(Item.GetID());
-						if (loadedTexture)
-						{
-							component.Texture = loadedTexture;
-						}
-						else
-						{
-							Ref<Asset> TextureAsset = AssetManager::LoadAsset(Item.GetID());
-							component.Texture = Serializer::DeserializeTexture(TextureAsset->GetData());
-						}
-
 						component.TextureID = Item.GetID();
+						component.Texture = TextureManager::LoadTexture(component.TextureID);
 					}
 				}
 

@@ -5,29 +5,6 @@ namespace Engine
 {
 	namespace Serializer
 	{
-		Ref<Texture2D> DeserializeTexture(const AssetMetadata& metadata)
-		{
-			int width, height, channels;
-
-			width = metadata.GetField<int>("width");
-			height = metadata.GetField<int>("height");
-			channels = metadata.GetField<int>("channels");
-
-			size_t dataSize = (size_t)(width * height * channels);
-
-			void* data = metadata.GetField("data", dataSize);
-
-			if (data)
-			{
-				Ref<Texture2D> result = Texture2D::Create(width, height);
-				result->SetData(data, dataSize, channels);
-
-				return result;
-			}
-
-			return nullptr;
-		}
-
 		AudioBufferData DeserializeAudio(const AssetMetadata& metadata)
 		{
 			AudioBufferData result;

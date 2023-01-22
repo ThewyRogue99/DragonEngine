@@ -4,7 +4,6 @@
 #pragma warning(disable : 4312)
 
 #include "PanelDragPayload.h"
-#include "ContentBrowserPanel/ContentBrowserTextures.h"
 
 #include "Engine/Renderer/Texture.h"
 #include "../Scene/EditorSceneManager.h"
@@ -12,6 +11,7 @@
 #include "Engine/Asset/AssetMetadata.h"
 
 #include "Engine/Asset/Serializer/SceneSerializer.h"
+#include "Engine/Asset/TextureManager.h"
 #include "../Asset/Serializer/Serializer.h"
 
 #include "../Tools/EditorTool.h"
@@ -353,34 +353,37 @@ namespace Engine
 
 	void ContentBrowserPanel::BrowserContent::Draw(float ThumbnailSize, bool& DidReload)
 	{
-		Ref<Texture2D> icon = nullptr;
-		switch (Type)
+		if (!ContentIcon)
 		{
-		case AssetType::Folder:
-			icon = DirectoryIcon;
-			break;
-		case AssetType::Scene:
-			icon = SceneFileIcon;
-			break;
-		case AssetType::Script:
-			icon = ScriptFileIcon;
-			break;
-		case AssetType::Audio:
-			icon = AudioFileIcon;
-			break;
-		case AssetType::Texture:
-			icon = ContentBrowserTextures::GetTexture(Entry.GetID());
-			break;
-		default:
-			icon = FileIcon;
-			break;
+			switch (Type)
+			{
+			case AssetType::Folder:
+				ContentIcon = DirectoryIcon;
+				break;
+			case AssetType::Scene:
+				ContentIcon = SceneFileIcon;
+				break;
+			case AssetType::Script:
+				ContentIcon = ScriptFileIcon;
+				break;
+			case AssetType::Audio:
+				ContentIcon = AudioFileIcon;
+				break;
+			case AssetType::Texture:
+			{
+				ContentIcon = TextureManager::LoadTexture(Entry.GetID());
+			} break;
+			default:
+				ContentIcon = FileIcon;
+				break;
+			}
 		}
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 0.f));
 		ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.f, 0.f, 0.f, 0.f));
 
-		ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { ThumbnailSize, ThumbnailSize }, { 0.f, 1.f }, { 1.f, 0.f });
+		ImGui::ImageButton((ImTextureID)ContentIcon->GetRendererID(), { ThumbnailSize, ThumbnailSize }, { 0.f, 1.f }, { 1.f, 0.f });
 		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered())
 		{
 			if (Type == AssetType::Script)
@@ -642,21 +645,8 @@ namespace Engine
 	void ContentBrowserPanel::ChangeCurrentDirectory(const std::filesystem::path& NewDirectory)
 	{
 		CurrentDirectory = NewDirectory;
-		ReloadTexturesInCurrentDirectory();
 
 		Reload();
-	}
-
-	void ContentBrowserPanel::ReloadTexturesInCurrentDirectory()
-	{
-		ContentBrowserTextures::Clear();
-
-		AssetIterator it(CurrentDirectory);
-		for (auto& entry : it)
-		{
-			if (entry.GetType() == AssetType::Texture)
-				ContentBrowserTextures::LoadTexture(entry.GetID());
-		}
 	}
 
 	bool ContentBrowserPanel::OnCreateContent(BrowserContent* Content)
@@ -726,7 +716,6 @@ namespace Engine
 	void ContentBrowserPanel::OnLoadProject(const Project& project)
 	{
 		LoadedProject = &project;
-		ReloadTexturesInCurrentDirectory();
 		Reload();
 	}
 }

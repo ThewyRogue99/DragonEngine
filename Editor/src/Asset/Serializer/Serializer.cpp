@@ -104,7 +104,6 @@ namespace Engine
 					name = AssetManager::GetAvailableName(DestinationPath, name);
 
 				AssetManager::CreateAsset(DestinationPath, name, data, type, Overwrite);
-				data.Clear();
 
 				return true;
 			}
