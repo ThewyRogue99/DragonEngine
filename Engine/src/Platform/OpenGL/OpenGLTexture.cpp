@@ -43,12 +43,12 @@ namespace Engine
 			} break;
 			default:
 			{
-				DE_CORE_ASSERT(false, "Failed to load texture image: Image format is not supported!");
+				DE_ASSERT(false, "Failed to load texture image: Image format is not supported!");
 			} return;
 		}
 
 		uint32_t bpp = ((DataFormat == GL_RGBA) ? 4 : 3);
-		DE_CORE_ASSERT(size == Width * Height * bpp, "Data must be entire texture!");
+		DE_ASSERT(size == Width * Height * bpp, "Data must be entire texture!");
 
 		glTextureSubImage2D(TextureID, 0, 0, 0, Width, Height, DataFormat, GL_UNSIGNED_BYTE, data);
 	}

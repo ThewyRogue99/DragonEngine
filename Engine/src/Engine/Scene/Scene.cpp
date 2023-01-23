@@ -29,7 +29,7 @@ namespace Engine
 				return b2_kinematicBody;
 		}
 
-		DE_CORE_ASSERT(false, "Unknown body type");
+		DE_ASSERT(false, "Unknown body type");
 		return b2_staticBody;
 	}
 
@@ -72,6 +72,7 @@ namespace Engine
 
 		// Copy all components
 		CopyComponent(AllComponents(), targetEntity, entity);
+		targetEntity.AddComponent<IDComponent>(UUID());
 
 		return targetEntity;
 	}
@@ -276,6 +277,8 @@ namespace Engine
 
 	void Scene::OnSceneBegin()
 	{
+		DE_INFO(Scene, "Beginning scene '{0}'", TypeUtils::FromUTF16(SceneName).c_str());
+
 		// Setup Camera
 		{
 			auto view = SceneRegistry.view<CameraComponent, TransformComponent>();
@@ -332,6 +335,8 @@ namespace Engine
 		PrimaryCamera = nullptr;
 
 		OnPhysics2DEnd();
+
+		DE_INFO(Scene, "Ending scene '{0}'", TypeUtils::FromUTF16(SceneName).c_str());
 	}
 
 	void Scene::OnCameraComponentAdded(entt::registry& registry, entt::entity entity)
@@ -350,7 +355,7 @@ namespace Engine
 		Entity targetEntity = TargetScene->GetEntityWithUUID(id);
 
 		if (!targetEntity.IsValid())
-			targetEntity = TargetScene->CreateEntityWithUUID(id, tag);
+			targetEntity = TargetScene->CreateEntity(tag);
 
 		// Copy all components
 		CopyComponent(AllComponents(), targetEntity, entity);

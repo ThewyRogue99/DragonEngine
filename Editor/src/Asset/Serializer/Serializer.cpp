@@ -45,9 +45,11 @@ namespace Engine
 
 				stbi_image_free(data);
 
+				DE_LOG("Serialized Texture on path: {0}", TypeUtils::FromUTF16(FilePath).c_str());
 				return true;
 			}
 
+			DE_LOG("Failed to serialize Texture on path: {0}", TypeUtils::FromUTF16(FilePath).c_str());
 			return false;
 		}
 
@@ -71,9 +73,11 @@ namespace Engine
 
 				res.Clear();
 
+				DE_LOG("Serializing Audio on path: {0}", TypeUtils::FromUTF16(FilePath).c_str());
 				return true;
 			}
 
+			DE_LOG("Failed to serialize Audio on path: {0}", TypeUtils::FromUTF16(FilePath).c_str());
 			return false;
 		}
 

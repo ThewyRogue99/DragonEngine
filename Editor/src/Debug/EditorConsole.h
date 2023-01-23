@@ -5,6 +5,8 @@
 
 #include "Engine/Core/Log.h"
 
+#include <vector>
+
 namespace Engine
 {
 	class EditorConsole : public Console
@@ -16,14 +18,11 @@ namespace Engine
 
 		virtual void OnDetach();
 
-	protected:
-		virtual Ref<CoreLogger> GetCoreLogger() override;
-
-		virtual Ref<ClientLogger> GetClientLogger() override;
+		const std::vector<Logger::LogData>& GetLogs() { return Logs; }
 
 	private:
-		Ref<CoreLogger> m_CoreLogger = nullptr;
+		void OnLog(const Logger::LogData& Data);
 
-		Ref<ClientLogger> m_ClientLogger = nullptr;
+		std::vector<Logger::LogData> Logs = { };
 	};
 }

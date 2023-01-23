@@ -20,7 +20,7 @@ namespace Engine
 				Ref<OpenGLShader> shader = std::make_shared<OpenGLShader>(VertexSource, FragmentSource, isFilePath);
 				if (!shader->Load())
 				{
-					DE_CORE_ASSERT(false, "Failed to load shader");
+					DE_ASSERT(false, "Failed to load shader");
 
 					return nullptr;
 				}
@@ -32,7 +32,7 @@ namespace Engine
 			}
 			default:
 			{
-				DE_CORE_ASSERT(false, "Unknown Renderer API");
+				DE_ASSERT(false, "Unknown Renderer API");
 				return nullptr;
 			}
 		}
@@ -55,7 +55,7 @@ namespace Engine
 			std::string vString = LoadFromFile(VertexSource);
 			if (vString.empty())
 			{
-				DE_CORE_ASSERT(false, "Failed to load vertex shader file from path: {0}", VertexSource.c_str());
+				DE_ASSERT(false, "Failed to load vertex shader file from path: {0}", VertexSource.c_str());
 
 				return false;
 			}
@@ -65,7 +65,7 @@ namespace Engine
 			std::string fString = LoadFromFile(FragmentSource);
 			if (fString.empty())
 			{
-				DE_CORE_ASSERT(false, "Failed to load fragment shader file from path: {0}", FragmentSource.c_str());
+				DE_ASSERT(false, "Failed to load fragment shader file from path: {0}", FragmentSource.c_str());
 
 				return false;
 			}

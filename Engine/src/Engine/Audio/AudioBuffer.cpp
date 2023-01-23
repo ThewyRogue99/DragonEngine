@@ -36,7 +36,7 @@ namespace Engine
 
 			} break;
 			default:
-				DE_CORE_ERROR("Unsupported audio format");
+				DE_ERROR(AudioBuffer, "Unsupported audio format");
 				return false;
 			}
 
@@ -44,13 +44,13 @@ namespace Engine
 				return false;
 
 			alGenBuffers(1, &buffer);
-			alBufferData(buffer, format, BuffData.Data, BuffData.DataSize, BuffData.SampleRate);
+			alBufferData(buffer, format, BuffData.Data, (ALsizei)BuffData.DataSize, (ALsizei)BuffData.SampleRate);
 
 			/* Check if an error occured, and clean up if so. */
 			err = alGetError();
 			if (err != AL_NO_ERROR)
 			{
-				DE_CORE_ERROR("OpenAL Error: %s\n", alGetString(err));
+				DE_ERROR(AudioBuffer, "OpenAL Error: %s\n", alGetString(err));
 				if (buffer && alIsBuffer(buffer))
 					alDeleteBuffers(1, &buffer);
 

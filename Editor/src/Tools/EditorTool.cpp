@@ -17,6 +17,8 @@ namespace Engine
     {
         bIsPlaying = true;
 
+        DE_INFO(EditorTool, "Editor BeginPlay");
+
         EditorScene* EScene = EditorSceneManager::GetEditorScene();
 
         SceneManager::Clear();
@@ -32,6 +34,8 @@ namespace Engine
     {
         bIsPlaying = false;
 
+        DE_INFO(EditorTool, "Editor EndPlay");
+
         OnEndPlayDispatch.Run();
 
         SceneManager::Clear();
@@ -41,6 +45,8 @@ namespace Engine
     void EditorTool::BeginSimulation()
     {
         if (EScene) { EndSimulation(); }
+
+        DE_INFO(EditorTool, "Editor BeginSimulation");
 
         bIsSimulating = true;
 
@@ -63,6 +69,8 @@ namespace Engine
         }
 
         bIsSimulating = false;
+
+        DE_INFO(EditorTool, "Editor EndSimulation");
     }
 
     bool EditorTool::IsPlaying()

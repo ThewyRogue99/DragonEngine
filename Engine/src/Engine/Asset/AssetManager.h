@@ -20,8 +20,8 @@ namespace Engine
 	    static void SetContentPath(const CString& Path);
 	    static CString GetContentPath();
 
-	    static void Load();
-	    static void Save();
+	    static bool Load();
+	    static bool Save();
 
         static bool CreateAsset(const CString& Path, const CString& Name, AssetMetadata& Data, AssetType Type, bool Overwrite = false);
 
@@ -72,8 +72,8 @@ namespace Engine
             void Deserialize(AssetMetadata& metadata);
         };
 
-	    static void LoadMetadata();
-	    static void SaveMetadata();
+	    static bool LoadMetadata();
+	    static bool SaveMetadata();
 
 	    static bool AssetExists(const CString& Path, const CString& Name);
         static bool AssetExists(const std::string& ID);

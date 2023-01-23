@@ -169,6 +169,8 @@ namespace Engine {
 		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
 		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
+
+		DE_INFO(Renderer2D, "Initialized Renderer2D");
 	}
 
 	void Renderer2D::Shutdown()
@@ -178,6 +180,8 @@ namespace Engine {
 		s_Data.QuadShapeBuffer = nullptr;
 		s_Data.CircleShapeBuffer = nullptr;
 		s_Data.LineShapeBuffer = nullptr;
+
+		DE_INFO(Renderer2D, "Shutting down Renderer2D");
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)

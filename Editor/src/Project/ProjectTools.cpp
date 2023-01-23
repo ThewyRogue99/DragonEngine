@@ -67,10 +67,14 @@ namespace Engine
 
 			if(!CoreAssemblyExists())
 				CopyCoreAssembly();
+
+			DE_INFO(ProjectTools, "Generated Script Project");
 		}
 
 		bool CompileScriptProject()
 		{
+			DE_LOG(ProjectTools, "Compiling Script Project...");
+
 			if (!CoreAssemblyExists() && !CopyCoreAssembly())
 				return false;
 
@@ -88,9 +92,11 @@ namespace Engine
 
 				LoadScriptProject();
 
+				DE_INFO(ProjectTools, "Successfully compiled Script Project");
 				return true;
 			}
 
+			DE_ERROR(ProjectTools, "Failed to compile Script Project");
 			return false;
 		}
 #endif

@@ -3,10 +3,6 @@
 
 namespace Engine
 {
-	Ref<CoreLogger> Log::s_CoreLogger = nullptr;
-
-	Ref<ClientLogger> Log::s_ClientLogger = nullptr;
-
 	Ref<Console> Log::DebugConsole = nullptr;
 
 	void Log::SetConsole(Ref<Console> NewConsole)
@@ -18,9 +14,6 @@ namespace Engine
 		{
 			DebugConsole = NewConsole;
 			DebugConsole->OnAttach();
-
-			s_CoreLogger = DebugConsole->GetCoreLogger();
-			s_ClientLogger = DebugConsole->GetClientLogger();
 		}
 	}
 }

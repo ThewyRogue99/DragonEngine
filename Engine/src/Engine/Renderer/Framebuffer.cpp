@@ -14,7 +14,7 @@ namespace Engine
 			case RendererAPI::API::OpenGL: return CreateRef<OpenGLFramebuffer>(props);
 			default:
 			{
-				DE_CORE_ASSERT(false, "Unknown Renderer API");
+				DE_ASSERT(false, "Unknown Renderer API");
 				return nullptr;
 			}
 		}

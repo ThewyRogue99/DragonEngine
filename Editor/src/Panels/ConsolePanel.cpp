@@ -51,7 +51,7 @@ namespace Engine
 	{
         if (!LogList)
         {
-            Ref<Console> AttachedConsole = Log::GetConsole();
+            Ref<EditorConsole> AttachedConsole = std::dynamic_pointer_cast<EditorConsole>(Log::GetConsole());
 
             if (AttachedConsole)
                 LogList = &(AttachedConsole->GetLogs());

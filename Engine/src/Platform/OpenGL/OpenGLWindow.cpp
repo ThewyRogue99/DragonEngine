@@ -31,8 +31,8 @@ namespace Engine
 		Data.Width = Props.Width;
 		Data.Height = Props.Height;
 
-		DE_CORE_INFO(
-			"Creating window {0}: [ Width: {1}, Height: {2} ]",
+		DE_INFO(
+			OpenGLWindow, "Creating window {0}: [ Width: {1}, Height: {2} ]",
 			Props.Title,
 			Props.Width,
 			Props.Height
@@ -152,6 +152,8 @@ namespace Engine
 		{
 			glfwDestroyWindow(NativeWindow);
 			NativeWindow = nullptr;
+
+			DE_WARN(OpenGLWindow, "Shutting down OpenGLWindow");
 		}
 	}
 

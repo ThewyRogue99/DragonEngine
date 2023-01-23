@@ -8,7 +8,7 @@ namespace Engine
 {
 	static void GLFWErrorCallback(int error, const char* description)
 	{
-		DE_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
+		DE_ERROR(OpenGLRendererAPI, "GLFW Error ({0}): {1}", error, description);
 	}
 
 	void OpenGLRendererAPI::Init()
@@ -18,10 +18,12 @@ namespace Engine
 
 			// TODO: glfwTerminate on system shutdown
 			int success = glfwInit();
-			DE_CORE_ASSERT(success, "Could not initialize GLFW!");
+			DE_ASSERT(success, "Could not initialize GLFW!");
 			if (!success) return;
 
 			glfwSetErrorCallback(GLFWErrorCallback);
+
+			DE_INFO(OpenGLRendererAPI, "Successfully initialized OpenGLRendererAPI");
 		}
 	}
 

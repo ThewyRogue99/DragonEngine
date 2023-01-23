@@ -89,7 +89,7 @@ namespace Engine
 					return GL_RED_INTEGER;
 				default:
 				{
-					DE_CORE_ASSERT(false, "Unsupported texture format");
+					DE_ASSERT(false, "Unsupported texture format");
 					return GL_NONE;
 				}
 			}
@@ -201,7 +201,7 @@ namespace Engine
 
 		if (ColorAttachments.size() > 1)
 		{
-			DE_CORE_ASSERT(ColorAttachments.size() <= 4, "Engine only supports 4 color attachments!");
+			DE_ASSERT(ColorAttachments.size() <= 4, "Engine only supports 4 color attachments!");
 
 			GLenum buffers[4] = {
 				GL_COLOR_ATTACHMENT0,
@@ -217,7 +217,7 @@ namespace Engine
 			glDrawBuffer(GL_NONE);
 		}
 
-		DE_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
+		DE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -243,7 +243,7 @@ namespace Engine
 
 	int OpenGLFramebuffer::ReadPixel(uint32_t AttachmentIndex, int x, int y)
 	{
-		DE_CORE_ASSERT(AttachmentIndex < ColorAttachments.size(), "Attachment Index is out of range");
+		DE_ASSERT(AttachmentIndex < ColorAttachments.size(), "Attachment Index is out of range");
 
 		Bind();
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + AttachmentIndex);
@@ -256,7 +256,7 @@ namespace Engine
 
 	void OpenGLFramebuffer::ClearAttachment(uint32_t AttachmentIndex, int value)
 	{
-		DE_CORE_ASSERT(AttachmentIndex < ColorAttachments.size(), "Attachment Index is out of range");
+		DE_ASSERT(AttachmentIndex < ColorAttachments.size(), "Attachment Index is out of range");
 
 		auto& spec = ColorAttachmentSpecifications[AttachmentIndex];
 

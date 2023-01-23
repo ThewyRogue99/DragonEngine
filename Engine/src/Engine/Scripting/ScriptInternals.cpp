@@ -36,7 +36,7 @@ namespace Engine
 			MonoType* managedType = mono_reflection_type_from_name(cstr, (MonoImage*)ScriptEngine::GetCoreAssemblyImage());
 			if (!managedType)
 			{
-				DE_CORE_ERROR("Could not find component type {}", managedTypename);
+				DE_ERROR(ScriptInternals, "Could not find component type {}", managedTypename);
 				return;
 			}
 
@@ -71,7 +71,7 @@ namespace Engine
 	{
 		const char* cstr = mono_string_to_utf8(str);
 
-		DE_INFO(cstr);
+		DE_INFO(App, cstr);
 
 		mono_free((void*)cstr);
 	}

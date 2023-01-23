@@ -20,7 +20,7 @@ namespace Engine
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			DE_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
+			DE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 
 			T& component = GetSceneRegistry().emplace<T>(EntityHandle, std::forward<Args>(args)...);
 
@@ -38,7 +38,7 @@ namespace Engine
 		template<typename T>
 		T& GetComponent()
 		{
-			DE_CORE_ASSERT(HasComponent<T>(), "Entity doesn't have component!");
+			DE_ASSERT(HasComponent<T>(), "Entity doesn't have component!");
 
 			return GetSceneRegistry().get<T>(EntityHandle);
 		}
@@ -52,7 +52,7 @@ namespace Engine
 		template<typename T>
 		void RemoveComponent()
 		{
-			DE_CORE_ASSERT(HasComponent<T>(), "Entity doesn't have a component!");
+			DE_ASSERT(HasComponent<T>(), "Entity doesn't have a component!");
 
 			GetSceneRegistry().remove<T>(EntityHandle);
 		}

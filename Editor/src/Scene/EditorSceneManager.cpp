@@ -21,7 +21,7 @@ namespace Engine
 		if (CurrentEditorScene)
 		{
 			std::string DebugName = TypeUtils::FromUTF16(CurrentEditorScene->GetName());
-			DE_CORE_WARN("Removing current Editor Scene: {0}", DebugName.c_str());
+			DE_WARN(EditorSceneManager, "Removing current Editor Scene: {0}", DebugName.c_str());
 
 			if (DestroyCurrent)
 				delete CurrentEditorScene;

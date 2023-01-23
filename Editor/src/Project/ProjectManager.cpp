@@ -35,6 +35,12 @@ namespace Engine
 
 	bool ProjectManager::CreateProject(const CString& ProjectPath, const std::string& ProjectName)
 	{
+		DE_LOG(
+			ProjectManager, "Creating project '{0}' in '{1}' path",
+			ProjectName.c_str(),
+			TypeUtils::FromUTF16(ProjectPath).c_str()
+		);
+
 		std::filesystem::path Path = ProjectPath;
 
 		if (std::filesystem::is_directory(Path) && std::filesystem::exists(Path))
@@ -79,17 +85,23 @@ namespace Engine
 				OnProjectLoad(ProjectData);
 				Dispatcher.Run(ProjectData);
 
+
+				DE_INFO(ProjectManager, "Successfully created project '{0}'", ProjectName.c_str());
 				return true;
 			}
-
-			return false;
 		}
 
+		DE_ERROR(ProjectManager, "Failed to create project '{0}'", ProjectName.c_str());
 		return false;
 	}
 
 	bool ProjectManager::LoadProject(const CString& ProjectPath)
 	{
+		DE_LOG(
+			ProjectManager, "Loading project in '{0}' path",
+			TypeUtils::FromUTF16(ProjectPath).c_str()
+		);
+
 		std::filesystem::path Path = ProjectPath;
 
 		if ((Path.extension() == ".deproject") && std::filesystem::exists(Path))
@@ -136,16 +148,20 @@ namespace Engine
 				bIsProjectLoaded = true;
 				Dispatcher.Run(ProjectData);
 
+				DE_INFO(ProjectManager, "Successfully loaded project '{0}'", ProjectData.Name.c_str());
 				return true;
 			}
 
 		}
 
+		DE_ERROR(ProjectManager, "Failed to load project in '{0}' path", TypeUtils::FromUTF16(ProjectPath).c_str());
 		return false;
 	}
 
 	bool ProjectManager::CreateScript(const std::string& Name)
 	{
+		DE_LOG(ProjectManager, "Creating Script '{0}'", Name.c_str());
+
 		bool IncludesSpace = Name.find_first_of(' ') != std::string::npos;
 		if (Name != "Script" && !IncludesSpace)
 		{
@@ -164,10 +180,13 @@ namespace Engine
 
 				ProjectTools::CompileScriptProject();
 
+				DE_INFO("Successfully created Script '{0}'", Name.c_str());
+
 				return true;
 			}
 		}
 
+		DE_ERROR("Failed to create Script '{0}'", Name.c_str());
 		return false;
 	}
 

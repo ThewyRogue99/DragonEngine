@@ -16,9 +16,15 @@ namespace Engine
 
 	void AudioEngine::Init()
 	{
+		DE_LOG(AudioEngine, "Initializing AudioEngine...");
+
 		ActiveAudioDevice = AudioDevice::OpenDevice();
 
-		DE_CORE_INFO("Using audio device: {0}", ActiveAudioDevice->DeviceName);
+		if (ActiveAudioDevice)
+		{
+			DE_INFO(AudioEngine, "Successfully initialized AudioEngine");
+			DE_INFO(AudioEngine, "Using audio device: {0}", ActiveAudioDevice->DeviceName);
+		}
 	}
 
 	void AudioEngine::Shutdown()
@@ -126,6 +132,8 @@ namespace Engine
 
 	void AudioEngine::StopAllAudio()
 	{
+		DE_WARN(AudioEngine, "Stopping all playing Audio");
+
 		for (auto& src : AudioSourceList)
 			alSourceStop(src->Source);
 	}

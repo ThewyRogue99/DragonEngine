@@ -43,7 +43,7 @@ namespace Engine
 	{
 		if (!alcMakeContextCurrent(nullptr))
 		{
-			DE_CORE_ERROR("Failed to set context to nullptr");
+			DE_ERROR(AudioDevice, "Failed to set context to nullptr");
 			return false;
 		}
 
@@ -52,14 +52,14 @@ namespace Engine
 		ALCenum err = alcGetError(Device);
 		if (err != AL_NO_ERROR)
 		{
-			DE_CORE_ERROR("alcDestroyContext() error: {0}", alcGetString(Device, err));
+			DE_ERROR(AudioDevice, "alcDestroyContext() error: {0}", alcGetString(Device, err));
 			return false;
 		}
 		Context = nullptr;
 
 		if (!alcCloseDevice(Device))
 		{
-			DE_CORE_ERROR("Failed to close sound device");
+			DE_ERROR(AudioDevice, "Failed to close sound device");
 			return false;
 		}
 

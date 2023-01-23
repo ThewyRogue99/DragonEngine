@@ -22,7 +22,7 @@ namespace Engine
 			case Engine::ShaderDataType::Bool:    return GL_BOOL;
 			default:
 			{
-				DE_CORE_ASSERT(false, "Unknown ShaderDataType!");
+				DE_ASSERT(false, "Unknown ShaderDataType!");
 				return 0;
 			}
 		}
@@ -51,7 +51,7 @@ namespace Engine
 
 	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
-		DE_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
+		DE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
 		glBindVertexArray(ArrayID);
 		vertexBuffer->Bind();
@@ -124,7 +124,7 @@ namespace Engine
 				break;
 			}
 			default:
-				DE_CORE_ASSERT(false, "Unknown ShaderDataType!");
+				DE_ASSERT(false, "Unknown ShaderDataType!");
 			}
 		}
 

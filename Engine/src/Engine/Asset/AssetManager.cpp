@@ -139,11 +139,16 @@ namespace Engine
 
 	void AssetManager::Init(const CString& Path)
 	{
+		DE_LOG(AssetManager, "Initializing AssetManager...");
+
 		SetContentPath(Path);
 
-		Load();
+		bIsAssetManagerInit = Load();
 
-		bIsAssetManagerInit = true;
+		if (bIsAssetManagerInit)
+			DE_INFO(AssetManager, "Successfully initialized AssetManager");
+		else
+			DE_ERROR(AssetManager, "Failed to initialize AssetManager");
 	}
 
 	void AssetManager::SetContentPath(const CString& Path)
@@ -156,14 +161,14 @@ namespace Engine
 		return ContentPath;
 	}
 
-	void AssetManager::Load()
+	bool AssetManager::Load()
 	{
-		LoadMetadata();
+		return LoadMetadata();
 	}
 
-	void AssetManager::Save()
+	bool AssetManager::Save()
 	{
-		SaveMetadata();
+		return SaveMetadata();
 	}
 
 	bool AssetManager::CreateAsset(const CString& Path, const CString& Name, AssetMetadata& Data, AssetType Type, bool Overwrite)
@@ -195,6 +200,8 @@ namespace Engine
 			std::ofstream f(FullPath, std::ios::out | std::ios::binary);
 			if (f.is_open())
 			{
+				DE_LOG(AssetManager, "Creating Asset in");
+
 				AssetData data(Name, Path, Type);
 
 				if (AddAsset(id, data))
@@ -498,7 +505,7 @@ namespace Engine
 		return "";
 	}
 
-	void AssetManager::LoadMetadata()
+	bool AssetManager::LoadMetadata()
 	{
 		CString FullPath = ContentPath / METADATA_FILE_NAME;
 
@@ -521,10 +528,14 @@ namespace Engine
 			}
 
 			f.close();
+
+			return true;
 		}
+
+		return false;
 	}
 
-	void AssetManager::SaveMetadata()
+	bool AssetManager::SaveMetadata()
 	{
 		CString FullPath = ContentPath / METADATA_FILE_NAME;
 
@@ -545,7 +556,11 @@ namespace Engine
 			metadata.Write(f);
 
 			f.close();
+
+			return true;
 		}
+
+		return false;
 	}
 
 	void AssetManager::AssetData::Serialize(AssetMetadata& metadata)

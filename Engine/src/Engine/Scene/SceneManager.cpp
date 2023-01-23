@@ -27,7 +27,7 @@ namespace Engine
 		}
 
 		std::string DebugName = TypeUtils::FromUTF16(cpy->GetName());
-		DE_CORE_ERROR("Cannot create {0} scene.(A scene with same tag already exists)", DebugName.c_str());
+		DE_ERROR(SceneManager, "Cannot create scene '{0}'.(A scene with same tag already exists)", DebugName.c_str());
 		return nullptr;
 	}
 
@@ -42,7 +42,7 @@ namespace Engine
 		else
 		{
 			std::string DebugName = TypeUtils::FromUTF16(cpy->GetName());
-			DE_CORE_ERROR("Cannot add {0} scene.(A scene with same tag already exists)", DebugName.c_str());
+			DE_ERROR(SceneManager, "Cannot add scene '{0}'.(A scene with same tag already exists)", DebugName.c_str());
 		}
 	}
 
@@ -69,7 +69,7 @@ namespace Engine
 			}
 
 			std::string DebugName = TypeUtils::FromUTF16(NewScene->GetName());
-			DE_CORE_ERROR("Cannot load {0} scene.(A scene with same tag already exists)", DebugName.c_str());
+			DE_ERROR(SceneManager, "Cannot load scene '{0}'.(A scene with same tag already exists)", DebugName.c_str());
 
 			delete NewScene;
 
@@ -97,7 +97,7 @@ namespace Engine
 			}
 
 			std::string DebugName = TypeUtils::FromUTF16(NewScene->GetName());
-			DE_CORE_ERROR("Cannot load {0} scene.(A scene with same tag already exists)", DebugName.c_str());
+			DE_ERROR(SceneManager, "Cannot load scene '{0}'.(A scene with same tag already exists)", DebugName.c_str());
 
 			delete NewScene;
 
@@ -150,7 +150,7 @@ namespace Engine
 			return true;
 		}
 
-		DE_CORE_WARN("Scene with the given tag doesn't exist");
+		DE_ERROR(SceneManager, "Scene with the tag '{0}' doesn't exist", TypeUtils::FromUTF16(Tag).c_str());
 		return false;
 	}
 
@@ -171,7 +171,7 @@ namespace Engine
 			return true;
 		}
 
-		DE_CORE_WARN("Scene with the given tag doesn't exist");
+		DE_ERROR(SceneManager, "Scene with the tag '{0}' doesn't exist", TypeUtils::FromUTF16(Tag).c_str());
 		return false;
 	}
 
@@ -182,6 +182,11 @@ namespace Engine
 			if (ActiveScene != SceneRef)
 			{
 				ActiveScene = SceneRef;
+
+				DE_INFO(
+					SceneManager, "Setting Active Scene to '{0}'",
+					TypeUtils::FromUTF16(SceneRef->GetName()).c_str()
+				);
 
 				RunSetActiveScene(ActiveScene);
 			}
@@ -199,7 +204,7 @@ namespace Engine
 		if (NewActiveScene)
 			return SetActiveScene(NewActiveScene);
 
-		DE_CORE_WARN("Scene with the given tag doesn't exist");
+		DE_ERROR(SceneManager, "Scene with the tag '{0}' doesn't exist", TypeUtils::FromUTF16(Tag).c_str());
 		return false;
 	}
 
@@ -217,6 +222,8 @@ namespace Engine
 
 	void SceneManager::Clear()
 	{
+		DE_WARN(SceneManager, "Clearing SceneManager");
+
 		ClearCallbacks();
 
 		for (Scene* scene : SceneList)

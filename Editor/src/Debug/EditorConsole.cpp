@@ -5,23 +5,19 @@ namespace Engine
 {
 	void EditorConsole::OnAttach()
 	{
-		m_CoreLogger = CreateRef<CoreLogger>("Engine", this);
-		m_ClientLogger = CreateRef<ClientLogger>("App", this);
+		ConsoleLogger = CreateRef<Logger>("Editor");
+		ConsoleLogger->OnLog().AddCallback(BIND_CLASS_FN(OnLog));
+
+		DE_INFO(EditorConsole, "Created Editor Console");
 	}
 
 	void EditorConsole::OnDetach()
 	{
-		m_CoreLogger = nullptr;
-		m_ClientLogger = nullptr;
+		ConsoleLogger = nullptr;
 	}
 
-	Ref<CoreLogger> EditorConsole::GetCoreLogger()
+	void EditorConsole::OnLog(const Logger::LogData& Data)
 	{
-		return m_CoreLogger;
-	}
-
-	Ref<ClientLogger> EditorConsole::GetClientLogger()
-	{
-		return m_ClientLogger;
+		Logs.push_back(Data);
 	}
 }

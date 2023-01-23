@@ -2,7 +2,7 @@
 
 #include "EditorPanel.h"
 
-#include "Engine/Core/Log.h"
+#include "../Debug/EditorConsole.h"
 #include <array>
 
 namespace Engine
@@ -30,7 +30,7 @@ namespace Engine
 
         ImGuiTextFilter m_TextFilter;
 
-        const Console::LogListType* LogList = nullptr;
+        const std::vector<Logger::LogData>* LogList = nullptr;
 
         enum COLOR_PALETTE
         {

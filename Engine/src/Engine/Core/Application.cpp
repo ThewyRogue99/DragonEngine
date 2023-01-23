@@ -18,7 +18,7 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		DE_CORE_ASSERT(!Instance, "Application already exists");
+		DE_ASSERT(!Instance, "Application already exists");
 		Instance = this;
 
 		std::string NameUTF8 = TypeUtils::FromUTF16(AppSpecification.Name.c_str());
@@ -34,11 +34,13 @@ namespace Engine
 		Renderer2D::Init();
 		ScriptEngine::Init();
 		AudioEngine::Init();
+
+		DE_INFO(Application, "Initialized Application");
 	}
 
 	Application::~Application()
 	{
-		ScriptEngine::Shutdown();
+		
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -71,6 +73,12 @@ namespace Engine
 		bIsRunning = false;
 
 		AudioEngine::Shutdown();
+		ScriptEngine::Shutdown();
+
+		DE_WARN(
+			Application, "Shutting down Application: {0}",
+			TypeUtils::FromUTF16(AppSpecification.Name).c_str()
+		);
 	}
 
 	void Application::Run()

@@ -37,7 +37,7 @@ namespace Engine
 		auto it = s_ScriptFieldTypeMap.find(typeName);
 		if (it == s_ScriptFieldTypeMap.end())
 		{
-			DE_CORE_ERROR("Unknown type: {0}", typeName);
+			DE_ERROR(ScriptFieldType, "Unknown type: {0}", typeName);
 			return ScriptFieldType::None;
 		}
 
@@ -89,7 +89,7 @@ void ScriptField::SetValue(MonoObject* Object, Type* value) \
 { \
 	if (Object) \
 	{ \
-		DE_CORE_ASSERT(FieldType == ScriptFieldType, "Cannot set a ScriptField of another type"); \
+		DE_ASSERT(FieldType == ScriptFieldType, "Cannot set a ScriptField of another type"); \
 \
 		mono_field_set_value(Object, ClassField, (void*)value); \
 		SetBufferValue(value); \
@@ -102,7 +102,7 @@ const Type& ScriptField::GetValue(MonoObject* Object) \
 	const Type& value = GetBufferValue<Type>(); \
 	if (Object) \
 	{ \
-		DE_CORE_ASSERT(FieldType == ScriptFieldType, "Cannot get a ScriptField of another type"); \
+		DE_ASSERT(FieldType == ScriptFieldType, "Cannot get a ScriptField of another type"); \
 \
 		mono_field_get_value(Object, ClassField, (void*)&value); \
 	} \

@@ -36,7 +36,7 @@ namespace Engine
 				return 1;
 			default:
 			{
-				DE_CORE_ASSERT(false, "Unknown ShaderDataType!");
+				DE_ASSERT(false, "Unknown ShaderDataType!");
 				return 0;
 			}
 		}
@@ -48,7 +48,7 @@ namespace Engine
 		{
 			case RendererAPI::API::None:
 			{
-				DE_CORE_ASSERT(false, "No renderer API is used for renderer!");
+				DE_ASSERT(false, "No renderer API is used for renderer!");
 				return nullptr;
 			}
 			case RendererAPI::API::OpenGL:
@@ -57,7 +57,7 @@ namespace Engine
 			}
 			default:
 			{
-				DE_CORE_ASSERT(false, "Unknown Renderer API!");
+				DE_ASSERT(false, "Unknown Renderer API!");
 				return nullptr;
 			}
 		}
@@ -69,7 +69,7 @@ namespace Engine
 		{
 			case RendererAPI::API::None:
 			{
-				DE_CORE_ASSERT(false, "No renderer API is used for renderer!");
+				DE_ASSERT(false, "No renderer API is used for renderer!");
 				return nullptr;
 			}
 			case RendererAPI::API::OpenGL:
@@ -78,7 +78,7 @@ namespace Engine
 			}
 			default:
 			{
-				DE_CORE_ASSERT(false, "Unknown Renderer API!");
+				DE_ASSERT(false, "Unknown Renderer API!");
 				return nullptr;
 			}
 		}
@@ -90,7 +90,7 @@ namespace Engine
 		{
 			case RendererAPI::API::None:
 			{
-				DE_CORE_ASSERT(false, "No renderer API is used for renderer!");
+				DE_ASSERT(false, "No renderer API is used for renderer!");
 				return nullptr;
 			}
 			case RendererAPI::API::OpenGL:
@@ -99,7 +99,7 @@ namespace Engine
 			}
 			default:
 			{
-				DE_CORE_ASSERT(false, "Unknown Renderer API!");
+				DE_ASSERT(false, "Unknown Renderer API!");
 				return nullptr;
 			}
 		}
@@ -145,7 +145,7 @@ namespace Engine
 				return 1;
 			default:
 			{
-				DE_CORE_ASSERT(false, "Unknown ShaderDataType!");
+				DE_ASSERT(false, "Unknown ShaderDataType!");
 				return 0;
 			}
 		}

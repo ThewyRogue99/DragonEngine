@@ -25,7 +25,7 @@ namespace Engine
 			for (auto& it : Args)
 				ss << it << ' ';
 
-			DE_CORE_LOG("{0}", ss.str());
+			DE_LOG(CommandSystem, "{0}", ss.str());
 		})
 	};
 
@@ -49,7 +49,7 @@ namespace Engine
 		}
 		else
 		{
-			DE_CORE_ERROR("Command \"{0}\" is not specified!", CommandStr);
+			DE_ERROR(CommandSystem, "Command \"{0}\" is not specified!", CommandStr);
 		}
 	}
 }

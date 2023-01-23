@@ -82,14 +82,14 @@ namespace Engine
 			if (status != MONO_IMAGE_OK)
 			{
 				const char* errorMessage = mono_image_strerror(status);
-				DE_CORE_ERROR(errorMessage);
+				DE_ERROR(ScriptEngine, errorMessage);
 
 				delete[] data.Data;
 				return nullptr;
 			}
 			else if (!image)
 			{
-				DE_CORE_ERROR("Failed to load assembly in path: {0}", path_str.c_str());
+				DE_ERROR(ScriptEngine, "Failed to load assembly in path: {0}", path_str.c_str());
 
 				delete[] data.Data;
 				return nullptr;
@@ -107,6 +107,8 @@ namespace Engine
 	void ScriptEngine::Init()
 	{
 		MonoInit();
+
+		DE_INFO(ScriptEngine, "Initialized ScriptEngine");
 	}
 
 	void ScriptEngine::Shutdown()
@@ -116,17 +118,23 @@ namespace Engine
 		mono_jit_cleanup(RootDomain);
 
 		ScriptDataList.clear();
+
+		DE_WARN(ScriptEngine, "Shutting down ScriptEngine");
 	}
 
 	void ScriptEngine::SetAssemblyPath(const CString& CoreAssemblyPath, const CString& AppAssemblyPath)
 	{
 		CoreAssembly.Path = CoreAssemblyPath;
 		AppAssembly.Path = AppAssemblyPath;
+
+		DE_WARN(ScriptEngine, "Setting new assembly paths for ScriptEngine");
 	}
 
 	void ScriptEngine::Run()
 	{
 		bShouldRun = true;
+
+		DE_INFO(ScriptEngine, "Running ScriptEngine");
 
 		for (auto& [name, script] : ScriptObjectList)
 		{
@@ -139,6 +147,8 @@ namespace Engine
 	{
 		bShouldRun = false;
 
+		DE_WARN(ScriptEngine, "Stopping ScriptEngine");
+
 		for (auto& [name, ptr] : ScriptObjectList)
 			delete ptr;
 
@@ -147,6 +157,8 @@ namespace Engine
 
 	bool ScriptEngine::LoadCore()
 	{
+		DE_LOG(ScriptEngine, "Loading Core Assembly...");
+
 		CoreAssembly.Assembly = Utils::LoadAssembly(CoreAssembly.Path);
 
 		if (CoreAssembly.Assembly)
@@ -156,14 +168,19 @@ namespace Engine
 			ScriptInternals::RegisterFunctions();
 			ScriptInternals::RegisterComponents();
 
+			DE_INFO(ScriptEngine, "Successfully loaded Core Assembly");
+
 			return true;
 		}
 
+		DE_ERROR(ScriptEngine, "Failed to load Core Assembly");
 		return false;
 	}
 
 	bool ScriptEngine::LoadApp(bool Reload)
 	{
+		DE_LOG(ScriptEngine, "Loading App Assembly...");
+
 		AppAssembly.Assembly = Utils::LoadAssembly(AppAssembly.Path);
 
 		if (AppAssembly.Assembly)
@@ -172,9 +189,12 @@ namespace Engine
 
 			ScriptEngine::LoadAllScripts(Reload);
 
+			DE_INFO(ScriptEngine, "Successfully loaded App Assembly");
+
 			return true;
 		}
 
+		DE_ERROR(ScriptEngine, "Failed to load App Assembly");
 		return false;
 	}
 
@@ -300,6 +320,8 @@ namespace Engine
 					{
 						GetFields(data);
 						ScriptDataList.push_back(data);
+
+						DE_LOG(ScriptEngine, "Loading Script: {0}.{1}", nameSpace, name);
 					}
 				}
 			}
@@ -348,12 +370,16 @@ namespace Engine
 
 				newScript->ScriptObject = ScriptObject;
 
+				DE_INFO("Creating Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
+
 				ScriptObjectList[ScriptName] = newScript;
 
 				return newScript;
 			}
 		}
 
+
+		DE_INFO("Failed to find Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
 		return nullptr;
 	}
 
@@ -396,6 +422,8 @@ namespace Engine
 
 		RootDomain = mono_jit_init("DEScript_JITRuntime");
 
-		DE_CORE_ASSERT(RootDomain, "Failed to initialize JIT");
+		DE_ASSERT(RootDomain, "Failed to initialize JIT");
+
+		DE_LOG(ScriptEngine, "Initialized Mono");
 	}
 }

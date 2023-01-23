@@ -30,6 +30,8 @@ namespace Engine
 
 	void EditorLayer::OnAttach()
 	{
+		Layer::OnAttach();
+
 		ResourceTool::LoadResources();
 
 		PManager.AddPanels({
@@ -54,7 +56,7 @@ namespace Engine
 
 	void EditorLayer::OnDetach()
 	{
-
+		Layer::OnDetach();
 	}
 
 	void EditorLayer::OnUpdate(float DeltaTime)
@@ -129,8 +131,6 @@ namespace Engine
 			{
 				if (ImGui::MenuItem("New Project", "Ctrl+N"))
 				{
-					//std::filesystem::path FullPath = FileDialogs::SaveFile(L"Project Files (*.deproject*) \0*.deproject*\0");
-
 					nfdchar_t* outPath = nullptr;
 					nfdresult_t result = NFD_PickFolder(nullptr, &outPath);
 
@@ -145,17 +145,15 @@ namespace Engine
 					}
 					else if (result == NFD_CANCEL)
 					{
-						DE_CORE_INFO("User cancelled file dialog");
+						DE_WARN(FileDialog, "User cancelled file dialog");
 					}
 					else
 					{
-						DE_CORE_INFO("Error: {0}", NFD_GetError());
+						DE_ERROR(FileDialog, "Error: {0}", NFD_GetError());
 					}
 				}
 				if (ImGui::MenuItem("Load Project", "Ctrl+L"))
 				{
-					//CString FullPath = FileDialogs::OpenFile(L"Project Files (*.deproject*) \0*.deproject*\0");
-
 					nfdchar_t* outPath = nullptr;
 					nfdresult_t result = NFD_OpenDialog("deproject;", nullptr, &outPath);
 
@@ -168,11 +166,11 @@ namespace Engine
 					}
 					else if (result == NFD_CANCEL)
 					{
-						DE_CORE_INFO("User cancelled file dialog");
+						DE_WARN(FileDialog, "User cancelled file dialog");
 					}
 					else
 					{
-						DE_CORE_INFO("Error: {0}", NFD_GetError());
+						DE_ERROR(FileDialog, "Error: {0}", NFD_GetError());
 					}
 				}
 

@@ -319,11 +319,11 @@ namespace Engine
 				}
 				else if (result == NFD_CANCEL)
 				{
-					DE_CORE_INFO("User cancelled file dialog");
+					DE_INFO(FileDialog, "User cancelled file dialog");
 				}
 				else
 				{
-					DE_CORE_INFO("Error: {0}", NFD_GetError());
+					DE_INFO(FileDialog, "Error: {0}", NFD_GetError());
 				}
 			}
 

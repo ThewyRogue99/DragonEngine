@@ -49,6 +49,12 @@ namespace Engine
 				// Texture is not loaded
 				Ref<Asset> TextureAsset = AssetManager::LoadAsset(TextureID);
 
+				DE_LOG(
+					TextureManager, "Loading texture: {0} with id: {0}",
+					TypeUtils::FromUTF16(TextureAsset->GetName()).c_str(),
+					TextureID.c_str()
+				);
+
 				if (TextureAsset && TextureAsset->GetAssetType() == AssetType::Texture)
 				{
 					Ref<Texture2D> texture = DeserializeTexture(TextureAsset->GetData());
