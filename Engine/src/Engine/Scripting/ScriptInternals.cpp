@@ -199,7 +199,7 @@ namespace Engine
 		int result = 0;
 
 		if (SceneRef)
-			result = SceneRef->GetEntityCount();
+			result = (int)SceneRef->GetEntityCount();
 
 		mono_free((void*)namestr);
 

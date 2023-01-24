@@ -7,6 +7,8 @@
 #include "Engine/Events/Event.h"
 #include "Engine/Renderer/Camera.h"
 
+#include "Engine/Physics/PhysicsWorld2D.h"
+
 #include "Components.h"
 
 #include <vector>
@@ -38,6 +40,7 @@ namespace Engine
 		friend class Entity;
 		friend class SceneManager;
 		friend class SceneSerializer;
+		friend class PhysicsWorld2D;
 		friend class SceneHierarchyPanel;
 
 		inline const CString& GetName() const { return SceneName; }
@@ -58,10 +61,6 @@ namespace Engine
 
 		void Render(float DeltaTime);
 
-		void OnPhysics2DStart();
-		void OnPhysics2DUpdate(float DeltaTime);
-		void OnPhysics2DEnd();
-
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
 
@@ -78,7 +77,7 @@ namespace Engine
 
 		entt::registry SceneRegistry;
 
-		b2World* m_PhysicsWorld = nullptr;
+		PhysicsWorld2D PhysicsWorld;
 
 		Camera* PrimaryCamera = nullptr;
 

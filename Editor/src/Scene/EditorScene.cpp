@@ -17,7 +17,7 @@ namespace Engine
 		PrimaryCamera->Update(DeltaTime);
 
 		if (bShouldSimulate)
-			OnPhysics2DUpdate(DeltaTime);
+			PhysicsWorld.Update(DeltaTime);
 
 		Render(DeltaTime);
 	}
@@ -38,13 +38,13 @@ namespace Engine
 	void EditorScene::OnSceneBegin()
 	{
 		if (bShouldSimulate)
-			OnPhysics2DStart();
+			PhysicsWorld.Begin(this);
 	}
 
 	void EditorScene::OnSceneEnd()
 	{
 		if (bShouldSimulate)
-			OnPhysics2DEnd();
+			PhysicsWorld.End();
 	}
 
 	void EditorScene::CopyEditorScene(EditorScene* SceneRef)
