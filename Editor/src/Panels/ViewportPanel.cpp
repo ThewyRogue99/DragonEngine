@@ -231,7 +231,7 @@ namespace Engine
 		{
 			case MouseButtonInput::MouseButton_Left:
 			{
-				if (bIsViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(KeyInput::Key_LeftAlt))
+				if (bIsViewportHovered && !(ImGuizmo::IsOver() && HoveredEntity == -1) && !Input::IsKeyPressed(KeyInput::Key_LeftAlt))
 					AddData(TEXT("SelectedEntity"), &HoveredEntity, sizeof(HoveredEntity));
 
 				return true;
