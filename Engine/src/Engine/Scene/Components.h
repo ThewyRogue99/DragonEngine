@@ -204,7 +204,7 @@ namespace Engine
 	COMPONENT_CLASS(CircleCollider2DComponent,
 	public:
 		glm::vec2 Offset = glm::vec2(0.0f, 0.0f);
-		float Radius = 0.5f;
+		float Radius = 1.f;
 
 		float Density = 1.0f;
 		float Friction = 0.4f;

@@ -90,6 +90,7 @@ namespace Engine
 	{
 		SceneCamera CopyCamera = Metadata.GetField<SceneCamera>("SceneCamera");
 
+		Camera = CopyCamera;
 		Primary = Metadata.GetField<bool>("Primary");
 		FixedAspectRatio = Metadata.GetField<bool>("FixedAspectRatio");
 	}
