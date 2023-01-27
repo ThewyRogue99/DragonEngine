@@ -329,6 +329,13 @@ namespace Engine
 
 			ImGui::SameLine(0.f, 5.f);
 
+			if (TopBarUtils::DrawTextButton("Compile"))
+			{
+				ProjectTools::CompileScriptProject();
+			}
+
+			ImGui::SameLine(0.f, 5.f);
+
 			if (TopBarUtils::DrawTextButton("Save"))
 			{
 				Scene* ActiveScene = EditorSceneManager::GetEditorScene();

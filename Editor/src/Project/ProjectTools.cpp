@@ -76,7 +76,10 @@ namespace Engine
 			DE_LOG(ProjectTools, "Compiling Script Project...");
 
 			if (!CoreAssemblyExists() && !CopyCoreAssembly())
+			{
+				DE_ERROR(ProjectTools, "Failed to compile Script Project (No scripts exist)");
 				return false;
+			}
 
 			std::filesystem::path SolutionPath = GetSolutionPath();
 
