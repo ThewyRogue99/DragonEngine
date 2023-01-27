@@ -209,7 +209,7 @@ namespace Engine
 						{
 							for (auto& field : *(script.Fields))
 							{
-								field.Set(scriptObject->ScriptObject);
+								field.Set(scriptObject);
 							}
 						}
 					}

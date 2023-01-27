@@ -7,21 +7,56 @@
 
 namespace Engine
 {
-	void Script::BeginPlay()
+	Script::~Script()
+	{
+		mono_gchandle_free(GCHandle);
+		Clear();
+	}
+
+	bool Script::BeginPlay()
 	{
 		if (ScriptObject && BeginPlayMethod)
 		{
-			mono_runtime_invoke(BeginPlayMethod, ScriptObject, nullptr, nullptr);
+			MonoObject* exc = nullptr;
+			mono_runtime_invoke(BeginPlayMethod, ScriptObject, nullptr, &exc);
+
+			if (exc)
+			{
+				char* msg = mono_string_to_utf8(mono_object_to_string(exc, NULL));
+				DE_ERROR(ScriptException, "Unhandled Exception: {0}", msg);
+				mono_free(msg);
+
+				return false;
+			}
+
+			return true;
 		}
+
+		return false;
 	}
 
-	void Script::Update(float DeltaTime)
+	bool Script::Update(float DeltaTime)
 	{
 		if (ScriptObject && UpdateMethod)
 		{
+			MonoObject* exc = nullptr;
+
 			void* timeParam = &DeltaTime;
-			mono_runtime_invoke(UpdateMethod, ScriptObject, &timeParam, nullptr);
+			mono_runtime_invoke(UpdateMethod, ScriptObject, &timeParam, &exc);
+
+			if (exc)
+			{
+				char* msg = mono_string_to_utf8(mono_object_to_string(exc, NULL));
+				DE_ERROR(ScriptException, "Unhandled Exception: {0}", msg);
+				mono_free(msg);
+
+				return false;
+			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 	void Script::AttachToEntity(Entity entity)

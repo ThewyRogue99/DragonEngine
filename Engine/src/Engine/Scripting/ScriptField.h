@@ -3,8 +3,6 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 
-#include <typeindex>
-
 extern "C" {
 	typedef struct _MonoClassField MonoClassField;
 	typedef struct _MonoObject MonoObject;
@@ -12,6 +10,8 @@ extern "C" {
 
 namespace Engine
 {
+	class Script;
+
 	enum class ScriptFieldType
 	{
 		None = 0,
@@ -37,25 +37,25 @@ namespace Engine
 		const ScriptFieldType GetFieldType() const { return FieldType; }
 		const ScriptFieldVisibility GetFieldVisibility() const { return FieldVisibility; }
 
-		void Set(MonoObject* Object);
+		void Set(Script* ScriptObject);
 
 		template<typename T>
-		void SetValue(MonoObject* Object, T* value);
+		void SetValue(Script* ScriptObject, T* value);
 
 		template<typename T>
 		void SetBufferValue(T* value)
 		{
 			if (FieldBuffer)
-				delete (T*)FieldBuffer;
+				delete FieldBuffer;
 
-			BufferSize = sizeof(T);
 			FieldBuffer = new T(*value);
+			BufferSize = sizeof(T);
 		}
 
-		void Get(MonoObject* Object);
+		void Get(Script* ScriptObject);
 
 		template<typename T>
-		const T& GetValue(MonoObject* Object);
+		const T& GetValue(Script* ScriptObject);
 
 		template<typename T>
 		const T& GetBufferValue()

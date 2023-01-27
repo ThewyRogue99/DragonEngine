@@ -16,17 +16,24 @@ namespace Engine
 	class Script
 	{
 	public:
-		void BeginPlay();
+		~Script();
 
-		void Update(float DeltaTime);
+		bool BeginPlay();
+
+		bool Update(float DeltaTime);
 
 		void AttachToEntity(Entity entity);
 
 		friend class ScriptEngine;
-		friend class Scene;
-		friend class EditorScene;
+		friend class ScriptField;
+
+		Script(const Script&) = delete;
+		const Script& operator =(const Script&) = delete;
 
 	private:
+		Script(MonoObject* ScriptObject, uint32_t GCHandle)
+			: ScriptObject(ScriptObject), GCHandle(GCHandle) { }
+
 		void Clear();
 
 	private:

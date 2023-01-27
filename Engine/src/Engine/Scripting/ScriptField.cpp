@@ -3,6 +3,8 @@
 
 #include "Engine/Scene/Entity.h"
 
+#include "Script.h"
+
 #include <mono/metadata/object.h>
 #include <unordered_map>
 #include <glm/glm.hpp>
@@ -51,14 +53,20 @@ namespace Engine
 		FieldType = MonoTypeToScriptFieldData(mono_field_get_type(Field));
 	}
 
-	void ScriptField::Set(MonoObject* Object)
+	void ScriptField::Set(Script* ScriptObject)
 	{
-		mono_field_set_value(Object, ClassField, FieldBuffer);
+		if (FieldBuffer)
+		{
+			mono_field_set_value(ScriptObject->ScriptObject, ClassField, FieldBuffer);
+		}
 	}
 
-	void ScriptField::Get(MonoObject* Object)
+	void ScriptField::Get(Script* ScriptObject)
 	{
-		mono_field_get_value(Object, ClassField, FieldBuffer);
+		if (FieldBuffer)
+		{
+			mono_field_get_value(ScriptObject->ScriptObject, ClassField, FieldBuffer);
+		}
 	}
 
 	void ScriptField::SetBufferData(void* Data, size_t size)
@@ -85,39 +93,40 @@ namespace Engine
 
 #define FIELD_TYPE_FUNCTIONS_DEFINITION(Type, ScriptFieldType) \
 template<> \
-void ScriptField::SetValue(MonoObject* Object, Type* value) \
+void ScriptField::SetValue(Script* ScriptObject, Type* value) \
 { \
-	if (Object) \
+	if (ScriptObject && value) \
 	{ \
 		DE_ASSERT(FieldType == ScriptFieldType, "Cannot set a ScriptField of another type"); \
 \
-		mono_field_set_value(Object, ClassField, (void*)value); \
+		mono_field_set_value(ScriptObject->ScriptObject, ClassField, (void*)value); \
 		SetBufferValue(value); \
 	} \
 } \
 \
 template<> \
-const Type& ScriptField::GetValue(MonoObject* Object) \
+const Type& ScriptField::GetValue(Script* ScriptObject) \
 { \
 	const Type& value = GetBufferValue<Type>(); \
-	if (Object) \
+	Get(ScriptObject); \
+	if (ScriptObject) \
 	{ \
 		DE_ASSERT(FieldType == ScriptFieldType, "Cannot get a ScriptField of another type"); \
 \
-		mono_field_get_value(Object, ClassField, (void*)&value); \
+		mono_field_get_value(ScriptObject->ScriptObject, ClassField, (void*)&value); \
 	} \
 	return value; \
 \
 }
 
 	template<typename T>
-	void ScriptField::SetValue(MonoObject* Object, T* value)
+	void ScriptField::SetValue(Script* ScriptObject, T* value)
 	{
 		DE_CORE_ASSERT(false, "Cannot set undefined ScriptFieldType");
 	}
 
 	template<typename T>
-	const T& ScriptField::GetValue(MonoObject* Object)
+	const T& ScriptField::GetValue(Script* ScriptObject)
 	{
 		DE_CORE_ASSERT(false, "Cannot get undefined ScriptFieldType");
 

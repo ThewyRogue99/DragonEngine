@@ -268,6 +268,31 @@ namespace Engine
 		ImGui::PopID();
 	}
 
+	template <typename T>
+	static void HandleField(ScriptField& field, ScriptComponent& component, bool isPlaying, std::function<bool(T&)> UIFunction)
+	{
+		if (isPlaying)
+		{
+			if (component.ScriptObject)
+			{
+				auto& val = field.GetValue<T>(component.ScriptObject);
+				T buff = val;
+
+				UIFunction(buff);
+			}
+		}
+		else
+		{
+			auto& val = field.GetBufferValue<T>();
+			T buff = val;
+
+			if (UIFunction(buff))
+			{
+				field.SetBufferValue(&buff);
+			}
+		}
+	}
+
 	void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		if(entity.HasComponent<TagComponent>())
@@ -482,7 +507,7 @@ namespace Engine
 			const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
 			if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
 			{
-				for (int i = 0; i < 2; i++)
+				for (int i = 0; i < 3; i++)
 				{
 					bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
 					if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
@@ -561,33 +586,35 @@ namespace Engine
 
 			if (component.Fields)
 			{
+				bool isPlaying = EditorTool::IsPlaying();
+
 				for (auto& field : *component.Fields)
 				{
 					const char* FieldName = field.GetName().c_str();
+
+					ImGui::BeginDisabled(isPlaying);
 
 					switch (field.GetFieldType())
 					{
 					case Engine::ScriptFieldType::Float:
 					{
-						auto& val = field.GetBufferValue<float>();
-						float buff = val;
-
-						if (ImGui::DragFloat(FieldName, &buff))
-						{
-							field.SetBufferValue(&buff);
-						}
+						HandleField<float>(
+							field,
+							component,
+							isPlaying,
+							[FieldName](auto& buff) { return ImGui::DragFloat(FieldName, &buff); }
+						);
 					} break;
 					case Engine::ScriptFieldType::Double:
 						break;
 					case Engine::ScriptFieldType::Bool:
 					{
-						auto& val = field.GetBufferValue<bool>();
-						bool buff = val;
-
-						if (ImGui::Checkbox(FieldName, &buff))
-						{
-							field.SetBufferValue(&buff);
-						}
+						HandleField<bool>(
+							field,
+							component,
+							isPlaying,
+							[FieldName](auto& buff) { return ImGui::Checkbox(FieldName, &buff); }
+						);
 					} break;
 					case Engine::ScriptFieldType::Char:
 						break;
@@ -595,13 +622,12 @@ namespace Engine
 						break;
 					case Engine::ScriptFieldType::Int:
 					{
-						auto& val = field.GetBufferValue<int>();
-						int buff = val;
-
-						if (ImGui::DragInt(FieldName, &buff))
-						{
-							field.SetBufferValue(&buff);
-						}
+						HandleField<int>(
+							field,
+							component,
+							isPlaying,
+							[FieldName](auto& buff) { return ImGui::DragInt(FieldName, &buff); }
+						);
 					} break;
 					case Engine::ScriptFieldType::Long:
 						break;
@@ -615,39 +641,38 @@ namespace Engine
 						break;
 					case Engine::ScriptFieldType::Vector2:
 					{
-						auto& val = field.GetBufferValue<glm::vec2>();
-						glm::vec2 buff = val;
-
-						if (ImGui::DragFloat2(FieldName, glm::value_ptr(buff)))
-						{
-							field.SetBufferValue(&buff);
-						}
+						HandleField<glm::vec2>(
+							field,
+							component,
+							isPlaying,
+							[FieldName](auto& buff) { return ImGui::DragFloat2(FieldName, glm::value_ptr(buff)); }
+						);
 					} break;
 					case Engine::ScriptFieldType::Vector3:
 					{
-						auto& val = field.GetBufferValue<glm::vec3>();
-						glm::vec3 buff = val;
-
-						if (ImGui::DragFloat3(FieldName, glm::value_ptr(buff)))
-						{
-							field.SetBufferValue(&buff);
-						}
+						HandleField<glm::vec3>(
+							field,
+							component,
+							isPlaying,
+							[FieldName](auto& buff) { return ImGui::DragFloat3(FieldName, glm::value_ptr(buff)); }
+						);
 					} break;
 					case Engine::ScriptFieldType::Vector4:
 					{
-						auto& val = field.GetBufferValue<glm::vec4>();
-						glm::vec4 buff = val;
-
-						if (ImGui::DragFloat4(FieldName, glm::value_ptr(buff)))
-						{
-							field.SetBufferValue(&buff);
-						}
+						HandleField<glm::vec4>(
+							field,
+							component,
+							isPlaying,
+							[FieldName](auto& buff) { return ImGui::DragFloat4(FieldName, glm::value_ptr(buff)); }
+						);
 					} break;
 					case Engine::ScriptFieldType::Entity:
 						break;
 					default:
 						break;
 					}
+
+					ImGui::EndDisabled();
 				}
 			}
 		});
@@ -726,10 +751,12 @@ namespace Engine
 		SceneManager::OnSetActiveScene().AddCallback([&] (Scene* NewScene) { Context = NewScene; });
 
 		Context = SceneManager::GetActiveScene();
+		SelectedEntity = { };
 	}
 
 	void SceneHierarchyPanel::OnEndPlay()
 	{
 		Context = EditorSceneManager::GetEditorScene();
+		SelectedEntity = { };
 	}
 }

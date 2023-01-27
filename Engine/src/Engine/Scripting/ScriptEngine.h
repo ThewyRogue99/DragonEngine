@@ -29,7 +29,6 @@ namespace Engine
 
 		static ScriptData* GetScriptData(const std::string& ScriptNamespace, const std::string& ScriptName);
 		static Script* NewScript(const std::string& ScriptNamespace, const std::string& ScriptName);
-		static void DestroyScript(Script* ScriptToDestroy);
 
 		static bool ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName);
 

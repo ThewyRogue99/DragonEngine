@@ -22,7 +22,7 @@ namespace Engine
 			m_VertexArray = VertexArray::Create();
 
 			size_t VertexCount = GetMaxBufferVertexCount();
-			m_VertexBuffer = VertexBuffer::Create(VertexCount * sizeof(T));
+			m_VertexBuffer = VertexBuffer::Create((uint32_t)(VertexCount * sizeof(T)));
 			m_VertexBuffer->SetLayout(Layout);
 
 			m_VertexArray->AddVertexBuffer(m_VertexBuffer);

@@ -435,7 +435,7 @@ namespace Engine {
 
 			RenderCommand::DrawIndexed(
 				s_Data.QuadShapeBuffer->GetVertexArray(),
-				IndexCount
+				(uint32_t)IndexCount
 			);
 
 			s_Data.Stats.DrawCalls++;
@@ -447,7 +447,7 @@ namespace Engine {
 
 			RenderCommand::DrawIndexed(
 				s_Data.CircleShapeBuffer->GetVertexArray(),
-				IndexCount
+				(uint32_t)IndexCount
 			);
 
 			s_Data.Stats.DrawCalls++;
@@ -460,7 +460,7 @@ namespace Engine {
 			RenderCommand::SetLineWidth(s_Data.LineWidth);
 			RenderCommand::DrawIndexed(
 				s_Data.LineShapeBuffer->GetVertexArray(),
-				IndexCount
+				(uint32_t)IndexCount
 			);
 
 			s_Data.Stats.DrawCalls++;

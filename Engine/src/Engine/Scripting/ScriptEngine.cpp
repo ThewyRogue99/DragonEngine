@@ -36,7 +36,7 @@ namespace Engine
 	static AssemblyInfo CoreAssembly;
 	static AssemblyInfo AppAssembly;
 
-	static std::unordered_map<std::string, Script*> ScriptObjectList = { };
+	static std::vector<Script*> ScriptObjectList = { };
 	static std::vector<ScriptData> ScriptDataList = { };
 
 	namespace Utils
@@ -136,7 +136,7 @@ namespace Engine
 
 		DE_INFO(ScriptEngine, "Running ScriptEngine");
 
-		for (auto& [name, script] : ScriptObjectList)
+		for (auto script : ScriptObjectList)
 		{
 			if(script)
 				script->BeginPlay();
@@ -149,7 +149,7 @@ namespace Engine
 
 		DE_WARN(ScriptEngine, "Stopping ScriptEngine");
 
-		for (auto& [name, ptr] : ScriptObjectList)
+		for (auto ptr : ScriptObjectList)
 			delete ptr;
 
 		ScriptObjectList.clear();
@@ -357,8 +357,8 @@ namespace Engine
 			{
 				mono_runtime_object_init(ScriptObject);
 
-				Script* newScript = new Script();
-				newScript->GCHandle = mono_gchandle_new(ScriptObject, false);
+				uint32_t GCHandle = mono_gchandle_new(ScriptObject, false);
+				Script* newScript = new Script(ScriptObject, GCHandle);
 
 				MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
 
@@ -372,21 +372,14 @@ namespace Engine
 
 				DE_INFO("Creating Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
 
-				ScriptObjectList[ScriptName] = newScript;
+				ScriptObjectList.push_back(newScript);
 
 				return newScript;
 			}
 		}
 
-
 		DE_INFO("Failed to find Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
 		return nullptr;
-	}
-
-	void ScriptEngine::DestroyScript(Script* ScriptToDestroy)
-	{
-		mono_gchandle_free(ScriptToDestroy->GCHandle);
-		ScriptToDestroy->Clear();
 	}
 
 	bool ScriptEngine::ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName)
@@ -403,7 +396,7 @@ namespace Engine
 	{
 		if (bShouldRun)
 		{
-			for (auto& [name, script] : ScriptObjectList)
+			for (auto script : ScriptObjectList)
 			{
 				if(script)
 					script->Update(DeltaTime);
