@@ -16,6 +16,6 @@ namespace Engine
 
 		static EditorScene* GetEditorScene();
 
-		static CallbackDispatcher<EditorScene*>::CallbackHandle OnEditorSceneChange();
+		static CallbackDispatcher<void, EditorScene*>::CallbackHandle OnEditorSceneChange();
 	};
 }

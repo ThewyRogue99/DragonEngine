@@ -6,11 +6,6 @@
 
 #include "Engine/Core/CallbackDispatcher.h"
 
-#pragma warning(push, 0)
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/bundled/format.h>
-#pragma warning(pop)
-
 #include <ctime>
 #include <string_view>
 
@@ -69,7 +64,7 @@ namespace Engine
 			std::string LogString;
 		};
 
-		CallbackDispatcher<LogData>::CallbackHandle OnLog()
+		CallbackDispatcher<void, LogData>::CallbackHandle OnLog()
 		{
 			return OnLogDispatch.GetHandle();
 		}
@@ -84,7 +79,7 @@ namespace Engine
 
 			std::string Timestamp = tbuff;
 
-			std::string LogString = fmt::vformat(fmt, fmt::make_format_args(args...));
+			std::string LogString = TypeUtils::FormatUTF8(fmt.data(), std::forward<Args>(args)...);
 
 			OnLogDispatch.Run({ level, Timestamp, LoggerName, LogString });
 		}
@@ -92,6 +87,6 @@ namespace Engine
 	protected:
 		std::string Name;
 
-		CallbackDispatcher<LogData> OnLogDispatch;
+		CallbackDispatcher<void, LogData> OnLogDispatch;
 	};
 }

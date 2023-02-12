@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Application.h"
 
+#include "Engine/Debug/Debug.h"
+
 #include "Engine/Renderer/Renderer2D.h"
 #include "Engine/Renderer/RenderCommand.h"
 #include "Platform/Platform.h"

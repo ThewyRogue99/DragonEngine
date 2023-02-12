@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "OpenGLTexture.h"
 
-#include "Engine/Types/Types.h"
+#include "Engine/Debug/Debug.h"
 
 #include <glad/glad.h>
 

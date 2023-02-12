@@ -16,7 +16,7 @@ namespace Engine
 		static bool IsPlaying();
 		static bool IsSimulating();
 
-		static CallbackDispatcher<>::CallbackHandle OnBeginPlay();
-		static CallbackDispatcher<>::CallbackHandle OnEndPlay();
+		static CallbackDispatcher<void>::CallbackHandle OnBeginPlay();
+		static CallbackDispatcher<void>::CallbackHandle OnEndPlay();
 	};
 }

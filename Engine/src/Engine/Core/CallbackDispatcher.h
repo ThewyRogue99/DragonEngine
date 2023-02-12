@@ -7,13 +7,13 @@
 
 namespace Engine
 {
-    template<typename... Args>
+    template<typename ReturnType, typename... Args>
     class CallbackDispatcher
     {
     public:
         CallbackDispatcher() = default;
 
-        using CallbackType = std::function<void(Args...)>;
+        using CallbackType = std::function<typename ReturnType(Args...)>;
 
         CallbackDispatcher(std::initializer_list<CallbackType> initializers)
             : CallbackList(initializers) { }
@@ -43,6 +43,9 @@ namespace Engine
             for (auto& Callback : CallbackList)
                 Callback(args...);
         }
+
+        auto begin() { return CallbackList.begin(); }
+        auto end() { return CallbackList.end(); }
 
         void Clear()
         {

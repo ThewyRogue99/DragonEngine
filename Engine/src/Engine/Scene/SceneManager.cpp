@@ -9,7 +9,7 @@
 
 namespace Engine
 {
-	static CallbackDispatcher<Scene*> OnSetActiveSceneDispatch;
+	static CallbackDispatcher<void, Scene*> OnSetActiveSceneDispatch;
 	static std::vector<Scene*> SceneList = { };
 	static Scene* ActiveScene = nullptr;
 
@@ -238,7 +238,7 @@ namespace Engine
 		OnSetActiveSceneDispatch.Clear();
 	}
 
-	CallbackDispatcher<Scene*>::CallbackHandle SceneManager::OnSetActiveScene()
+	CallbackDispatcher<void, Scene*>::CallbackHandle SceneManager::OnSetActiveScene()
 	{
 		return OnSetActiveSceneDispatch.GetHandle();
 	}

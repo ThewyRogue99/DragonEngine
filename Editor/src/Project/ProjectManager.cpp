@@ -13,7 +13,7 @@
 
 namespace Engine
 {
-	using DispatcherType = CallbackDispatcher<const Project&>;
+	using DispatcherType = CallbackDispatcher<void, const Project&>;
 
 	static Project ProjectData;
 	static bool bIsProjectLoaded = false;

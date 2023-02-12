@@ -2,6 +2,7 @@
 #include "Types.h"
 
 #include <codecvt>
+#include <cstdarg>
 
 namespace Engine
 {

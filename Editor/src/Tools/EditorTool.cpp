@@ -5,8 +5,8 @@
 
 namespace Engine
 {
-    static CallbackDispatcher<> OnBeginPlayDispatch;
-    static CallbackDispatcher<> OnEndPlayDispatch;
+    static CallbackDispatcher<void> OnBeginPlayDispatch;
+    static CallbackDispatcher<void> OnEndPlayDispatch;
 
     static EditorScene* EScene = nullptr;
 
@@ -83,12 +83,12 @@ namespace Engine
         return bIsSimulating;
     }
 
-    CallbackDispatcher<>::CallbackHandle EditorTool::OnBeginPlay()
+    CallbackDispatcher<void>::CallbackHandle EditorTool::OnBeginPlay()
     {
         return OnBeginPlayDispatch.GetHandle();
     }
 
-    CallbackDispatcher<>::CallbackHandle EditorTool::OnEndPlay()
+    CallbackDispatcher<void>::CallbackHandle EditorTool::OnEndPlay()
     {
         return OnEndPlayDispatch.GetHandle();
     }

@@ -37,6 +37,6 @@ namespace Engine
 
 		static const Project& GetLoadedProject();
 
-		static CallbackDispatcher<const Project&>::CallbackHandle OnLoadProject();
+		static CallbackDispatcher<void, const Project&>::CallbackHandle OnLoadProject();
 	};
 }

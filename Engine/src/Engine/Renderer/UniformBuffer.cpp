@@ -1,9 +1,9 @@
 #include "depch.h"
-#include "UniformBuffer.h"
+#include "Platform/OpenGL/OpenGLUniformBuffer.h"
+
+#include "Engine/Debug/Debug.h"
 
 #include "RendererAPI.h"
-
-#include "Platform/OpenGL/OpenGLUniformBuffer.h"
 
 namespace Engine
 {

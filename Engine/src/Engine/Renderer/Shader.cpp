@@ -1,9 +1,9 @@
 #include "depch.h"
 #include "Shader.h"
 
-#include "RendererAPI.h"
+#include "Engine/Debug/Debug.h"
 
-#include "Engine/Core/Log.h"
+#include "RendererAPI.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 

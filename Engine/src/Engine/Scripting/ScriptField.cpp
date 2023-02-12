@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "ScriptField.h"
 
+#include "Engine/Debug/Debug.h"
+
 #include "Engine/Scene/Entity.h"
 
 #include "Script.h"

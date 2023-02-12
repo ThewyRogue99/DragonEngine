@@ -1,9 +1,10 @@
 #include "depch.h"
 
+#include "Engine/Debug/Debug.h"
+
 #include "ScriptEngine.h"
 #include "ScriptInternals.h"
 
-#include "Engine/Core/Log.h"
 #include "ScriptField.h"
 
 #include <algorithm>

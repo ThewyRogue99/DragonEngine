@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Framebuffer.h"
 
+#include "Engine/Debug/Debug.h"
+
 #include "RendererAPI.h"
 
 #include "Platform/OpenGL/OpenGLFramebuffer.h"

@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-	static CallbackDispatcher<EditorScene*> OnEditorSceneChangeDispatch;
+	static CallbackDispatcher<void, EditorScene*> OnEditorSceneChangeDispatch;
 	static EditorScene* CurrentEditorScene = nullptr;
 
     EditorScene* EditorSceneManager::CreateEditorScene(const CString& Tag, bool DestroyCurrent)
@@ -37,7 +37,7 @@ namespace Engine
 		return CurrentEditorScene;
 	}
 
-	CallbackDispatcher<EditorScene*>::CallbackHandle EditorSceneManager::OnEditorSceneChange()
+	CallbackDispatcher<void, EditorScene*>::CallbackHandle EditorSceneManager::OnEditorSceneChange()
 	{
 		return OnEditorSceneChangeDispatch.GetHandle();
 	}

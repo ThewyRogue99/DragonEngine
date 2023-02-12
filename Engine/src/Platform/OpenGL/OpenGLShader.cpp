@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "OpenGLShader.h"
 
+#include "Engine/Debug/Debug.h"
+
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 

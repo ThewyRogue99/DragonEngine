@@ -2,6 +2,8 @@
 
 #include "Engine/Scripting/ScriptEngine.h"
 
+#include "Engine/Debug/Debug.h"
+
 #include <sstream>
 #include <cstdlib>
 
@@ -112,6 +114,8 @@ namespace Engine
 
 			bool result = ScriptEngine::Load(bShouldReload);
 			bShouldReload = true;
+
+			DE_ASSERT(false, "Anan");
 
 			return result;
 		}

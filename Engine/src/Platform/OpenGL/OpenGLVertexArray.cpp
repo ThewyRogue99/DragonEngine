@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "OpenGLVertexArray.h"
 
+#include "Engine/Debug/Debug.h"
+
 #include <glad/glad.h>
 
 namespace Engine

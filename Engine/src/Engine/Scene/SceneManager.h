@@ -37,6 +37,6 @@ namespace Engine
 
 		static void ClearCallbacks();
 
-		static CallbackDispatcher<Scene*>::CallbackHandle OnSetActiveScene();
+		static CallbackDispatcher<void, Scene*>::CallbackHandle OnSetActiveScene();
 	};
 }

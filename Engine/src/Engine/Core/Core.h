@@ -42,12 +42,6 @@
 	#define ENGINE_API
 #endif
 
-#if ENGINE_BUILD_DEBUG
-	#define DE_ASSERT(x, ...) { if(!(x)) { DE_ERROR(Assert, __VA_ARGS__); __debugbreak(); } }
-#else
-	#define DE_ASSERT(x, ...) { if(!(x)) { DE_ERROR(Assert, __VA_ARGS__); } }
-#endif
-
 #define BIT(x) (1 << x)
 
 #define BIND_CLASS_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
