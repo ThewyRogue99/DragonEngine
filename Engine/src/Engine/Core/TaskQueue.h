@@ -18,6 +18,8 @@ namespace Engine
 
         Task(std::function<void()> Function)
             : TaskFunction(Function), bIsComplete(false) { }
+
+        Task(const Task&) = default;
     };
 
     // A class that manages a queue of tasks and a pool of worker threads
@@ -46,13 +48,12 @@ namespace Engine
     private:
         std::queue<Task> Tasks = { };
 
-        std::vector<std::thread> Threads = { };
+        std::vector<std::thread*> Threads = { };
 
         std::mutex QueueMutex;
+        std::condition_variable TaskAvailableCondition;
 
-        std::condition_variable TaskAvailable;
-
-        bool bIsAcceptingTasks;
-        bool bIsShuttingDown;
+        bool bIsAcceptingTasks = false;
+        bool bIsShuttingDown = false;
     };
 }

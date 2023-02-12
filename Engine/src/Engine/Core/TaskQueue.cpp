@@ -7,7 +7,7 @@ namespace Engine
     {
         // Create the worker threads
         for (int i = 0; i < NumThreads; i++) {
-            Threads.emplace_back([this] { this->WorkerThread(); });
+            Threads.emplace_back(new std::thread(BIND_CLASS_FN(WorkerThread)));
         }
     }
 
@@ -22,9 +22,12 @@ namespace Engine
             throw std::runtime_error("Cannot add tasks to a shutdown queue");
         }
 
-        std::unique_lock<std::mutex> lock(QueueMutex);
+        while (!QueueMutex.try_lock());
         Tasks.push(TaskFunction);
-        TaskAvailable.notify_one();
+
+        TaskAvailableCondition.notify_one();
+
+        QueueMutex.unlock();
     }
 
     void TaskQueue::WaitForCompletion()
@@ -32,7 +35,7 @@ namespace Engine
         std::unique_lock<std::mutex> lock(QueueMutex);
 
         while (!Tasks.empty()) {
-            TaskAvailable.wait(lock);
+            TaskAvailableCondition.wait(lock);
         }
     }
 
@@ -41,17 +44,21 @@ namespace Engine
         bIsAcceptingTasks = false;
         bIsShuttingDown = true;
 
-        TaskAvailable.notify_all();
+        TaskAvailableCondition.notify_all();
 
-        for (auto& thread : Threads) {
-            thread.join();
+        for (auto thread : Threads) {
+            thread->join();
+
+            delete thread;
         }
+
+        Threads.clear();
     }
 
     void TaskQueue::Join()
     {
-        for (auto& thread : Threads) {
-            thread.join();
+        for (auto thread : Threads) {
+            thread->join();
         }
     }
 
@@ -61,7 +68,8 @@ namespace Engine
         {
             // Wait for a task to become available
             std::unique_lock<std::mutex> lock(QueueMutex);
-            TaskAvailable.wait(lock, [this] { return !Tasks.empty() || bIsShuttingDown; });
+
+            TaskAvailableCondition.wait(lock, [&] { return !Tasks.empty() || bIsShuttingDown; });
 
             if (bIsShuttingDown) {
                 return;
