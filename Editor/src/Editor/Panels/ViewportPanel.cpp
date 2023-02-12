@@ -14,8 +14,8 @@
 #include "Engine/Asset/Serializer/SceneSerializer.h"
 #include "Engine/Asset/AssetManager.h"
 
-#include "../Tools/EditorTool.h"
-#include "../Scene/EditorSceneManager.h"
+#include "Editor/Tools/EditorTool.h"
+#include "Editor/Scene/EditorSceneManager.h"
 
 #pragma warning(disable : 4312)
 

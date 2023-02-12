@@ -115,8 +115,6 @@ namespace Engine
 			bool result = ScriptEngine::Load(bShouldReload);
 			bShouldReload = true;
 
-			DE_ASSERT(false, "Anan");
-
 			return result;
 		}
 

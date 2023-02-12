@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "OpenGLBuffer.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 #include <glad/glad.h>
 
 namespace Engine

@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Core.h"
 #include "EditorPanel.h"
-#include "../Scene/EditorScene.h"
+#include "Editor/Scene/EditorScene.h"
 #include "Engine/Scene/Entity.h"
 
 namespace Engine

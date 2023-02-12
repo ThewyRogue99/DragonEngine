@@ -4,7 +4,7 @@
 #include "Engine/Types/Types.h"
 #include "Engine/Scene/Entity.h"
 #include "EditorPanel.h"
-#include "../Scene/EditorScene.h"
+#include "Editor/Scene/EditorScene.h"
 #include "Engine/Renderer/Framebuffer.h"
 
 #include "Engine/Events/MouseEvent.h"

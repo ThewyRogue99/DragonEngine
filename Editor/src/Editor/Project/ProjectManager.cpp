@@ -1,7 +1,7 @@
 #include "ProjectManager.h"
 
 #include "Engine/Asset/Serializer/SceneSerializer.h"
-#include "../Scene/EditorSceneManager.h"
+#include "Editor/Scene/EditorSceneManager.h"
 
 #include "ProjectTools.h"
 #include "Engine/Scripting/ScriptEngine.h"

@@ -2,7 +2,7 @@
 #include "SceneHierarchyPanel.h"
 
 #include "PanelDragPayload.h"
-#include "../Asset/Serializer/Serializer.h"
+#include "Editor/Asset/Serializer/Serializer.h"
 #include "Engine/Asset/Serializer/Serializer.h"
 
 #include "Engine/Scene/Components.h"
@@ -10,11 +10,11 @@
 #include "Engine/Audio/AudioEngine.h"
 #include "Engine/Scripting/ScriptEngine.h"
 
-#include "../Scene/EditorSceneManager.h"
+#include "Editor/Scene/EditorSceneManager.h"
 #include "Engine/Asset/AssetManager.h"
 #include "Engine/Asset/TextureManager.h"
 
-#include "../Tools/EditorTool.h"
+#include "Editor/Tools/EditorTool.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>

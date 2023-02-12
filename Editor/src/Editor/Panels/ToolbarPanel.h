@@ -3,7 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 #include "EditorPanel.h"
-#include "../Scene/EditorScene.h"
+#include "Editor/Scene/EditorScene.h"
 #include "Engine/Renderer/Texture.h"
 
 namespace Engine

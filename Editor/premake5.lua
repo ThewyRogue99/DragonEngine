@@ -19,6 +19,7 @@ project "Editor"
 
 	includedirs
 	{
+		"src",
 		"%{wks.location}/Engine/vendor/spdlog/include",
 		"%{wks.location}/Engine/src",
 		"%{IncludeDir.GLFW}",

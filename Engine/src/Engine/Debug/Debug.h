@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Log.h"
 #include "Engine/Types/Types.h"
 #include "ExceptionHandler.h"
+
+#include "Instrumentor.h"
 
 #if ENGINE_BUILD_DEBUG
 	#define DE_ASSERT(x, ...) { if(!(x)) { __debugbreak(); ExceptionHandler::ThrowException<AssertException>(TypeUtils::FormatUTF8(__VA_ARGS__)); } }

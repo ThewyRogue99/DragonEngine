@@ -1,6 +1,7 @@
 #include "depch.h"
-
 #include "OpenGLWindow.h"
+
+#include "Engine/Debug/Instrumentor.h"
 
 #include "Engine/Events/ApplicationEvent.h"
 #include "Engine/Events/MouseEvent.h"

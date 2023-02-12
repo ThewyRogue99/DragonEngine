@@ -6,19 +6,19 @@
 #include "PanelDragPayload.h"
 
 #include "Engine/Renderer/Texture.h"
-#include "../Scene/EditorSceneManager.h"
+#include "Editor/Scene/EditorSceneManager.h"
 #include "Engine/Asset/AssetUtils.h"
 #include "Engine/Asset/AssetMetadata.h"
 
 #include "Engine/Asset/Serializer/SceneSerializer.h"
 #include "Engine/Asset/TextureManager.h"
-#include "../Asset/Serializer/Serializer.h"
+#include "Editor/Asset/Serializer/Serializer.h"
 
-#include "../Tools/EditorTool.h"
-#include "../Tools/ResourceTool.h"
+#include "Editor/Tools/EditorTool.h"
+#include "Editor/Tools/ResourceTool.h"
 
-#include "../Project/ProjectManager.h"
-#include "../Project/ProjectTools.h"
+#include "Editor/Project/ProjectManager.h"
+#include "Editor/Project/ProjectTools.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>

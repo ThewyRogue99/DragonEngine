@@ -1,6 +1,6 @@
 #include "PanelManager.h"
 
-#include "Engine/Core/Log.h"
+#include "Engine/Debug/Log.h"
 
 #include <algorithm>
 

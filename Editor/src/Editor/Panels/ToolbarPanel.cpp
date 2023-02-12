@@ -1,9 +1,9 @@
 #include "ToolbarPanel.h"
 
-#include "../Scene/EditorSceneManager.h"
-#include "../Tools/ResourceTool.h"
-#include "../Tools/EditorTool.h"
-#include "../Project/ProjectTools.h"
+#include "Editor/Scene/EditorSceneManager.h"
+#include "Editor/Tools/ResourceTool.h"
+#include "Editor/Tools/EditorTool.h"
+#include "Editor/Project/ProjectTools.h"
 
 #pragma warning(disable : 4312)
 

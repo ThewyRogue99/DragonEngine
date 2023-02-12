@@ -1,5 +1,5 @@
 #pragma once
-#include "Core.h"
+#include "Engine/Core/Core.h"
 
 #include "Engine/Debug/Console.h"
 

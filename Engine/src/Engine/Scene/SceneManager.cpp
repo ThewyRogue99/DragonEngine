@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "SceneManager.h"
 
-#include "Engine/Core/Log.h"
+#include "Engine/Debug/Log.h"
 #include "Engine/Asset/AssetManager.h"
 #include "Engine/Asset/Serializer/SceneSerializer.h"
 

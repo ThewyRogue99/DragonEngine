@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "CommandSystem.h"
 
-#include "Engine/Core/Log.h"
+#include "Engine/Debug/Log.h"
 
 #include <functional>
 #include <unordered_map>

@@ -2,7 +2,7 @@
 
 #include "EditorPanel.h"
 
-#include "../Debug/EditorConsole.h"
+#include "Editor/Debug/EditorConsole.h"
 #include <array>
 
 namespace Engine

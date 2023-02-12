@@ -3,7 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 
-#include "Engine/Core/Log.h"
+#include "Engine/Debug/Log.h"
 
 #include <vector>
 

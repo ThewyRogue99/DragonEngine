@@ -17,8 +17,6 @@
 
 #include "Engine/Types/Types.h"
 
-#include "Engine/Core/Log.h"
+#include "Engine/Debug/Log.h"
 
 #include "Engine/Core/Input.h"
-
-#include "Engine/Debug/Instrumentor.h"

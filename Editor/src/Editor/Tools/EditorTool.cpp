@@ -1,7 +1,7 @@
 #include "EditorTool.h"
 
 #include "Engine/Audio/AudioEngine.h"
-#include "../Scene/EditorSceneManager.h"
+#include "Editor/Scene/EditorSceneManager.h"
 
 namespace Engine
 {
