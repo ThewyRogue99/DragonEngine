@@ -5,13 +5,18 @@
 
 namespace Engine
 {
-	RendererAPI* RenderCommand::API_Instance = nullptr;
+	static RendererAPI* API_Instance = nullptr;
 
 	void RenderCommand::Init()
 	{
 		API_Instance = RendererAPI::Create(RendererAPI::API::OpenGL);
 
 		API_Instance->Init();
+	}
+
+	void RenderCommand::Shutdown()
+	{
+		API_Instance->Shutdown();
 	}
 
 	void RenderCommand::SetClearColor(const glm::vec4& color)

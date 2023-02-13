@@ -38,6 +38,8 @@ namespace Engine
 				// Close Program
 				Application::Get().Close();
 
+				// TODO: Implement a native MessageBox to display error and stack
+
 				delete exc;
 				exit(-1);
 			}

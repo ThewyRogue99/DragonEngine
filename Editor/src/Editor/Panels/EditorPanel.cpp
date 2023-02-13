@@ -38,6 +38,11 @@ namespace Engine
 
 	}
 
+	void EditorPanel::OnBeginRender()
+	{
+
+	}
+
 	void EditorPanel::OnRender(float DeltaTime)
 	{
 		
@@ -115,26 +120,36 @@ namespace Engine
 			ImGui::PushStyleColor(color.style, color.value);
 
 		ImGui::BeginDisabled(IsDisabled);
-		ImGui::Begin(PanelName.c_str(), nullptr, WindowFlag);
+		if (ImGui::Begin(PanelName.c_str(), nullptr, WindowFlag))
+		{
+			if (!bBeginRender)
+			{
+				OnBeginRender();
+				bBeginRender = true;
+			}
 
-		PanelPosition = ImGui::GetWindowPos();
+			PanelPosition = ImGui::GetWindowPos();
 
-		ImVec2 PanelMinRegion = ImGui::GetWindowContentRegionMin();
-		ImVec2 PanelMaxRegion = ImGui::GetWindowContentRegionMax();
+			ImVec2 PanelMinRegion = ImGui::GetWindowContentRegionMin();
+			ImVec2 PanelMaxRegion = ImGui::GetWindowContentRegionMax();
 
-		PanelBounds[0] = { PanelMinRegion.x + PanelPosition.x, PanelMinRegion.y + PanelPosition.y };
-		PanelBounds[1] = { PanelMaxRegion.x + PanelPosition.x, PanelMaxRegion.y + PanelPosition.y };
+			PanelBounds[0] = { PanelMinRegion.x + PanelPosition.x, PanelMinRegion.y + PanelPosition.y };
+			PanelBounds[1] = { PanelMaxRegion.x + PanelPosition.x, PanelMaxRegion.y + PanelPosition.y };
 
-		ImVec2 CurrentSize = ImGui::GetWindowSize();
+			ImVec2 CurrentSize = ImGui::GetWindowSize();
 
-		if (CurrentSize.x != PanelSize.x || CurrentSize.y != PanelSize.y)
-			OnResize((uint32_t)CurrentSize.x, (uint32_t)CurrentSize.y);
+			if (CurrentSize.x != PanelSize.x || CurrentSize.y != PanelSize.y)
+				OnResize((uint32_t)CurrentSize.x, (uint32_t)CurrentSize.y);
 
-		PanelSize = CurrentSize;
-		PanelAvailableSize = ImGui::GetContentRegionAvail();
+			PanelSize = CurrentSize;
+			PanelAvailableSize = ImGui::GetContentRegionAvail();
 
-		OnRender(DeltaTime);
-
+			OnRender(DeltaTime);
+		}
+		else
+		{
+			bBeginRender = false;
+		}
 		ImGui::End();
 		ImGui::EndDisabled();
 

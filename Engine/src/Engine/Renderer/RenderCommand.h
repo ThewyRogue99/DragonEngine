@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
-#include "RendererAPI.h"
 
 #include "VertexArray.h"
 
@@ -13,6 +12,7 @@ namespace Engine
 	{
 	public:
 		static void Init();
+		static void Shutdown();
 
 		static void SetClearColor(const glm::vec4& color);
 		static void Clear();
@@ -23,8 +23,5 @@ namespace Engine
 		static void SetLineWidth(float Width);
 
 		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
-
-	private:
-		static RendererAPI* API_Instance;
 	};
 }

@@ -21,6 +21,8 @@ namespace Engine
 
 		virtual void OnUpdate(float DeltaTime);
 
+		virtual void OnBeginRender();
+
 		virtual void OnRender(float DeltaTime);
 
 		virtual void OnDelete();
@@ -77,6 +79,8 @@ namespace Engine
 		bool IsDisabled = false;
 
 	private:
+		bool bBeginRender = false;
+
 		ImVec2 PanelPosition;
 		ImVec2 PanelSize;
 

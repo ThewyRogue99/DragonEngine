@@ -10,7 +10,7 @@ namespace Engine
 
 	bool OpenGLInput::IsKeyPressedImpl(KeyInput KeyCode)
 	{
-		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNativeWindow());
 
 		int state = glfwGetKey(window, static_cast<int>(KeyCode));
 
@@ -19,7 +19,7 @@ namespace Engine
 
 	bool OpenGLInput::IsMouseButtonPressedImpl(MouseButtonInput Button)
 	{
-		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNativeWindow());
 
 		int state = glfwGetMouseButton(window, static_cast<int>(Button));
 
@@ -28,7 +28,7 @@ namespace Engine
 
 	std::pair<float, float> OpenGLInput::GetMousePositionImpl()
 	{
-		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNativeWindow());
 
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);

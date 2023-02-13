@@ -47,7 +47,7 @@ namespace Engine
 		float GetDeltaTime() const { return DeltaTime; }
 
 		inline static Application& Get() { return *Instance; }
-		inline Window& GetWindow() { return *AppWindow; }
+		inline Ref<Window> GetWindow() { return AppWindow; }
 
 		const ApplicationSpecification& GetSpecification() const { return AppSpecification; }
 
@@ -59,7 +59,7 @@ namespace Engine
 		bool OnWindowResize(WindowResizeEvent& event);
 
 	protected:
-		Scope<Window> AppWindow;
+		Ref<Window> AppWindow;
 
 		bool bIsRunning = false;
 

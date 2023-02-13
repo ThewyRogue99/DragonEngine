@@ -177,15 +177,34 @@ namespace Engine
 			}
 		}
 
-		if (ImGui::IsWindowFocused())
-			bIsViewportFocused = true;
+		if (ImGui::IsWindowHovered())
+		{
+			bIsViewportHovered = true;
+		}
 		else
+		{
+			bIsViewportHovered = false;
+		}
+
+		if (ImGui::IsWindowFocused())
+		{
+			bIsViewportFocused = true;
+
+			if (!EditorTool::IsPlaying())
+			{
+				if(bIsViewportHovered)
+					((EditorScene*)ActiveScene)->SetShouldBlockEvents(false);
+				else
+					((EditorScene*)ActiveScene)->SetShouldBlockEvents(true);
+			}
+		}
+		else
+		{
 			bIsViewportFocused = false;
 
-		if (ImGui::IsWindowHovered())
-			bIsViewportHovered = true;
-		else
-			bIsViewportHovered = false;
+			if (!EditorTool::IsPlaying())
+				((EditorScene*)ActiveScene)->SetShouldBlockEvents(true);
+		}
 
 		m_FrameBuffer->Unbind();
 	}

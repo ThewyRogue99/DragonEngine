@@ -9,7 +9,7 @@ namespace Engine
 
 	RendererAPI* RendererAPI::Create(API api)
 	{
-		SetAPI(api);
+		m_API = api;
 
 		switch (m_API)
 		{

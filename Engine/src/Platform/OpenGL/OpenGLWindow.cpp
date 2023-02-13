@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "OpenGLWindow.h"
 
+#include "Engine/Renderer/GraphicsContext.h"
+
 #include "Engine/Debug/Instrumentor.h"
 
 #include "Engine/Events/ApplicationEvent.h"
@@ -21,7 +23,13 @@ namespace Engine
 
 	OpenGLWindow::~OpenGLWindow()
 	{
-		ShutDown();
+		if (NativeWindow)
+		{
+			glfwDestroyWindow(NativeWindow);
+			NativeWindow = nullptr;
+
+			DE_WARN(OpenGLWindow, "Shutting down OpenGLWindow");
+		}
 	}
 
 	void OpenGLWindow::Init(const WindowProps& Props)
@@ -58,104 +66,93 @@ namespace Engine
 		Context = new OpenGLContext(NativeWindow);
 		Context->Init();
 
-		glfwSetWindowUserPointer(NativeWindow, &Data);
+		glfwSetWindowUserPointer(NativeWindow, this);
 		SetVSync(true);
 
 		glfwSetWindowSizeCallback(NativeWindow, [](GLFWwindow* window, int width, int height)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			data.Width = width;
-			data.Height = height;
+			OpenGLWindow* wnd = (OpenGLWindow*)glfwGetWindowUserPointer(window);
+			wnd->Data.Width = width;
+			wnd->Data.Height = height;
 
 			WindowResizeEvent e(width, height);
-			data.EventCallback(e);
+			wnd->OnEventDispatch.Run(e);
 		});
 
 		glfwSetWindowCloseCallback(NativeWindow, [](GLFWwindow* window)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			OpenGLWindow* wnd = (OpenGLWindow*)glfwGetWindowUserPointer(window);
 
 			WindowCloseEvent e = WindowCloseEvent();
-			data.EventCallback(e);
+			wnd->OnEventDispatch.Run(e);
 		});
 
 		glfwSetCharCallback(NativeWindow, [](GLFWwindow* window, unsigned int Character)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			OpenGLWindow* wnd = (OpenGLWindow*)glfwGetWindowUserPointer(window);
 
 			KeyTypedEvent e(Character);
-			data.EventCallback(e);
+			wnd->OnEventDispatch.Run(e);
 		});
 
 		glfwSetKeyCallback(NativeWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			OpenGLWindow* wnd = (OpenGLWindow*)glfwGetWindowUserPointer(window);
 
 			switch (action)
 			{
 			case GLFW_PRESS:
 			{
 				KeyPressedEvent e(static_cast<KeyInput>(key));
-				data.EventCallback(e);
+				wnd->OnEventDispatch.Run(e);
 			} break;
 			case GLFW_RELEASE:
 			{
 				KeyReleasedEvent e(static_cast<KeyInput>(key));
-				data.EventCallback(e);
+				wnd->OnEventDispatch.Run(e);
 			} break;
 			case GLFW_REPEAT:
 			{
 				KeyPressedEvent e(static_cast<KeyInput>(key), true);
-				data.EventCallback(e);
+				wnd->OnEventDispatch.Run(e);
 			} break;
 			}
 		});
 
 		glfwSetMouseButtonCallback(NativeWindow, [](GLFWwindow* window, int button, int action, int mods)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			OpenGLWindow* wnd = (OpenGLWindow*)glfwGetWindowUserPointer(window);
 
 			switch (action)
 			{
 			case GLFW_PRESS:
 			{
 				MouseButtonPressedEvent e(static_cast<MouseButtonInput>(button));
-				data.EventCallback(e);
+				wnd->OnEventDispatch.Run(e);
 			} break;
 			case GLFW_RELEASE:
 			{
 				MouseButtonReleasedEvent e(static_cast<MouseButtonInput>(button));
-				data.EventCallback(e);
+				wnd->OnEventDispatch.Run(e);
 			} break;
 			}
 		});
 
 		glfwSetScrollCallback(NativeWindow, [](GLFWwindow* window, double xoffset, double yoffset)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			OpenGLWindow* wnd = (OpenGLWindow*)glfwGetWindowUserPointer(window);
 
 			MouseScrolledEvent e((float)xoffset, (float)yoffset);
-			data.EventCallback(e);
+			wnd->OnEventDispatch.Run(e);
 		});
 
 		glfwSetCursorPosCallback(NativeWindow, [](GLFWwindow* window, double x, double y)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			OpenGLWindow* wnd = (OpenGLWindow*)glfwGetWindowUserPointer(window);
 
 			MouseMovedEvent e((float)x, (float)y);
-			data.EventCallback(e);
+			wnd->OnEventDispatch.Run(e);
 		});
-	}
-
-	void OpenGLWindow::ShutDown()
-	{
-		if (NativeWindow)
-		{
-			glfwDestroyWindow(NativeWindow);
-			NativeWindow = nullptr;
-
-			DE_WARN(OpenGLWindow, "Shutting down OpenGLWindow");
-		}
 	}
 
 	void OpenGLWindow::OnUpdate()

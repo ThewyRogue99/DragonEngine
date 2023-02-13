@@ -1,7 +1,9 @@
 #pragma once
-#include "depch.h"
 
+#include "Engine/Core/Core.h"
 #include "Engine/Events/Event.h"
+
+#include "Engine/Core/CallbackDispatcher.h"
 
 namespace Engine
 {
@@ -21,8 +23,6 @@ namespace Engine
 	class ENGINE_API Window
 	{
 	public:
-		using EventCallbackFn = std::function<void(Event&)>;
-
 		virtual ~Window() { }
 
 		virtual void OnUpdate() = 0;
@@ -30,14 +30,17 @@ namespace Engine
 		virtual unsigned int GetWidth() const = 0;
 		virtual unsigned int GetHeight() const = 0;
 
-		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
+		inline CallbackDispatcher<void, Event&>::CallbackHandle OnEvent()
+			{ return OnEventDispatch.GetHandle(); }
+
 		virtual void SetVSync(bool Enabled) = 0;
 		virtual bool IsVsync() const = 0;
 
 		virtual void* GetNativeWindow() const = 0;
 
-		virtual void ShutDown() = 0;
+		static Ref<Window> Create(const WindowProps& props = WindowProps());
 
-		static Window* Create(const WindowProps& props = WindowProps());
+	protected:
+		CallbackDispatcher<void, Event&> OnEventDispatch;
 	};
 }

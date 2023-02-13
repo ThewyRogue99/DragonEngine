@@ -29,6 +29,11 @@ namespace Engine
 		}
 	}
 
+	void OpenGLRendererAPI::Shutdown()
+	{
+		glfwTerminate();
+	}
+
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
 	{
 		glClearColor(color.r, color.g, color.b, color.w);

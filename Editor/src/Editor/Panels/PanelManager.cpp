@@ -124,11 +124,10 @@ namespace Engine
 
     void PanelManager::OnEvent(Event& event)
     {
-        Event* ptr = &event;
-        std::for_each(Panels.begin(), Panels.end(), [ptr](EditorPanel* panel)
+        for (auto panel : Panels)
         {
-            panel->OnEvent(*ptr);
-        });
+            panel->OnEvent(event);
+        }
     }
 
     void PanelManager::DisablePanel(const std::string& PanelName)

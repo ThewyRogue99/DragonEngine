@@ -14,7 +14,8 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
-		PrimaryCamera->Update(DeltaTime);
+		if (!bShouldBlockEvents)
+			PrimaryCamera->Update(DeltaTime);
 
 		if (bShouldSimulate)
 			PhysicsWorld.Update(DeltaTime);

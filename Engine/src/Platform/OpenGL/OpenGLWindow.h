@@ -1,17 +1,18 @@
 #pragma once
 
 #include "Engine/Core/Window.h"
-#include "Engine/Renderer/GraphicsContext.h"
 
 struct GLFWwindow;
 
 namespace Engine
 {
+	class GraphicsContext;
+
 	class OpenGLWindow : public Window
 	{
 	public:
 		OpenGLWindow(const WindowProps& Props);
-		virtual ~OpenGLWindow();
+		~OpenGLWindow();
 
 		void OnUpdate() override;
 
@@ -21,12 +22,7 @@ namespace Engine
 		inline unsigned int GetHeight()
 			const override { return Data.Height; }
 
-		inline void SetEventCallback(const EventCallbackFn& Callback)
-			override { Data.EventCallback = Callback; }
-
 		void SetVSync(bool Enabled) override;
-
-		virtual void ShutDown() override;
 
 		inline bool IsVsync() const override { return Data.VSync; }
 
@@ -44,8 +40,6 @@ namespace Engine
 			const char* Title = nullptr;
 			unsigned int Width = 1280, Height = 720;
 			bool VSync = true;
-
-			EventCallbackFn EventCallback;
 		} Data;
 	};
 }

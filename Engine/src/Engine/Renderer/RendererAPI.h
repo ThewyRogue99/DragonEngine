@@ -12,11 +12,12 @@ namespace Engine
 	public:
 		enum class API
 		{
-			None, OpenGL,
+			None, OpenGL
 		};
 
 	public:
 		virtual void Init() = 0;
+		virtual void Shutdown() = 0;
 
 		virtual void SetClearColor(const glm::vec4& color) = 0;
 		virtual void Clear() = 0;
@@ -31,9 +32,6 @@ namespace Engine
 		inline static API GetAPI() { return m_API; }
 
 		static RendererAPI* Create(API api);
-
-	protected:
-		inline static void SetAPI(API api) { m_API = api; }
 
 	private:
 		static API m_API;

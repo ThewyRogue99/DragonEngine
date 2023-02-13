@@ -6,12 +6,12 @@
 
 namespace Engine
 {
-	Window* Window::Create(const WindowProps& props)
+	Ref<Window> Window::Create(const WindowProps& props)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::OpenGL:
-			return new OpenGLWindow(props);
+			return CreateRef<OpenGLWindow>(props);
 		default:
 			return nullptr;
 		}

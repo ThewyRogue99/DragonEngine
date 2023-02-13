@@ -23,6 +23,8 @@ namespace Engine
 		DE_ASSERT(!Instance, "Application already exists");
 		Instance = this;
 
+		bIsRunning = true;
+
 		std::string NameUTF8 = TypeUtils::FromUTF16(AppSpecification.Name.c_str());
 
 		if (!AppSpecification.WorkingDirectory.empty())
@@ -30,8 +32,8 @@ namespace Engine
 
 		RenderCommand::Init();
 
-		AppWindow = Scope<Window>(Window::Create(WindowProps(NameUTF8.c_str())));
-		AppWindow->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
+		AppWindow = Window::Create(WindowProps(NameUTF8.c_str()));
+		AppWindow->OnEvent().AddCallback(BIND_CLASS_FN(Application::OnEvent));
 
 		Renderer2D::Init();
 		ScriptEngine::Init();
@@ -63,7 +65,7 @@ namespace Engine
 
 		for (auto it = layerStack.end(); it != layerStack.begin();)
 		{
-			(*--it)->OnEvent(event);
+			(*(--it))->OnEvent(event);
 
 			if (event.IsHandled())
 				break;
@@ -72,15 +74,20 @@ namespace Engine
 
 	void Application::Close()
 	{
-		bIsRunning = false;
+		if (bIsRunning)
+		{
+			bIsRunning = false;
 
-		AudioEngine::Shutdown();
-		ScriptEngine::Shutdown();
+			AudioEngine::Shutdown();
+			ScriptEngine::Shutdown();
 
-		DE_WARN(
-			Application, "Shutting down Application: {0}",
-			TypeUtils::FromUTF16(AppSpecification.Name).c_str()
-		);
+			RenderCommand::Shutdown();
+
+			DE_WARN(
+				Application, "Shutting down Application: {0}",
+				TypeUtils::FromUTF16(AppSpecification.Name).c_str()
+			);
+		}
 	}
 
 	void Application::Run()
