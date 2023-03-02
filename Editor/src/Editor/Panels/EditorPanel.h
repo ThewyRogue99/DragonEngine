@@ -29,6 +29,13 @@ namespace Engine
 
 		virtual void OnEvent(Event& event);
 
+		void SetShowCloseButton(bool state) { bShowCloseButton = state; }
+
+		void ClosePanel();
+		void OpenPanel();
+
+		void SetFocus();
+
 		ImVec2 GetPanelAvailableSize() const { return PanelAvailableSize; }
 		uint32_t GetPanelAvailableWidth() const { return (uint32_t)PanelAvailableSize.x; }
 		uint32_t GetPanelAvailableHeight() const { return (uint32_t)PanelAvailableSize.y; }
@@ -38,6 +45,8 @@ namespace Engine
 		uint32_t GetHeight() const { return (uint32_t)PanelSize.y; }
 
 		ImVec2 GetPanelRelativeMousePos();
+
+		const std::string& GetName() const { return PanelName; }
 
 		friend class PanelManager;
 
@@ -77,9 +86,11 @@ namespace Engine
 		std::string PanelName;
 
 		bool IsDisabled = false;
+		bool bIsOpen = true;
 
 	private:
-		bool bBeginRender = false;
+		bool bBeginRender = true;
+		bool bShowCloseButton = false;
 
 		ImVec2 PanelPosition;
 		ImVec2 PanelSize;

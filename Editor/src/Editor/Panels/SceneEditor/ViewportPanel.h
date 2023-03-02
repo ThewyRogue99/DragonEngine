@@ -3,7 +3,7 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 #include "Engine/Scene/Entity.h"
-#include "EditorPanel.h"
+#include "Editor/Panels/EditorPanel.h"
 #include "Editor/Scene/EditorScene.h"
 #include "Engine/Renderer/Framebuffer.h"
 

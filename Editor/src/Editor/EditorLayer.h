@@ -19,9 +19,11 @@ namespace Engine
 
 		virtual void OnUpdate(float DeltaTime) override;
 
-		virtual void OnImGuiRender(float DeltaTime) override;
+		void OnImGuiRender(float DeltaTime);
 
 		virtual void OnEvent(Event& event) override;
+
+		void OpenSettingsPanel();
 
 	private:
 		void OnActiveSceneChange(Scene* scene);
@@ -32,9 +34,14 @@ namespace Engine
 		void OnProjectLoad(const Project& project);
 
 	private:
+		struct LayerData
+		{
+			bool bIsSettingsOpen = false;
+		} Data;
+
+	private:
 		Scene* ActiveScene = nullptr;
 
-		// Panels
 		PanelManager PManager;
 	};
 }

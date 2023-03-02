@@ -33,6 +33,21 @@ namespace Engine
 
 	}
 
+	void EditorPanel::ClosePanel()
+	{
+		bIsOpen = false;
+	}
+
+	void EditorPanel::OpenPanel()
+	{
+		bIsOpen = true;
+	}
+
+	void EditorPanel::SetFocus()
+	{
+		ImGui::SetWindowFocus(PanelName.c_str());
+	}
+
 	void EditorPanel::OnUpdate(float DeltaTime)
 	{
 
@@ -113,47 +128,54 @@ namespace Engine
 
 	void EditorPanel::Render(float DeltaTime)
 	{
-		for (auto& style : PanelStyles)
-			ImGui::PushStyleVar(style.style, style.value);
-
-		for (auto& color : PanelColors)
-			ImGui::PushStyleColor(color.style, color.value);
-
-		ImGui::BeginDisabled(IsDisabled);
-		if (ImGui::Begin(PanelName.c_str(), nullptr, WindowFlag))
+		if (bIsOpen)
 		{
-			if (!bBeginRender)
+			for (auto& style : PanelStyles)
+				ImGui::PushStyleVar(style.style, style.value);
+
+			for (auto& color : PanelColors)
+				ImGui::PushStyleColor(color.style, color.value);
+
+			ImGui::BeginDisabled(IsDisabled);
+			if (ImGui::Begin(PanelName.c_str(), bShowCloseButton ? &bIsOpen : nullptr, WindowFlag))
 			{
-				OnBeginRender();
+				if (bBeginRender)
+				{
+					OnBeginRender();
+					bBeginRender = false;
+				}
+
+				PanelPosition = ImGui::GetWindowPos();
+
+				ImVec2 PanelMinRegion = ImGui::GetWindowContentRegionMin();
+				ImVec2 PanelMaxRegion = ImGui::GetWindowContentRegionMax();
+
+				PanelBounds[0] = { PanelMinRegion.x + PanelPosition.x, PanelMinRegion.y + PanelPosition.y };
+				PanelBounds[1] = { PanelMaxRegion.x + PanelPosition.x, PanelMaxRegion.y + PanelPosition.y };
+
+				ImVec2 CurrentSize = ImGui::GetWindowSize();
+
+				if (CurrentSize.x != PanelSize.x || CurrentSize.y != PanelSize.y)
+					OnResize((uint32_t)CurrentSize.x, (uint32_t)CurrentSize.y);
+
+				PanelSize = CurrentSize;
+				PanelAvailableSize = ImGui::GetContentRegionAvail();
+
+				OnRender(DeltaTime);
+			}
+			else
+			{
 				bBeginRender = true;
 			}
+			ImGui::End();
+			ImGui::EndDisabled();
 
-			PanelPosition = ImGui::GetWindowPos();
-
-			ImVec2 PanelMinRegion = ImGui::GetWindowContentRegionMin();
-			ImVec2 PanelMaxRegion = ImGui::GetWindowContentRegionMax();
-
-			PanelBounds[0] = { PanelMinRegion.x + PanelPosition.x, PanelMinRegion.y + PanelPosition.y };
-			PanelBounds[1] = { PanelMaxRegion.x + PanelPosition.x, PanelMaxRegion.y + PanelPosition.y };
-
-			ImVec2 CurrentSize = ImGui::GetWindowSize();
-
-			if (CurrentSize.x != PanelSize.x || CurrentSize.y != PanelSize.y)
-				OnResize((uint32_t)CurrentSize.x, (uint32_t)CurrentSize.y);
-
-			PanelSize = CurrentSize;
-			PanelAvailableSize = ImGui::GetContentRegionAvail();
-
-			OnRender(DeltaTime);
+			ImGui::PopStyleVar((int)PanelStyles.size());
+			ImGui::PopStyleColor((int)PanelColors.size());
 		}
 		else
 		{
-			bBeginRender = false;
+			bBeginRender = true;
 		}
-		ImGui::End();
-		ImGui::EndDisabled();
-
-		ImGui::PopStyleVar((int)PanelStyles.size());
-		ImGui::PopStyleColor((int)PanelColors.size());
 	}
 }

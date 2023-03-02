@@ -18,6 +18,8 @@ namespace Engine
 		void AddPanel(EditorPanel* panel);
 		void AddPanels(std::initializer_list<EditorPanel*> panels);
 
+		EditorPanel* GetPanel(const std::string& PanelName);
+
 		void RemovePanel(const std::string& PanelName);
 		void RemoveAllPanels();
 

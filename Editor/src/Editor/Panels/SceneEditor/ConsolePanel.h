@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EditorPanel.h"
+#include "Editor/Panels/EditorPanel.h"
 
 #include "Editor/Debug/EditorConsole.h"
 #include <array>

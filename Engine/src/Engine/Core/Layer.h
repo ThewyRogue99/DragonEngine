@@ -15,7 +15,6 @@ namespace Engine
 		virtual void OnAttach();
 		virtual void OnDetach();
 		virtual void OnUpdate(float DeltaTime);
-		virtual void OnImGuiRender(float DeltaTime);
 		virtual void OnEvent(Event& event);
 
 		inline const CString& GetName() const { return DebugName; }

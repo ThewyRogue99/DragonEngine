@@ -57,7 +57,8 @@ namespace Engine
 
 		TextureID = Metadata.GetStringField<char>("TextureID");
 
-		Texture = TextureManager::LoadTexture(TextureID);
+		if(!TextureID.empty())
+			Texture = TextureManager::LoadTexture(TextureID);
 
 		TilingFactor = Metadata.GetField<float>("TilingFactor");
 	}

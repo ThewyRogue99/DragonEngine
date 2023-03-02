@@ -42,7 +42,7 @@ int main()
 	delete App;
 	DE_PROFILE_END_SESSION();
 
-	return 1;
+	return 0;
 }
 
 #else

@@ -6,7 +6,7 @@
 #include "Engine/Renderer/Texture.h"
 
 #include "Editor/Project/ProjectManager.h"
-#include "EditorPanel.h"
+#include "Editor/Panels/EditorPanel.h"
 #include "Engine/Asset/AssetManager.h"
 
 #include <filesystem>

@@ -20,8 +20,6 @@ namespace Engine
 		void End();
 
 	private:
-		void SetUITheme(bool Dark = true, float Alpha = 1.f);
-
 		void SetUIDarkBlueTheme();
 
 		float Time = 0.f;

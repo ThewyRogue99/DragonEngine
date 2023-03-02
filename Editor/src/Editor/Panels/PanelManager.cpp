@@ -26,6 +26,20 @@ namespace Engine
             AddPanel(panel);
     }
 
+    EditorPanel* PanelManager::GetPanel(const std::string& PanelName)
+    {
+        auto it = std::find_if(
+            Panels.begin(),
+            Panels.end(),
+            [&, PanelName](EditorPanel* panel) { return PanelName == panel->GetName(); }
+        );
+
+        if (it != Panels.end())
+            return *it;
+
+        return nullptr;
+    }
+
     void PanelManager::RemovePanel(const std::string& PanelName)
     {
         for (uint32_t i = 0; i < Panels.size(); i++)

@@ -2,11 +2,15 @@
 
 #include "Engine/Audio/AudioEngine.h"
 #include "Editor/Scene/EditorSceneManager.h"
+#include "Editor/EditorLayer.h"
 
 namespace Engine
 {
     static CallbackDispatcher<void> OnBeginPlayDispatch;
     static CallbackDispatcher<void> OnEndPlayDispatch;
+
+    unsigned int EditorTool::EditorDockspaceID = 0;
+    EditorLayer* EditorTool::ELayer = nullptr;
 
     static EditorScene* EScene = nullptr;
 
@@ -91,5 +95,15 @@ namespace Engine
     CallbackDispatcher<void>::CallbackHandle EditorTool::OnEndPlay()
     {
         return OnEndPlayDispatch.GetHandle();
+    }
+
+    void EditorTool::SetEditorLayer(EditorLayer* Layer)
+    {
+        ELayer = Layer;
+    }
+
+    EditorLayer* EditorTool::GetEditorLayer()
+    {
+        return ELayer;
     }
 }

@@ -4,6 +4,8 @@
 
 namespace Engine
 {
+	class EditorLayer;
+
 	class EditorTool
 	{
 	public:
@@ -18,5 +20,13 @@ namespace Engine
 
 		static CallbackDispatcher<void>::CallbackHandle OnBeginPlay();
 		static CallbackDispatcher<void>::CallbackHandle OnEndPlay();
+
+		static unsigned int EditorDockspaceID;
+
+		static void SetEditorLayer(EditorLayer* Layer);
+		static EditorLayer* GetEditorLayer();
+
+	private:
+		static EditorLayer* ELayer;
 	};
 }

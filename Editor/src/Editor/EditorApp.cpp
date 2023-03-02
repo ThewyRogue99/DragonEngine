@@ -3,6 +3,7 @@
 
 #include "Debug/EditorConsole.h"
 
+#include "Editor/Tools/EditorTool.h"
 #include "EditorLayer.h"
 #include "ImGui/ImGuiLayer.h"
 
@@ -13,7 +14,9 @@ namespace Engine
 	public:
 		EditorApp(const ApplicationSpecification& Specs) : Application(Specs)
 		{
-			PushLayer(new EditorLayer());
+			AppEditorLayer = new EditorLayer();
+			PushLayer(AppEditorLayer);
+			EditorTool::SetEditorLayer(AppEditorLayer);
 
 			AppImGuiLayer = new ImGuiLayer();
 			PushOverlay(AppImGuiLayer);
@@ -28,8 +31,7 @@ namespace Engine
 
 				AppImGuiLayer->Begin();
 
-				for (Layer* layer : layerStack)
-					layer->OnImGuiRender(DeltaTime);
+				AppEditorLayer->OnImGuiRender(DeltaTime);
 
 				AppImGuiLayer->End();
 			}
@@ -37,6 +39,7 @@ namespace Engine
 
 	private:
 		ImGuiLayer* AppImGuiLayer = nullptr;
+		EditorLayer* AppEditorLayer = nullptr;
 	};
 
 	Application* CreateApplication(ApplicationCommandLineArgs args)

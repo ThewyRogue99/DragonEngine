@@ -29,11 +29,6 @@ namespace Engine
 
 	}
 
-	void Layer::OnImGuiRender(float DeltaTime)
-	{
-
-	}
-
 	void Layer::OnEvent(Event& event)
 	{
 

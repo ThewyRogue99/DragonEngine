@@ -6,6 +6,9 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Renderer/Renderer2D.h"
 
+#include "Panels/SceneEditorPanel.h"
+#include "Panels/SettingsPanel.h"
+
 #include <imgui.h>
 #include <ImGuizmo.h>
 
@@ -14,12 +17,6 @@
 
 #include "Tools/EditorTool.h"
 #include "Tools/ResourceTool.h"
-
-#include "Panels/SceneHierarchyPanel.h"
-#include "Panels/ContentBrowserPanel.h"
-#include "Panels/ViewportPanel.h"
-#include "Panels/ToolbarPanel.h"
-#include "Panels/ConsolePanel.h"
 
 namespace Engine
 {
@@ -35,23 +32,17 @@ namespace Engine
 		ResourceTool::LoadResources();
 
 		PManager.AddPanels({
-			new ViewportPanel(),
-			new SceneHierarchyPanel(),
-			new ToolbarPanel(),
-			new ConsolePanel(),
-			new ContentBrowserPanel()
+			new SceneEditorPanel(),
+			new SettingsPanel()
 		});
 
-		if (!ProjectManager::IsProjectLoaded())
-			PManager.DisableAllPanels();
+		PManager.GetPanel("Settings")->ClosePanel();
 
 		EditorScene* EScene = EditorSceneManager::CreateEditorScene(TEXT("Scene"));
 
 		EditorSceneManager::OnEditorSceneChange().AddCallback(BIND_CLASS_FN(EditorLayer::OnActiveSceneChange));
 		EditorTool::OnBeginPlay().AddCallback(BIND_CLASS_FN(EditorLayer::OnBeginPlay));
 		EditorTool::OnEndPlay().AddCallback(BIND_CLASS_FN(EditorLayer::OnEndPlay));
-
-		ProjectManager::OnLoadProject().AddCallback(BIND_CLASS_FN(EditorLayer::OnProjectLoad));
 	}
 
 	void EditorLayer::OnDetach()
@@ -64,19 +55,13 @@ namespace Engine
 		DE_PROFILE_FUNCTION();
 
 		Engine::Renderer2D::ResetStats();
-
-		PManager.Update(DeltaTime);
 	}
 
 	void EditorLayer::OnImGuiRender(float DeltaTime)
 	{
 		DE_PROFILE_FUNCTION();
 
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
-		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-		// because it would be confusing to have two docking targets within each others.
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
 
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -87,20 +72,9 @@ namespace Engine
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-		// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-		// and handle the pass-thru hole, so we ask Begin() to not render a background.
-		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-			window_flags |= ImGuiWindowFlags_NoBackground;
-
-		// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-		// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-		// all active windows docked into it will lose their parent and become undocked.
-		// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
-		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
-
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-		ImGui::Begin("DockSpace Demo", nullptr, window_flags);
+		ImGui::Begin("Editor", nullptr, window_flags);
 
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar(2);
@@ -113,71 +87,9 @@ namespace Engine
 
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-		}
-
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("Editor"))
-			{
-				if (ImGui::MenuItem("Exit"))
-					Engine::Application::Get().Close();
-
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("New Project", "Ctrl+N"))
-				{
-					nfdchar_t* outPath = nullptr;
-					nfdresult_t result = NFD_PickFolder(nullptr, &outPath);
-
-					if (result == NFD_OKAY)
-					{
-						std::filesystem::path FullPath = outPath;
-						free(outPath);
-
-						std::string ProjectName = TypeUtils::FromUTF16(FullPath.filename());
-
-						ProjectManager::CreateProject(FullPath, ProjectName);
-					}
-					else if (result == NFD_CANCEL)
-					{
-						DE_WARN(FileDialog, "User cancelled file dialog");
-					}
-					else
-					{
-						DE_ERROR(FileDialog, "Error: {0}", NFD_GetError());
-					}
-				}
-				if (ImGui::MenuItem("Load Project", "Ctrl+L"))
-				{
-					nfdchar_t* outPath = nullptr;
-					nfdresult_t result = NFD_OpenDialog("deproject;", nullptr, &outPath);
-
-					if (result == NFD_OKAY)
-					{
-						std::filesystem::path FullPath = outPath;
-						free(outPath);
-
-						ProjectManager::LoadProject(FullPath);
-					}
-					else if (result == NFD_CANCEL)
-					{
-						DE_WARN(FileDialog, "User cancelled file dialog");
-					}
-					else
-					{
-						DE_ERROR(FileDialog, "Error: {0}", NFD_GetError());
-					}
-				}
-
-				ImGui::EndMenu();
-			}
-
-			ImGui::EndMenuBar();
+			ImGuiID dockspace_id = ImGui::GetID("EditorDockSpace");
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
+			EditorTool::EditorDockspaceID = dockspace_id;
 		}
 
 		auto stats = Engine::Renderer2D::GetStats();
@@ -189,9 +101,18 @@ namespace Engine
 		ImGui::End();
 	}
 
-	void EditorLayer::OnEvent(Engine::Event& event)
+	void EditorLayer::OnEvent(Event& event)
 	{
-		PManager.OnEvent(event);
+
+	}
+
+	void EditorLayer::OpenSettingsPanel()
+	{
+		EditorPanel* Panel = PManager.GetPanel("Settings");
+		Panel->OpenPanel();
+		Data.bIsSettingsOpen = true;
+
+		Panel->SetFocus();
 	}
 
 	void EditorLayer::OnActiveSceneChange(Scene* scene)
