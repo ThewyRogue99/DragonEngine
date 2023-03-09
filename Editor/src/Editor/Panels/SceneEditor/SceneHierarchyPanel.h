@@ -5,6 +5,8 @@
 #include "Editor/Scene/EditorScene.h"
 #include "Engine/Scene/Entity.h"
 
+#include "Engine/Renderer/Texture.h"
+
 namespace Engine
 {
 	class SceneHierarchyPanel : public EditorPanel

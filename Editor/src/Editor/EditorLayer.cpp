@@ -54,6 +54,8 @@ namespace Engine
 	{
 		DE_PROFILE_FUNCTION();
 
+		PManager.Update(DeltaTime);
+
 		Engine::Renderer2D::ResetStats();
 	}
 
@@ -103,7 +105,7 @@ namespace Engine
 
 	void EditorLayer::OnEvent(Event& event)
 	{
-
+		PManager.OnEvent(event);
 	}
 
 	void EditorLayer::OpenSettingsPanel()

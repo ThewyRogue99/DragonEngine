@@ -282,12 +282,12 @@ namespace Engine
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, style.Colors[ImGuiCol_Tab]);
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, style.Colors[ImGuiCol_TabActive]);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.f);
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
 
-		ImGui::BeginChild("##top_bar", ImVec2((float)GetPanelAvailableWidth(), 20), false, ImGuiWindowFlags_NoDecoration);
+		ImGui::BeginChild("##top_bar", ImVec2((float)GetPanelAvailableWidth(), 20.f), false, ImGuiWindowFlags_NoDecoration);
 		{
 			if (TopBarUtils::DrawTextButton("<-"))
 			{

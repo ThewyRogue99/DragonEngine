@@ -47,6 +47,11 @@ namespace Engine
         ColorPalette[COL_TIMESTAMP] = ImVec4(1.f, 1.f, 1.f, 0.5f);
 	}
 
+    void ConsolePanel::OnCreate()
+    {
+        SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.f, 5.f));
+    }
+
 	void ConsolePanel::OnRender(float DeltaTime)
 	{
         if (!LogList)

@@ -43,7 +43,7 @@ namespace Engine
 
 		m_FrameBuffer = Framebuffer::Create(Specs);
 
-		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.f, 0.f });
+		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 
 		ActiveScene = EditorSceneManager::GetEditorScene();
 

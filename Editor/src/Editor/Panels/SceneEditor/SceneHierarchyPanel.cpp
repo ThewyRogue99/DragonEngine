@@ -14,6 +14,7 @@
 #include "Engine/Asset/AssetManager.h"
 #include "Engine/Asset/TextureManager.h"
 
+#include "Editor/Tools/ResourceTool.h"
 #include "Editor/Tools/EditorTool.h"
 
 #include <imgui.h>
@@ -21,6 +22,8 @@
 
 namespace Engine
 {
+	static Ref<Texture2D> CheckerboardTexture = nullptr;
+
 	SceneHierarchyPanel::SceneHierarchyPanel() : EditorPanel("Scene Hierarchy")
 	{
 
@@ -28,6 +31,11 @@ namespace Engine
 
 	void SceneHierarchyPanel::OnCreate()
 	{
+		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.f, 5.f));
+
+		if(!CheckerboardTexture)
+			CheckerboardTexture = ResourceTool::GetIcon(TEXT("Checkerboard"));
+
 		Context = EditorSceneManager::GetEditorScene();
 
 		EditorSceneManager::OnEditorSceneChange().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnEditorSceneChange));
@@ -93,19 +101,14 @@ namespace Engine
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-		ImGuiTreeNodeFlags flags = (SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
-		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
-
 		std::string tag_str = TypeUtils::FromUTF16(tag);
 
-		bool open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag_str.c_str());
-
-		if (ImGui::IsItemClicked())
+		if(ImGui::Selectable(tag_str.c_str(), SelectedEntity == entity, ImGuiSelectableFlags_SpanAvailWidth))
 		{
 			SetSelectedEntity(entity);
 		}
 
-		if (ImGui::BeginPopupContextItem("##entity"))
+		if (ImGui::BeginPopupContextItem(entity.GetUUID().GetString().c_str()))
 		{
 			if (ImGui::MenuItem("Delete Entity"))
 			{
@@ -114,13 +117,7 @@ namespace Engine
 				if (SelectedEntity == entity)
 					SetSelectedEntity({ });
 			}
-
 			ImGui::EndPopup();
-		}
-
-		if (open)
-		{
-			ImGui::TreePop();
 		}
 	}
 
@@ -159,16 +156,12 @@ namespace Engine
 			bool removeComponent = false;
 			if (allowDelete)
 			{
-				ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+				ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 18);
 
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4.f, 4.f });
-
-				float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y;
-
-				ImGui::SameLine(contentRegionAvailable.x - lineHeight + 36.f);
-
-				if (ImGui::Button("...", ImVec2{ lineHeight, lineHeight }))
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.13f, 0.13f, 0.13f, 1.f));
+				if (ImGui::Button("...", ImVec2(20.f, 0.f)))
 					ImGui::OpenPopup("ComponentSettings");
+				ImGui::PopStyleColor();
 
 				if (ImGui::BeginPopup("ComponentSettings"))
 				{
@@ -177,8 +170,6 @@ namespace Engine
 
 					ImGui::EndPopup();
 				}
-
-				ImGui::PopStyleVar();
 			}
 
 			if (open)
@@ -195,7 +186,7 @@ namespace Engine
 		}
 	}
 
-	static void DrawVec3Control(const char* label, glm::vec3& values, float resetValue = 0.f, float columnWidth = 100.f)
+	static void DrawVec3Control(const char* label, glm::vec3& values, float resetValue = 0.f, float columnWidth = 70.f)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0];
@@ -305,7 +296,9 @@ namespace Engine
 			memset(buffer, 0, sizeof(buffer));
 			strcpy_s(buffer, sizeof(buffer), tag_str.c_str());
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
+			{
 				component.Tag = TypeUtils::FromUTF8(buffer);
+			}
 		}
 
 		ImGui::SameLine();
@@ -404,7 +397,15 @@ namespace Engine
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 
-			ImGui::Button("Texture", { 100.f, 0.f });
+			ImGui::Text("Texture: ");
+			ImGui::ImageButton(
+				component.Texture
+				? (ImTextureID)(component.Texture->GetRendererID())
+				: (ImTextureID)(CheckerboardTexture->GetRendererID()),
+				ImVec2(128, 128),
+				ImVec2(0.f, 1.f),
+				ImVec2(1.f, 0.f)
+			);
 
 			if (ImGui::BeginDragDropTarget())
 			{

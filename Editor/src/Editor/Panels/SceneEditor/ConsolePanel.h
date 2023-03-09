@@ -12,6 +12,8 @@ namespace Engine
     public:
         ConsolePanel();
 
+        virtual void OnCreate() override;
+
         virtual void OnRender(float DeltaTime) override;
 
     private:
