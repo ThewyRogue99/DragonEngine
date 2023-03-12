@@ -9,22 +9,21 @@ namespace Engine
 {
 	static std::unordered_map<std::string, WeakRef<Texture2D>> LoadedTextureMap = { };
 
-	Ref<Texture2D> DeserializeTexture(const AssetMetadata& metadata)
+	Ref<Texture2D> DeserializeTexture(Ref<AssetMetadata> Metadata)
 	{
+		MemoryMap& MetadataMap = Metadata->GetFields();
 		int width, height, channels;
 
-		width = metadata.GetField<int>("width");
-		height = metadata.GetField<int>("height");
-		channels = metadata.GetField<int>("channels");
+		width = MetadataMap.GetField<int>("width");
+		height = MetadataMap.GetField<int>("height");
+		channels = MetadataMap.GetField<int>("channels");
 
-		size_t dataSize = (size_t)(width * height * channels);
+		MemoryMap::FieldData& data = MetadataMap.GetFieldData("data");
 
-		void* data = metadata.GetField("data", dataSize);
-
-		if (data)
+		if (data.DataPtr)
 		{
 			Ref<Texture2D> result = Texture2D::Create(width, height);
-			result->SetData(data, (uint32_t)dataSize, (uint32_t)channels);
+			result->SetData(data.DataPtr, (uint32_t)data.DataSize, (uint32_t)channels);
 
 			return result;
 		}
@@ -51,13 +50,13 @@ namespace Engine
 
 				DE_LOG(
 					TextureManager, "Loading texture: {0} with id: {0}",
-					TypeUtils::FromUTF16(TextureAsset->GetName()).c_str(),
+					TypeUtils::FromUTF16(TextureAsset->GetInfo().Name).c_str(),
 					TextureID.c_str()
 				);
 
-				if (TextureAsset && TextureAsset->GetAssetType() == AssetType::Texture)
+				if (TextureAsset && TextureAsset->GetInfo().Type == AssetType::Texture)
 				{
-					Ref<Texture2D> texture = DeserializeTexture(TextureAsset->GetData());
+					Ref<Texture2D> texture = DeserializeTexture(TextureAsset->Metadata);
 
 					if (texture)
 					{
@@ -76,9 +75,9 @@ namespace Engine
 		{
 			Ref<Asset> TextureAsset = AssetManager::LoadAsset(TextureID);
 
-			if (TextureAsset && TextureAsset->GetAssetType() == AssetType::Texture)
+			if (TextureAsset && TextureAsset->GetInfo().Type == AssetType::Texture)
 			{
-				Ref<Texture2D> texture = DeserializeTexture(TextureAsset->GetData());
+				Ref<Texture2D> texture = DeserializeTexture(TextureAsset->Metadata);
 
 				if (texture)
 				{
@@ -93,9 +92,9 @@ namespace Engine
 
 	Ref<Texture2D> TextureManager::LoadTexture(Ref<Asset> TextureAsset)
 	{
-		if (TextureAsset && (TextureAsset->GetAssetType() == AssetType::Texture))
+		if (TextureAsset && (TextureAsset->GetInfo().Type == AssetType::Texture))
 		{
-			auto& it = LoadedTextureMap.find(TextureAsset->GetID());
+			auto& it = LoadedTextureMap.find(TextureAsset->GetInfo().ID);
 
 			if (it != LoadedTextureMap.end())
 			{
@@ -103,7 +102,7 @@ namespace Engine
 				if (it->second.expired())
 				{
 					// Texture is not loaded
-					Ref<Texture2D> texture = DeserializeTexture(TextureAsset->GetData());
+					Ref<Texture2D> texture = DeserializeTexture(TextureAsset->Metadata);
 
 					if (texture)
 					{
@@ -119,11 +118,11 @@ namespace Engine
 			}
 			else
 			{
-				Ref<Texture2D> texture = DeserializeTexture(TextureAsset->GetData());
+				Ref<Texture2D> texture = DeserializeTexture(TextureAsset->Metadata);
 
 				if (texture)
 				{
-					LoadedTextureMap[TextureAsset->GetID()] = texture;
+					LoadedTextureMap[TextureAsset->GetInfo().ID] = texture;
 					return texture;
 				}
 			}

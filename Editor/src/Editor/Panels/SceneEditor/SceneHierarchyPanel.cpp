@@ -430,7 +430,10 @@ namespace Engine
 			{
 				ImGui::SameLine(0.f, 20.f);
 				if (ImGui::Button("Remove Texture"))
+				{
+					component.TextureID = "";
 					component.Texture = nullptr;
+				}
 			}
 		});
 
@@ -699,7 +702,7 @@ namespace Engine
 						if(!component.Source)
 							component.Source = AudioEngine::CreateAudioSource();
 
-						Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(AudioAsset->GetData()));
+						Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(AudioAsset->Metadata));
 
 						component.Source->SetBuffer(Buff);
 					}

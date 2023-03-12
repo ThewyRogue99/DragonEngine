@@ -55,11 +55,11 @@ namespace Engine
 	{
 		Ref<Asset> SceneAsset = AssetManager::LoadAsset(SceneAssetID);
 
-		if (SceneAsset->GetAssetType() == AssetType::Scene)
+		if (SceneAsset->GetInfo().Type == AssetType::Scene)
 		{
 			Scene* NewScene = new Scene();
 
-			SceneSerializer::Deserialize(NewScene, SceneAsset->GetData());
+			SceneSerializer::Deserialize(NewScene, SceneAsset->Metadata);
 
 			if (!GetScene(NewScene->GetName()))
 			{
@@ -83,11 +83,11 @@ namespace Engine
 	{
 		Ref<Asset> SceneAsset = AssetManager::LoadAsset(Path, Name);
 
-		if (SceneAsset->GetAssetType() == AssetType::Scene)
+		if (SceneAsset->GetInfo().Type == AssetType::Scene)
 		{
 			Scene* NewScene = new Scene();
 
-			SceneSerializer::Deserialize(NewScene, SceneAsset->GetData());
+			SceneSerializer::Deserialize(NewScene, SceneAsset->Metadata);
 
 			if (!GetScene(NewScene->GetName()))
 			{

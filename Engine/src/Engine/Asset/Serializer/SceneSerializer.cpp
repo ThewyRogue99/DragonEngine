@@ -10,9 +10,10 @@
 
 namespace Engine
 {
-	void SceneSerializer::Serialize(Scene* scene, AssetMetadata& metadata)
+	void SceneSerializer::Serialize(Scene* scene, Ref<AssetMetadata> Metadata)
 	{
-		metadata.SetStringField<wchar_t>("SceneName", scene->SceneName);
+		MemoryMap& MetadataMap = Metadata->GetFields();
+		MetadataMap.SetStringField<wchar_t>("SceneName", scene->SceneName);
 
 		scene->SceneRegistry.each([&](auto entityID)
 		{
@@ -24,19 +25,19 @@ namespace Engine
 				{
 					auto& id = entity.GetComponent<IDComponent>().ID;
 
-					AssetMetadata data;
+					MemoryMap data;
 
 					SerializeEntity(data, entity);
 
-					metadata.SetField("Entity:" + id.GetString(), data);
+					MetadataMap.SetField("Entity:" + id.GetString(), data);
 				}
 			}
 		});
 	}
 
-	void SceneSerializer::Deserialize(Scene* scene, const AssetMetadata& metadata)
+	void SceneSerializer::Deserialize(Scene* scene, Ref<AssetMetadata> Metadata)
 	{
-		for (auto& [key, value] : metadata)
+		for (auto& [key, value] : Metadata->GetFields())
 		{
 			if (value.DataPtr)
 			{
@@ -58,7 +59,7 @@ namespace Engine
 
 						if (type == "Entity")
 						{
-							AssetMetadata* data = (AssetMetadata*)value.DataPtr;
+							MemoryMap* data = (MemoryMap*)value.DataPtr;
 							Entity deserializedEntity = DeserializeEntity(*data, scene);
 						}
 					}
@@ -72,14 +73,14 @@ if (Ent.HasComponent<ComponentName>()) \
 { \
 	auto& cc = Ent.GetComponent<ComponentName>(); \
 \
-	AssetMetadata data; \
+	MemoryMap data; \
 	cc.OnSerialize(data); \
 \
 	Out.SetField(ComponentName::GetStaticTypeName(), data); \
 	__VA_ARGS__ \
 }
 
-	void SceneSerializer::SerializeEntity(AssetMetadata& out, Entity entity)
+	void SceneSerializer::SerializeEntity(MemoryMap& out, Entity entity)
 	{
 		SERIALIZE_COMPONENT_MACRO(IDComponent, entity, out)
 		SERIALIZE_COMPONENT_MACRO(TagComponent, entity, out)
@@ -102,18 +103,18 @@ if (KeyName == #ComponentName) \
 	__VA_ARGS__ \
 }
 
-	Entity SceneSerializer::DeserializeEntity(AssetMetadata& in, Scene* scene)
+	Entity SceneSerializer::DeserializeEntity(const MemoryMap& in, Scene* scene)
 	{
 		Entity deserializedEntity = { };
 
 		{
 			// Get ID
-			AssetMetadata& idata = in.GetField<AssetMetadata>(IDComponent::GetStaticTypeName());
+			MemoryMap& idata = in.GetField<MemoryMap>(IDComponent::GetStaticTypeName());
 			IDComponent idc;
 			idc.OnDeserialize(idata);
 
 			// Get Name
-			AssetMetadata& tagdata = in.GetField<AssetMetadata>(TagComponent::GetStaticTypeName());
+			MemoryMap& tagdata = in.GetField<MemoryMap>(TagComponent::GetStaticTypeName());
 			TagComponent tagc;
 			tagc.OnDeserialize(tagdata);
 
@@ -122,7 +123,7 @@ if (KeyName == #ComponentName) \
 			DE_LOG(SceneSerializer, "Deserialized entity with ID = {0}, name = {1}", idc.ID.GetString(), TypeUtils::FromUTF16(tagc.Tag));
 
 			// Get Transform
-			AssetMetadata& tdata = in.GetField<AssetMetadata>(TransformComponent::GetStaticTypeName());
+			MemoryMap& tdata = in.GetField<MemoryMap>(TransformComponent::GetStaticTypeName());
 			TransformComponent tc;
 			tc.OnDeserialize(tdata);
 

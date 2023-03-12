@@ -23,9 +23,9 @@ public: \
 	friend class SceneSerializer; \
 \
 protected: \
-	virtual void OnSerialize(AssetMetadata& Metadata) override; \
+	virtual void OnSerialize(MemoryMap& DataMap) override; \
 \
-	virtual void OnDeserialize(AssetMetadata& Metadata) override;
+	virtual void OnDeserialize(const MemoryMap& DataMap) override;
 
 #define COMPONENT_CLASS(T, ...) class T : public Component \
 { \
@@ -41,9 +41,9 @@ namespace Engine
 	class Component
 	{
 	protected:
-		virtual void OnSerialize(AssetMetadata& Metadata) = 0;
+		virtual void OnSerialize(MemoryMap& DataMap) = 0;
 
-		virtual void OnDeserialize(AssetMetadata& Metadata) = 0;
+		virtual void OnDeserialize(const MemoryMap& DataMap) = 0;
 	};
 
 	COMPONENT_CLASS(IDComponent,

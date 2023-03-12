@@ -13,43 +13,55 @@
 
 namespace Engine
 {
+	class AssetInfo
+	{
+	public:
+		AssetInfo() = default;
+		AssetInfo(const AssetInfo&) = default;
+
+		AssetInfo(
+			CString Name,
+			CString Path,
+			std::string ID,
+			AssetType Type = AssetType::Undefined
+		) : Name(Name), Path(Path), ID(ID), Type(Type) { }
+
+		CString Name;
+		CString Path;
+		std::string ID;
+
+		AssetType Type = AssetType::Undefined;
+	};
+
 	class Asset
 	{
 	public:
-		const AssetMetadata& GetData() const { return Metadata; }
+		const AssetInfo& GetInfo() const { return *Info; }
 
-		const CString& GetName() const { return Name; }
-
-		const std::string& GetID() const { return ID; }
-
-		const AssetType GetAssetType() const { return Type; }
+		bool IsLoaded() const { return Metadata != nullptr; }
 
 		friend class AssetManager;
 		friend class AssetSerializer;
 
 		Asset& operator=(Asset&) = delete;
 
+		Ref<AssetMetadata> Metadata = nullptr;
+
 	private:
 		struct phold {
 			explicit phold(int) {}
 		};
 
-		Asset(const CString& Name, UUID id = UUID()) : Name(Name), ID(id.GetString()) { }
-		Asset(UUID id = UUID()) : ID(id.GetString()) { }
-
+		Asset() = default;
 		Asset(const Asset&) = default;
 
 		void Write(std::ostream& ss);
 		void Read(std::istream& ss);
 
 	public:
-		explicit Asset(const phold&, const CString& Name, UUID id = UUID()) : Asset(Name, id) { }
+		explicit Asset(const phold&) : Asset() { }
 
 	private:
-		AssetMetadata Metadata;
-		
-		CString Name;
-		std::string ID;
-		AssetType Type = AssetType::Undefined;
+		AssetInfo* Info = nullptr;
 	};
 }

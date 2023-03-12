@@ -11,21 +11,23 @@ namespace Engine
 {
 	namespace Serializer
 	{
-		bool SerializeWithAssetType(const CString& FilePath, AssetMetadata& metadata, AssetType type)
+		bool SerializeWithAssetType(const CString& FilePath, Ref<AssetMetadata> Metadata, AssetType type)
 		{
 			switch (type)
 			{
 			case AssetType::Texture:
-				return SerializeTexture(FilePath, metadata);
+				return SerializeTexture(FilePath, Metadata);
 			case AssetType::Audio:
-				return SerializeAudio(FilePath, metadata);
+				return SerializeAudio(FilePath, Metadata);
 			default:
 				return false;
 			}
 		}
 
-		bool SerializeTexture(const CString& FilePath, AssetMetadata& metadata)
+		bool SerializeTexture(const CString& FilePath, Ref<AssetMetadata> Metadata)
 		{
+			MemoryMap& MetadataMap = Metadata->GetFields();
+
 			stbi_set_flip_vertically_on_load(true);
 
 			FILE* f = _wfopen(FilePath.c_str(), L"rb");
@@ -38,10 +40,10 @@ namespace Engine
 			{
 				int dataSize = width * height * channels;
 
-				metadata.SetField("width", width);
-				metadata.SetField("height", height);
-				metadata.SetField("channels", channels);
-				metadata.SetField("data", data, dataSize);
+				MetadataMap.SetField("width", width);
+				MetadataMap.SetField("height", height);
+				MetadataMap.SetField("channels", channels);
+				MetadataMap.SetField("data", data, dataSize);
 
 				stbi_image_free(data);
 
@@ -53,8 +55,10 @@ namespace Engine
 			return false;
 		}
 
-		bool SerializeAudio(const CString& FilePath, AssetMetadata& metadata)
+		bool SerializeAudio(const CString& FilePath, Ref<AssetMetadata> Metadata)
 		{
+			MemoryMap& MetadataMap = Metadata->GetFields();
+
 			AudioToWav::Audio res = AudioToWav::Utils::LoadAudioFile(FilePath);
 			
 			if (!res.Empty())
@@ -66,10 +70,10 @@ namespace Engine
 				const void* Data = res.GetData();
 				size_t DataSize = res.GetDataSize();
 
-				metadata.SetField("Channels", Channels);
-				metadata.SetField("SampleSize", SampleSize);
-				metadata.SetField("SampleRate", SampleRate);
-				metadata.SetField("Data", (void*)Data, DataSize);
+				MetadataMap.SetField("Channels", Channels);
+				MetadataMap.SetField("SampleSize", SampleSize);
+				MetadataMap.SetField("SampleRate", SampleRate);
+				MetadataMap.SetField("Data", (void*)Data, DataSize);
 
 				res.Clear();
 
@@ -81,7 +85,7 @@ namespace Engine
 			return false;
 		}
 
-		bool CreateAssetFromFile(const CString& TargetPath, const CString& DestinationPath, bool Overwrite)
+		bool CreateAssetFromFile(const CString& TargetPath, const CString& DestinationPath)
 		{
 			std::filesystem::path FPath = TargetPath;
 
@@ -94,7 +98,7 @@ namespace Engine
 
 			AssetType type = AssetUtils::GetAssetTypeFromExtension(ext);
 
-			AssetMetadata data;
+			Ref<AssetMetadata> data = AssetMetadata::Create();
 
 			if (Serializer::SerializeWithAssetType(FPath, data, type))
 			{
@@ -104,12 +108,12 @@ namespace Engine
 				std::filesystem::path ContentPath = AssetManager::GetContentPath();
 				CString FullPath = (ContentPath / DestinationPath) / (w_id + L".deasset");
 
-				if (!Overwrite)
-					name = AssetManager::GetAvailableName(DestinationPath, name);
-
-				AssetManager::CreateAsset(DestinationPath, name, data, type, Overwrite);
-
-				return true;
+				return AssetManager::CreateAsset(
+					DestinationPath,
+					AssetManager::GetAvailableName(DestinationPath, name),
+					type,
+					data
+				) != nullptr;
 			}
 
 			return false;

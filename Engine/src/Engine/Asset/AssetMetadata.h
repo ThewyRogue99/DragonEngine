@@ -11,74 +11,76 @@ namespace Engine
 	class AssetMetadata
 	{
 	public:
-		AssetMetadata() = default;
-		AssetMetadata(const AssetMetadata&) = default;
-
 		~AssetMetadata();
 
-		struct FieldData
-		{
-			uint32_t DataSize = 0;
-			bool IsMap = false;
-
-			void* DataPtr = nullptr;
-		};
-
-		using FieldMap = std::unordered_map<std::string, FieldData>;
-
-		template<typename T>
-		void SetField(const std::string& field, T& value) { SetField(field, (void*)&value, sizeof(T)); }
-
-		template<typename T>
-		void SetStringField(const std::string& field, const StringBase<T>& value)
-		{
-			SetField(field, (void*)value.c_str(), (value.size() + 1) * sizeof(T));
-		}
-
-		void SetField(const std::string& field, void* buff, size_t buffsize);
-
-		void SetField(const std::string& field, AssetMetadata& data);
-
-		template<typename T>
-		T& GetField(const std::string& field) const
-		{
-			size_t size = 0;
-			void* DataPtr = GetField(field, size);
-
-			return *((T*)DataPtr);
-		}
-
-		template<typename T>
-		StringBase<T> GetStringField(const std::string& field)
-		{
-			size_t size = 0;
-			void* DataPtr = GetField(field, size);
-
-			StringBase<T> s((const T*)DataPtr);
-
-			return s;
-		}
-
-		void* GetField(const std::string& field, size_t& size) const;
-
-		void Copy(AssetMetadata& CopyData);
-
-		bool Empty() { return FieldTable.size() == 0; }
-
-		FieldMap::iterator begin() { return FieldTable.begin(); }
-		FieldMap::iterator end() { return FieldTable.end(); }
-
-		FieldMap::const_iterator begin() const { return FieldTable.begin(); }
-		FieldMap::const_iterator end() const { return FieldTable.end(); }
-
-		bool FieldExists(const std::string& field) { return FieldTable.find(field) != FieldTable.end(); }
-
-		void Clear();
+		MemoryMap& GetFields() { return FieldTable; }
 
 		void Write(std::ostream& ss);
 		void Read(std::istream& ss);
 
+		static Ref<AssetMetadata> Create();
+
+		AssetMetadata& operator=(const AssetMetadata&) = delete;
+
 	private:
-		FieldMap FieldTable = { };
+		AssetMetadata() = default;
+		AssetMetadata(const AssetMetadata&) = default;
+
+	private:
+		class TableHeader
+		{
+		public:
+			TableHeader() = default;
+			TableHeader(const TableHeader&) = default;
+
+			std::string fieldName;
+
+			friend std::ostream& operator <<(std::ostream& ss, const TableHeader& header)
+			{
+				return TableHeader::WriteStream(ss, header);
+			}
+
+			friend std::istream& operator >>(std::istream& ss, TableHeader& header)
+			{
+				return TableHeader::ReadStream(ss, header);
+			}
+
+		private:
+			static std::ostream& WriteStream(std::ostream& ss, const TableHeader& header);
+			static std::istream& ReadStream(std::istream& ss, TableHeader& header);
+		};
+
+		class FieldHeader
+		{
+		public:
+			FieldHeader() = default;
+			FieldHeader(const FieldHeader&) = default;
+
+			MemoryMap::FieldData Data;
+
+			friend std::ostream& operator <<(std::ostream& ss, const FieldHeader& header)
+			{
+				return FieldHeader::WriteStream(ss, header);
+			}
+
+			friend std::istream& operator >>(std::istream& ss, FieldHeader& header)
+			{
+				return FieldHeader::ReadStream(ss, header);
+			}
+
+		private:
+			static std::ostream& WriteStream(std::ostream& ss, const FieldHeader& header);
+			static std::istream& ReadStream(std::istream& ss, FieldHeader& header);
+		};
+
+		struct phold {
+			explicit phold(int) {}
+		};
+
+	public:
+		explicit AssetMetadata(const phold&) : AssetMetadata() { }
+
+	private:
+		MemoryMap FieldTable = { };
 	};
 }

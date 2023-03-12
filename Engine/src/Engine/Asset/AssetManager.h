@@ -23,19 +23,29 @@ namespace Engine
 	    static bool Load();
 	    static bool Save();
 
-        static bool CreateAsset(const CString& Path, const CString& Name, AssetMetadata& Data, AssetType Type, bool Overwrite = false);
+        static Ref<Asset> CreateAsset(
+            const CString& Path,
+            const CString& Name,
+            AssetType Type,
+            Ref<AssetMetadata> Metadata = nullptr
+        );
 
-        static bool RenameAsset(const std::string& AssetID, const CString& NewName);
-        static bool RenameAsset(const CString& Path, const CString& Name, const CString& NewName);
+        static bool RenameAsset(Ref<Asset> AssetRef, const CString& NewName);
 
-        static bool RemoveAsset(const std::string& AssetID);
-	    static bool RemoveAsset(const CString& Path, const CString& Name);
+        static bool RemoveAsset(Ref<Asset> AssetRef);
 
-        static bool MoveAsset(const std::string& AssetID, const CString& NewPath);
-        static bool MoveAsset(const CString& Path, const CString& Name, const CString& NewPath);
+        static bool MoveAsset(Ref<Asset> AssetRef, const CString& NewPath);
+
+        static Ref<Asset> GetAsset(const std::string& AssetID);
+        static Ref<Asset> GetAsset(const CString& Path, const CString& Name);
 
         static Ref<Asset> LoadAsset(const std::string& AssetID);
         static Ref<Asset> LoadAsset(const CString& Path, const CString& Name);
+
+        static bool SaveAsset(Ref<Asset> AssetRef);
+
+        static bool AssetExists(const CString& Path, const CString& Name);
+        static bool AssetExists(const std::string& ID);
 
 	    static CString GetFullPath(const CString& Path);
         static CString GetFullPath(const CString& Path, const CString& Name);
@@ -54,33 +64,18 @@ namespace Engine
         friend class AssetIterator;
 
     private:
-        class AssetData
-        {
-        public:
-            AssetData() = default;
-            AssetData(CString Name, CString Path, AssetType Type)
-                : Name(Name), Path(Path), Type(Type) { }
-
-            CString Name;
-            CString Path;
-
-            AssetType Type = AssetType::Undefined;
-
-            WeakRef<Asset> AssetRef;
-
-            void Serialize(AssetMetadata& metadata);
-            void Deserialize(AssetMetadata& metadata);
-        };
-
 	    static bool LoadMetadata();
 	    static bool SaveMetadata();
 
-	    static bool AssetExists(const CString& Path, const CString& Name);
-        static bool AssetExists(const std::string& ID);
+	    static bool AddAsset(const std::string& ID, AssetInfo* Info);
 
-	    static bool AddAsset(const std::string& ID, const AssetData& data);
-
-        using AssetMap = std::unordered_map<std::string, AssetData>;
+        using AssetMap = std::unordered_map<
+            std::string,
+            std::pair<
+                AssetInfo*,
+                WeakRef<Asset>
+            >
+        >;
 
         static AssetMap AssetList;
     };

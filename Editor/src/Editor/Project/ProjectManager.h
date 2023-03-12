@@ -20,8 +20,8 @@ namespace Engine
 		friend class ProjectManager;
 
 	private:
-		void Serialize(AssetMetadata& data);
-		void Deserialize(AssetMetadata& data);
+		void Serialize(Ref<AssetMetadata> data);
+		void Deserialize(Ref<AssetMetadata> data);
 	};
 
 	class ProjectManager

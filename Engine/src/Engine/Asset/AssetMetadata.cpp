@@ -5,169 +5,7 @@ namespace Engine
 {
 	AssetMetadata::~AssetMetadata()
 	{
-		Clear();
-	}
-
-	void AssetMetadata::SetField(const std::string& field, void* buff, size_t buffsize)
-	{
-		uint8_t* databuff = new uint8_t[buffsize];
-
-		memcpy(databuff, buff, buffsize);
-
-		if (FieldExists(field))
-		{
-			FieldData& data = FieldTable[field];
-
-			if (data.DataPtr)
-			{
-				if (data.IsMap)
-					delete (AssetMetadata*)data.DataPtr;
-				else
-					delete[] data.DataPtr;
-			}
-
-			data.DataPtr = databuff;
-			data.DataSize = (uint32_t)buffsize;
-		}
-		else
-		{
-			FieldTable[field] = { (uint32_t)buffsize, false, databuff };
-		}
-	}
-
-	void AssetMetadata::SetField(const std::string& field, AssetMetadata& data)
-	{
-		AssetMetadata* copyData = new AssetMetadata();
-		data.Copy(*copyData);
-
-		if (FieldExists(field))
-		{
-			FieldData& data = FieldTable[field];
-
-			if (data.DataPtr)
-			{
-				if (data.IsMap)
-					delete (AssetMetadata*)data.DataPtr;
-				else
-					delete[] data.DataPtr;
-			}
-
-			data.DataPtr = copyData;
-			data.DataSize = 0;
-		}
-		else
-		{
-			FieldTable[field] = { (uint32_t)(data.FieldTable.size()), true, copyData};
-		}
-	}
-
-	struct TableHeader
-	{
-		std::string fieldName;
-
-		friend std::ostream& operator <<(std::ostream& ss, const TableHeader& header)
-		{
-			uint32_t nameSize = (uint32_t)(header.fieldName.size() + 1);
-
-			ss.write((char*)&nameSize, sizeof(uint32_t));
-
-			ss.write(header.fieldName.c_str(), nameSize);
-
-			return ss;
-		}
-
-		friend std::istream& operator >>(std::istream& ss, TableHeader& header)
-		{
-			uint32_t nameSize = 0;
-			ss.read((char*)&nameSize, sizeof(uint32_t));
-
-			char* buff = new char[nameSize];
-			ss.read(buff, nameSize);
-
-			header.fieldName = buff;
-			delete[] buff;
-
-			return ss;
-		}
-	};
-
-	struct FieldHeader
-	{
-		AssetMetadata::FieldData Data;
-
-		friend std::ostream& operator <<(std::ostream& ss, const FieldHeader& header)
-		{
-			if (header.Data.DataPtr)
-			{
-				ss.write((char*)&header.Data.DataSize, sizeof(uint32_t));
-				ss.write((char*)&header.Data.IsMap, sizeof(bool));
-
-				if (header.Data.IsMap)
-				{
-					AssetMetadata* metadata = (AssetMetadata*)header.Data.DataPtr;
-					metadata->Write(ss);
-				}
-				else
-				{
-					ss.write((char*)header.Data.DataPtr, header.Data.DataSize);
-				}
-			}
-
-			return ss;
-		}
-
-		friend std::istream& operator >>(std::istream& ss, FieldHeader& header)
-		{
-			uint32_t DataSize = 0;
-			ss.read((char*)&DataSize, sizeof(uint32_t));
-
-			bool IsMap = false;
-			ss.read((char*)&IsMap, sizeof(bool));
-
-			if (IsMap)
-			{
-				AssetMetadata* metadata = new AssetMetadata();
-				metadata->Read(ss);
-
-				header.Data.DataSize = DataSize;
-				header.Data.IsMap = true;
-				header.Data.DataPtr = metadata;
-			}
-			else
-			{
-				if (DataSize > 0)
-				{
-					char* buff = new char[DataSize];
-					ss.read(buff, DataSize);
-
-					header.Data.DataSize = DataSize;
-					header.Data.IsMap = false;
-					header.Data.DataPtr = buff;
-				}
-			}
-
-			return ss;
-		}
-	};
-
-	void AssetMetadata::Clear()
-	{
-		for (auto& pair : FieldTable)
-		{
-			FieldData& data = pair.second;
-
-			if (data.DataPtr)
-			{
-				if (data.IsMap)
-					((AssetMetadata*)(data.DataPtr))->Clear();
-				else
-					delete[] (uint8_t*)(data.DataPtr);
-
-				data.DataPtr = nullptr;
-			}
-		}
-
-		FieldTable.clear();
+		FieldTable.Clear();
 	}
 
 	void AssetMetadata::Write(std::ostream& ss)
@@ -189,7 +27,7 @@ namespace Engine
 
 		for (auto& pair : FieldTable)
 		{
-			FieldData& data = pair.second;
+			MemoryMap::FieldData& data = pair.second;
 
 			FieldHeader h;
 			h.Data.DataSize = data.DataSize;
@@ -234,52 +72,96 @@ namespace Engine
 			{
 				std::string FieldName = TableHeaderList[i].fieldName;
 
-				uint32_t DataSize = FieldHeaderList[i].Data.DataSize;
-				bool IsMap = FieldHeaderList[i].Data.IsMap;
-				void* DataPtr = FieldHeaderList[i].Data.DataPtr;
+				MemoryMap::FieldData& data = FieldTable.GetFieldData(FieldName);
 
-				FieldTable[FieldName] = { DataSize, IsMap, DataPtr };
+				data.DataSize = FieldHeaderList[i].Data.DataSize;
+				data.IsMap = FieldHeaderList[i].Data.IsMap;
+				data.DataPtr = FieldHeaderList[i].Data.DataPtr;
 			}
 		}
 	}
 
-	void* AssetMetadata::GetField(const std::string& field, size_t& size) const
+	Ref<AssetMetadata> AssetMetadata::Create()
 	{
-		void* DataPtr = FieldTable.at(field).DataPtr;
-		size = FieldTable.at(field).DataSize;
-
-		return DataPtr;
+		return CreateRef<AssetMetadata>(phold{ 0 });
 	}
 
-	void AssetMetadata::Copy(AssetMetadata& CopyData)
+	std::ostream& AssetMetadata::TableHeader::WriteStream(std::ostream& ss, const TableHeader& header)
 	{
-		FieldMap& CopyTable = CopyData.FieldTable;
+		uint32_t nameSize = (uint32_t)(header.fieldName.size() + 1);
 
-		for (auto& [key, data] : FieldTable)
+		ss.write((char*)&nameSize, sizeof(uint32_t));
+
+		ss.write(header.fieldName.c_str(), nameSize);
+
+		return ss;
+	}
+
+	std::istream& AssetMetadata::TableHeader::ReadStream(std::istream& ss, TableHeader& header)
+	{
+		uint32_t nameSize = 0;
+		ss.read((char*)&nameSize, sizeof(uint32_t));
+
+		char* buff = new char[nameSize];
+		ss.read(buff, nameSize);
+
+		header.fieldName = buff;
+		delete[] buff;
+
+		return ss;
+	}
+
+	std::ostream& AssetMetadata::FieldHeader::WriteStream(std::ostream& ss, const FieldHeader& header)
+	{
+		if (header.Data.DataPtr)
 		{
-			CopyTable[key].DataSize = data.DataSize;
-			CopyTable[key].IsMap = data.IsMap;
+			ss.write((char*)&header.Data.DataSize, sizeof(uint32_t));
+			ss.write((char*)&header.Data.IsMap, sizeof(bool));
 
-			if (data.DataPtr)
+			if (header.Data.IsMap)
 			{
-				if (data.IsMap)
-				{
-					AssetMetadata* copyMetadata = new AssetMetadata();
-					((AssetMetadata*)data.DataPtr)->Copy(*copyMetadata);
-
-					CopyTable[key].DataPtr = copyMetadata;
-				}
-				else
-				{
-					if (data.DataSize > 0)
-					{
-						uint8_t* buff = new uint8_t[data.DataSize];
-						memcpy(buff, data.DataPtr, data.DataSize);
-						
-						CopyTable[key].DataPtr = buff;
-					}
-				}
+				AssetMetadata* metadata = (AssetMetadata*)header.Data.DataPtr;
+				metadata->Write(ss);
+			}
+			else
+			{
+				ss.write((char*)header.Data.DataPtr, header.Data.DataSize);
 			}
 		}
+
+		return ss;
+	}
+
+	std::istream& AssetMetadata::FieldHeader::ReadStream(std::istream& ss, FieldHeader& header)
+	{
+		uint32_t DataSize = 0;
+		ss.read((char*)&DataSize, sizeof(uint32_t));
+
+		bool IsMap = false;
+		ss.read((char*)&IsMap, sizeof(bool));
+
+		if (IsMap)
+		{
+			AssetMetadata* metadata = new AssetMetadata();
+			metadata->Read(ss);
+
+			header.Data.DataSize = DataSize;
+			header.Data.IsMap = true;
+			header.Data.DataPtr = metadata;
+		}
+		else
+		{
+			if (DataSize > 0)
+			{
+				char* buff = new char[DataSize];
+				ss.read(buff, DataSize);
+
+				header.Data.DataSize = DataSize;
+				header.Data.IsMap = false;
+				header.Data.DataPtr = buff;
+			}
+		}
+
+		return ss;
 	}
 }

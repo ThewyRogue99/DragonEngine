@@ -77,7 +77,7 @@ namespace Engine
 		if (dFolder)
 			return dFolder->Path;
 		else
-			return (*_it).second.Path;
+			return _it->second.first->Path;
 	}
 
 	const CString& DirectoryEntry::GetName() const
@@ -85,7 +85,7 @@ namespace Engine
 		if (dFolder)
 			return dFolder->Name;
 		else
-			return (*_it).second.Name;
+			return _it->second.first->Name;
 	}
 
 	const CString& DirectoryEntry::GetPathName() const
@@ -93,15 +93,15 @@ namespace Engine
 		if (dFolder)
 			return dFolder->PathName;
 		else
-			return (*_it).second.Path;
+			return _it->second.first->Path;
 	}
 
 	const std::string& DirectoryEntry::GetID() const
 	{
 		if (!dFolder)
-			return (*_it).first;
+			return _it->first;
 		else
-			throw std::out_of_range("Entry is not a Directory!");
+			throw std::out_of_range("Cannot get the ID of a Directory!");
 	}
 
 	const AssetType DirectoryEntry::GetType() const
@@ -109,7 +109,7 @@ namespace Engine
 		if (dFolder)
 			return AssetType::Folder;
 		else
-			return (*_it).second.Type;
+			return _it->second.first->Type;
 	}
 
 	const DirectoryEntry& AssetIterator::operator*() const
@@ -171,27 +171,17 @@ namespace Engine
 		return SaveMetadata();
 	}
 
-	bool AssetManager::CreateAsset(const CString& Path, const CString& Name, AssetMetadata& Data, AssetType Type, bool Overwrite)
+	Ref<Asset> AssetManager::CreateAsset(const CString& Path, const CString& Name, AssetType Type, Ref<AssetMetadata> Metadata)
 	{
 		if (bIsAssetManagerInit)
 		{
-			std::string id;
-
+			if (AssetExists(Path, Name))
 			{
-				bool exists = AssetExists(Path, Name);
-
-				if (!Overwrite)
-				{
-					if (exists)
-						return false;
-					else
-						id = UUID().GetString();
-				}
-				else if(exists)
-					id = GetAssetID(Path, Name);
-				else
-					id = UUID().GetString();
+				DE_ERROR(AssetManager, "Cannot create an asset that already exists!");
+				return nullptr;
 			}
+
+			std::string id = UUID().GetString();
 
 			CString w_id = TypeUtils::FromUTF8(id);
 
@@ -200,23 +190,22 @@ namespace Engine
 			std::ofstream f(FullPath, std::ios::out | std::ios::binary);
 			if (f.is_open())
 			{
-				DE_LOG(AssetManager, "Creating Asset in");
+				std::string cPath = TypeUtils::FromUTF16(Path);
+				DE_LOG(AssetManager, "Creating Asset in {0}", cPath.c_str());
 
-				AssetData data(Name, Path, Type);
+				AssetInfo* info = new AssetInfo(Name, Path, id, Type);
 
-				if (AddAsset(id, data))
+				if (AddAsset(id, info))
 				{
-					if (!Data.Empty() && Type != AssetType::Undefined)
-					{
-						Asset asset(Name, id);
-						Data.Copy(asset.Metadata);
-						asset.Type = Type;
+					Ref<Asset> AssetRef = CreateRef<Asset>(Asset::phold{ 0 });
+					AssetRef->Info = info;
+					AssetRef->Metadata = Metadata;
+					AssetRef->Write(f);
 
-						asset.Write(f);
-					}
+					AssetList[id].second = AssetRef;
 
 					SaveMetadata();
-					return true;
+					return AssetRef;
 				}
 
 				f.close();
@@ -226,96 +215,93 @@ namespace Engine
 		return false;
 	}
 
-	bool AssetManager::RenameAsset(const std::string& AssetID, const CString& NewName)
+	bool AssetManager::RenameAsset(Ref<Asset> AssetRef, const CString& NewName)
 	{
-		if (!bIsAssetManagerInit) return false;
-
-		try
+		if (AssetRef && bIsAssetManagerInit)
 		{
-			AssetData& data = AssetManager::AssetList[AssetID];
+			auto it = AssetList.find(AssetRef->GetInfo().ID);
+			if (it != AssetList.end())
+			{
+				it->second.first->Name = NewName;
 
-			data.Name = NewName;
-
-			SaveMetadata();
-			return true;
-		}
-		catch (const std::out_of_range&)
-		{
-			return false;
-		}
-	}
-
-	bool AssetManager::RenameAsset(const CString& Path, const CString& Name, const CString& NewName)
-	{
-		if (!bIsAssetManagerInit) return false;
-
-		std::string id = GetAssetID(Path, Name);
-
-		return RenameAsset(id, NewName);
-	}
-
-	bool AssetManager::RemoveAsset(const std::string& AssetID)
-	{
-		if (!bIsAssetManagerInit) return false;
-
-		try
-		{
-			AssetData& data = AssetManager::AssetList[AssetID];
-
-			CString w_id = TypeUtils::FromUTF8(AssetID);
-
-			CString FullPath = (ContentPath / data.Path) / (w_id + L".deasset");
-
-			AssetManager::AssetList.erase(AssetID);
-
-			SaveMetadata();
-			return std::filesystem::remove(FullPath);
-		}
-		catch (const std::out_of_range&)
-		{
-			return false;
-		}
-	}
-
-	bool AssetManager::RemoveAsset(const CString& Path, const CString& Name)
-	{
-		if (!bIsAssetManagerInit) return false;
-
-		std::string id = GetAssetID(Path, Name);
-
-		return RemoveAsset(id);
-	}
-
-	bool AssetManager::MoveAsset(const std::string& AssetID, const CString& NewPath)
-	{
-		AssetData& data = AssetList[AssetID];
-
-		if (data.Type != AssetType::Folder)
-		{
-			std::filesystem::path p_OldPath = ContentPath / data.Path;
-			p_OldPath /= AssetID + ".deasset";
-
-			std::filesystem::path p_NewPath = ContentPath / NewPath;
-			p_NewPath /= AssetID + ".deasset";
-
-			std::filesystem::rename(p_OldPath, p_NewPath);
-
-			data.Path = NewPath;
-			SaveMetadata();
-
-			return true;
+				SaveMetadata();
+				return true;
+			}
 		}
 
 		return false;
 	}
 
-	bool AssetManager::MoveAsset(const CString& Path, const CString& Name, const CString& NewPath)
+	bool AssetManager::RemoveAsset(Ref<Asset> AssetRef)
 	{
-		if (!bIsAssetManagerInit) return false;
+		if (AssetRef && bIsAssetManagerInit)
+		{
+			const std::string& AssetID = AssetRef->GetInfo().ID;
 
-		std::string id = GetAssetID(Path, Name);
+			auto it = AssetList.find(AssetID);
+			if (it != AssetList.end())
+			{
+				CString w_id = TypeUtils::FromUTF8(AssetID);
 
-		return MoveAsset(id, NewPath);
+				CString FullPath = (ContentPath / AssetRef->GetInfo().Path) / (w_id + L".deasset");
+
+				AssetManager::AssetList.erase(AssetID);
+
+				SaveMetadata();
+				return std::filesystem::remove(FullPath);
+			}
+		}
+
+		return false;
+	}
+
+	bool AssetManager::MoveAsset(Ref<Asset> AssetRef, const CString& NewPath)
+	{
+		if (AssetRef && bIsAssetManagerInit)
+		{
+			const std::string& AssetID = AssetRef->GetInfo().ID;
+
+			AssetInfo* info = AssetList[AssetID].first;
+
+			if (info->Type != AssetType::Folder)
+			{
+				std::filesystem::path p_OldPath = ContentPath / info->Path;
+				p_OldPath /= AssetID + ".deasset";
+
+				std::filesystem::path p_NewPath = ContentPath / NewPath;
+				p_NewPath /= AssetID + ".deasset";
+
+				std::filesystem::rename(p_OldPath, p_NewPath);
+
+				info->Path = NewPath;
+				SaveMetadata();
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	Ref<Asset> AssetManager::GetAsset(const std::string& AssetID)
+	{
+		auto& it = AssetList.find(AssetID);
+		if (it != AssetList.end())
+		{
+			Ref<Asset> AssetRef = CreateRef<Asset>(Asset::phold{ 0 });
+			AssetRef->Info = it->second.first;
+
+			it->second.second = AssetRef;
+
+			return AssetRef;
+		}
+
+		return nullptr;
+	}
+
+	Ref<Asset> AssetManager::GetAsset(const CString& Path, const CString& Name)
+	{
+		return GetAsset(GetAssetID(Path, Name));
 	}
 
 	Ref<Asset> AssetManager::LoadAsset(const std::string& AssetID)
@@ -325,37 +311,56 @@ namespace Engine
 		auto& it = AssetList.find(AssetID);
 		if (it != AssetList.end())
 		{
-			AssetData& data = it->second;
+			WeakRef<Asset>& WeakAsset = it->second.second;
 
 			// Check if an asset is already loaded
-			if (data.AssetRef.expired())
+			if (WeakAsset.expired())
 			{
-				// Asset is not loaded
-				CString w_id = TypeUtils::FromUTF8(AssetID);
+				AssetInfo* info = it->second.first;
 
-				CString FullPath = (ContentPath / data.Path) / (w_id + L".deasset");
+				CString w_id = TypeUtils::FromUTF8(AssetID);
+				CString FullPath = (ContentPath / info->Path) / (w_id + L".deasset");
 
 				std::ifstream f(FullPath, std::ios::in | std::ios::binary);
 				if (f.is_open())
 				{
-					Ref<Asset> asset = CreateRef<Asset>(Asset::phold{ 0 }, data.Name, AssetID);
-					data.AssetRef = asset;
+					Ref<Asset> AssetRef = CreateRef<Asset>(Asset::phold{ 0 });
+					AssetRef->Info = info;
+					AssetRef->Metadata = AssetMetadata::Create();
+					AssetRef->Read(f);
 
-					asset->Type = data.Type;
-
-					asset->Read(f);
+					WeakAsset = AssetRef;
 
 					f.close();
 
-					return asset;
+					return AssetRef;
 				}
-
-				return nullptr;
 			}
 			else
 			{
-				// Asset is loaded
-				return data.AssetRef.lock();
+				Ref<Asset> AssetRef = WeakAsset.lock();
+
+				if (AssetRef->IsLoaded())
+				{
+					return AssetRef;
+				}
+				else
+				{
+					CString w_id = TypeUtils::FromUTF8(AssetID);
+
+					CString FullPath = (ContentPath / AssetRef->GetInfo().Path) / (w_id + L".deasset");
+
+					std::ifstream f(FullPath, std::ios::in | std::ios::binary);
+					if (f.is_open())
+					{
+						AssetRef->Metadata = AssetMetadata::Create();
+						AssetRef->Read(f);
+
+						f.close();
+
+						return AssetRef;
+					}
+				}
 			}
 		}
 
@@ -367,6 +372,27 @@ namespace Engine
 		std::string id = GetAssetID(Path, Name);
 
 		return LoadAsset(id);
+	}
+
+	bool AssetManager::SaveAsset(Ref<Asset> AssetRef)
+	{
+		const std::string& AssetID = AssetRef->GetInfo().ID;
+
+		CString w_id = TypeUtils::FromUTF8(AssetID);
+
+		CString FullPath = (ContentPath / AssetRef->GetInfo().Path) / (w_id + L".deasset");
+
+		std::ofstream f(FullPath, std::ios::out | std::ios::binary);
+		if (f.is_open())
+		{
+			AssetRef->Write(f);
+
+			f.close();
+
+			return true;
+		}
+
+		return false;
 	}
 
 	CString AssetManager::GetFullPath(const CString& Path)
@@ -384,17 +410,18 @@ namespace Engine
 		return path + L".deasset";
 	}
 
-	bool AssetManager::AddAsset(const std::string& ID, const AssetData& data)
+	bool AssetManager::AddAsset(const std::string& ID, AssetInfo* Info)
 	{
-		if (!bIsAssetManagerInit) return false;
-
-		if (!AssetExists(data.Path, data.Name))
+		if (bIsAssetManagerInit)
 		{
-			AssetList[ID] = data;
-			return true;
+			if (!AssetExists(Info->Path, Info->Name))
+			{
+				AssetList[ID].first = Info;
+				return true;
+			}
 		}
 
-		return true;
+		return false;
 	}
 
 	bool AssetManager::CreateFolder(const CString& Path, const CString& Name)
@@ -494,12 +521,13 @@ namespace Engine
 
 	std::string AssetManager::GetAssetID(const CString& Path, const CString& Name)
 	{
-		if (!bIsAssetManagerInit) return "";
-
-		for (auto& [key, value] : AssetManager::AssetList)
+		if (bIsAssetManagerInit)
 		{
-			if (value.Name == Name && value.Path == Path)
-				return key;
+			for (auto& [key, pair] : AssetManager::AssetList)
+			{
+				if (pair.first->Name == Name && pair.first->Path == Path)
+					return key;
+			}
 		}
 
 		return "";
@@ -513,18 +541,26 @@ namespace Engine
 
 		if (f.is_open())
 		{
-			AssetMetadata metadata;
+			AssetList.clear();
 
-			metadata.Read(f);
+			Ref<AssetMetadata> metadata = AssetMetadata::Create();
 
-			AssetManager::AssetList.clear();
+			metadata->Read(f);
 
-			for (auto& [id, data] : metadata)
+			for (auto& [id, data] : metadata->GetFields())
 			{
-				AssetData assetData;
-				assetData.Deserialize(*(AssetMetadata*)data.DataPtr);
+				if (data.IsMap)
+				{
+					AssetInfo* Info = new AssetInfo();
+					MemoryMap& AssetMap = *((MemoryMap*)data.DataPtr);
 
-				AssetList[id] = assetData;
+					Info->Name = AssetMap.GetStringField<wchar_t>("Name");
+					Info->Path = AssetMap.GetStringField<wchar_t>("Path");
+					Info->Type = AssetMap.GetField<AssetType>("Type");
+					Info->ID = id;
+
+					AssetList[id].first = Info;
+				}
 			}
 
 			f.close();
@@ -543,17 +579,21 @@ namespace Engine
 
 		if (f.is_open())
 		{
-			AssetMetadata metadata;
+			Ref<AssetMetadata> Metadata = AssetMetadata::Create();
+			MemoryMap& MetadataMap = Metadata->GetFields();
 
 			for (auto& [id, data] : AssetList)
 			{
-				AssetMetadata serializeData;
-				data.Serialize(serializeData);
+				MemoryMap SerializeMap;
 
-				metadata.SetField(id, serializeData);
+				SerializeMap.SetStringField("Name", data.first->Name);
+				SerializeMap.SetStringField("Path", data.first->Path);
+				SerializeMap.SetField("Type", data.first->Type);
+
+				MetadataMap.SetField(id, SerializeMap);
 			}
 
-			metadata.Write(f);
+			Metadata->Write(f);
 
 			f.close();
 
@@ -561,19 +601,5 @@ namespace Engine
 		}
 
 		return false;
-	}
-
-	void AssetManager::AssetData::Serialize(AssetMetadata& metadata)
-	{
-		metadata.SetStringField("Name", Name);
-		metadata.SetStringField("Path", Path);
-		metadata.SetField("Type", Type);
-	}
-
-	void AssetManager::AssetData::Deserialize(AssetMetadata& metadata)
-	{
-		Name = metadata.GetStringField<wchar_t>("Name");
-		Path = metadata.GetStringField<wchar_t>("Path");
-		Type = metadata.GetField<AssetType>("Type");
 	}
 }

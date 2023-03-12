@@ -52,6 +52,10 @@ namespace Engine
 
 			std::filesystem::create_directory(Path / TEXT("Source"));
 
+			// Create metadata.dat file for AssetManager
+			std::ofstream f(Path / TEXT("Assets/metadata.dat"), std::ios::out);
+			f.close();
+
 			SetAssetManager(Path);
 
 			// Create Project File
@@ -63,21 +67,20 @@ namespace Engine
 				// Create a scene
 				EditorScene* EScene = EditorSceneManager::CreateEditorScene(TEXT("Scene"));
 
-				AssetMetadata sceneData;
+				Ref<AssetMetadata> sceneData = AssetMetadata::Create();
 				SceneSerializer::Serialize(EScene, sceneData);
 
-				AssetManager::CreateAsset(TEXT(""), TEXT("Scene"), sceneData, AssetType::Scene);
-				Ref<Asset> SceneAsset = AssetManager::LoadAsset(TEXT(""), TEXT("Scene"));
+				Ref<Asset> SceneAsset = AssetManager::CreateAsset(TEXT(""), TEXT("Scene"), AssetType::Scene, sceneData);
 
 				// Set Project
 				ProjectData.Name = ProjectName;
 				ProjectData.Path = Path;
-				ProjectData.StartSceneID = SceneAsset->GetID();
+				ProjectData.StartSceneID = SceneAsset->GetInfo().ID;
 
-				AssetMetadata projectData;
+				Ref<AssetMetadata> projectData = AssetMetadata::Create();
 				ProjectData.Serialize(projectData);
 
-				projectData.Write(pf);
+				projectData->Write(pf);
 
 				pf.close();
 
@@ -109,8 +112,8 @@ namespace Engine
 			std::ifstream pf(Path, std::ios::in | std::ios::binary);
 			if (pf.is_open())
 			{
-				AssetMetadata data;
-				data.Read(pf);
+				Ref<AssetMetadata> data = AssetMetadata::Create();
+				data->Read(pf);
 
 				ProjectData.Deserialize(data);
 
@@ -123,24 +126,24 @@ namespace Engine
 				// Set Default Scene
 				Ref<Asset> SceneAsset = AssetManager::LoadAsset(ProjectData.StartSceneID);
 
-				if (SceneAsset->GetAssetType() == AssetType::Scene)
+				if (SceneAsset->GetInfo().Type == AssetType::Scene)
 				{
-					EditorScene* EScene = EditorSceneManager::CreateEditorScene(SceneAsset->GetName());
-					SceneSerializer::Deserialize(EScene, SceneAsset->GetData());
+					EditorScene* EScene = EditorSceneManager::CreateEditorScene(SceneAsset->GetInfo().Name);
+					SceneSerializer::Deserialize(EScene, SceneAsset->Metadata);
 				}
 				else
 				{
 					// Create a scene
 					EditorScene* EScene = EditorSceneManager::CreateEditorScene(TEXT("Scene"));
 
-					AssetMetadata data;
+					Ref<AssetMetadata> data;
 					SceneSerializer::Serialize(EScene, data);
 
-					if (AssetManager::CreateAsset(TEXT(""), TEXT("Scene"), data, AssetType::Scene))
+					if (AssetManager::CreateAsset(TEXT(""), TEXT("Scene"), AssetType::Scene, data))
 					{
 						Ref<Asset> NewSceneAsset = AssetManager::LoadAsset(TEXT(""), TEXT("Scene"));
 
-						ProjectData.StartSceneID = NewSceneAsset->GetID();
+						ProjectData.StartSceneID = NewSceneAsset->GetInfo().ID;
 					}
 					else return false;
 				}
@@ -205,15 +208,19 @@ namespace Engine
 		return Dispatcher.GetHandle();
 	}
 
-	void Project::Serialize(AssetMetadata& data)
+	void Project::Serialize(Ref<AssetMetadata> data)
 	{
-		data.SetStringField("Name", Name);
-		data.SetStringField("StartSceneID", StartSceneID);
+		MemoryMap& DataMap = data->GetFields();
+
+		DataMap.SetStringField("Name", Name);
+		DataMap.SetStringField("StartSceneID", StartSceneID);
 	}
 
-	void Project::Deserialize(AssetMetadata& data)
+	void Project::Deserialize(Ref<AssetMetadata> data)
 	{
-		Name = data.GetStringField<char>("Name");
-		StartSceneID = data.GetStringField<char>("StartSceneID");
+		MemoryMap& DataMap = data->GetFields();
+
+		Name = DataMap.GetStringField<char>("Name");
+		StartSceneID = DataMap.GetStringField<char>("StartSceneID");
 	}
 }

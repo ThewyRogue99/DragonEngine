@@ -8,121 +8,121 @@
 
 namespace Engine
 {
-	void IDComponent::OnSerialize(AssetMetadata& Metadata)
+	void IDComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetStringField("ID", ID.GetString());
+		DataMap.SetStringField("ID", ID.GetString());
 	}
 
-	void IDComponent::OnDeserialize(AssetMetadata& Metadata)
+	void IDComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		ID = Metadata.GetStringField<char>("ID");
+		ID = DataMap.GetStringField<char>("ID");
 	}
 
-	void TagComponent::OnSerialize(AssetMetadata& Metadata)
+	void TagComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetStringField("Tag", Tag);
+		DataMap.SetStringField("Tag", Tag);
 	}
 
-	void TagComponent::OnDeserialize(AssetMetadata& Metadata)
+	void TagComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		Tag = Metadata.GetStringField<wchar_t>("Tag");
+		Tag = DataMap.GetStringField<wchar_t>("Tag");
 	}
 
-	void TransformComponent::OnSerialize(AssetMetadata& Metadata)
+	void TransformComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetField("Position", Position);
-		Metadata.SetField("Rotation", Rotation);
-		Metadata.SetField("Scale", Scale);
+		DataMap.SetField("Position", Position);
+		DataMap.SetField("Rotation", Rotation);
+		DataMap.SetField("Scale", Scale);
 	}
 
-	void TransformComponent::OnDeserialize(AssetMetadata& Metadata)
+	void TransformComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		Position = Metadata.GetField<glm::vec3>("Position");
-		Rotation = Metadata.GetField<glm::vec3>("Rotation");
-		Scale = Metadata.GetField<glm::vec3>("Scale");
+		Position = DataMap.GetField<glm::vec3>("Position");
+		Rotation = DataMap.GetField<glm::vec3>("Rotation");
+		Scale = DataMap.GetField<glm::vec3>("Scale");
 	}
 
-	void SpriteRendererComponent::OnSerialize(AssetMetadata& Metadata)
+	void SpriteRendererComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetField("Color", Color);
+		DataMap.SetField("Color", Color);
 
-		Metadata.SetStringField("TextureID", TextureID);
+		DataMap.SetStringField("TextureID", TextureID);
 
-		Metadata.SetField("TilingFactor", TilingFactor);
+		DataMap.SetField("TilingFactor", TilingFactor);
 	}
 
-	void SpriteRendererComponent::OnDeserialize(AssetMetadata& Metadata)
+	void SpriteRendererComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		Color = Metadata.GetField<glm::vec4>("Color");
+		Color = DataMap.GetField<glm::vec4>("Color");
 
-		TextureID = Metadata.GetStringField<char>("TextureID");
+		TextureID = DataMap.GetStringField<char>("TextureID");
 
-		if(!TextureID.empty())
+		if (!TextureID.empty())
 			Texture = TextureManager::LoadTexture(TextureID);
 
-		TilingFactor = Metadata.GetField<float>("TilingFactor");
+		TilingFactor = DataMap.GetField<float>("TilingFactor");
 	}
 
-	void CircleRendererComponent::OnSerialize(AssetMetadata& Metadata)
+	void CircleRendererComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetField("Color", Color);
-		Metadata.SetField("Radius", Radius);
-		Metadata.SetField("Thickness", Thickness);
-		Metadata.SetField("Fade", Fade);
+		DataMap.SetField("Color", Color);
+		DataMap.SetField("Radius", Radius);
+		DataMap.SetField("Thickness", Thickness);
+		DataMap.SetField("Fade", Fade);
 	}
 
-	void CircleRendererComponent::OnDeserialize(AssetMetadata& Metadata)
+	void CircleRendererComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		Color = Metadata.GetField<glm::vec4>("Color");
-		Radius = Metadata.GetField<float>("Radius");
-		Thickness = Metadata.GetField<float>("Thickness");
-		Fade = Metadata.GetField<float>("Fade");
+		Color = DataMap.GetField<glm::vec4>("Color");
+		Radius = DataMap.GetField<float>("Radius");
+		Thickness = DataMap.GetField<float>("Thickness");
+		Fade = DataMap.GetField<float>("Fade");
 	}
 
-	void CameraComponent::OnSerialize(AssetMetadata& Metadata)
+	void CameraComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetField("SceneCamera", Camera);
+		DataMap.SetField("SceneCamera", Camera);
 
-		Metadata.SetField("Primary", Primary);
-		Metadata.SetField("FixedAspectRatio", FixedAspectRatio);
+		DataMap.SetField("Primary", Primary);
+		DataMap.SetField("FixedAspectRatio", FixedAspectRatio);
 	}
 
-	void CameraComponent::OnDeserialize(AssetMetadata& Metadata)
+	void CameraComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		SceneCamera CopyCamera = Metadata.GetField<SceneCamera>("SceneCamera");
+		SceneCamera CopyCamera = DataMap.GetField<SceneCamera>("SceneCamera");
 
 		Camera = CopyCamera;
-		Primary = Metadata.GetField<bool>("Primary");
-		FixedAspectRatio = Metadata.GetField<bool>("FixedAspectRatio");
+		Primary = DataMap.GetField<bool>("Primary");
+		FixedAspectRatio = DataMap.GetField<bool>("FixedAspectRatio");
 	}
 
-	void AudioComponent::OnSerialize(AssetMetadata& Metadata)
+	void AudioComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetStringField("AudioID", AudioID);
+		DataMap.SetStringField("AudioID", AudioID);
 	}
 
-	void AudioComponent::OnDeserialize(AssetMetadata& Metadata)
+	void AudioComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		AudioID = Metadata.GetStringField<char>("AudioID");
+		AudioID = DataMap.GetStringField<char>("AudioID");
 
 		Ref<Asset> AudioAsset = AssetManager::LoadAsset(AudioID);
 
-		if (AudioAsset->GetAssetType() == AssetType::Audio)
+		if (AudioAsset->GetInfo().Type == AssetType::Audio)
 		{
 			Source = AudioEngine::CreateAudioSource();
 
-			Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(AudioAsset->GetData()));
+			Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(AudioAsset->Metadata));
 
 			Source->SetBuffer(Buff);
 		}
 	}
 
-	void ScriptComponent::OnSerialize(AssetMetadata& Metadata)
+	void ScriptComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetStringField("Name", Name);
-		Metadata.SetStringField("Namespace", Namespace);
+		DataMap.SetStringField("Name", Name);
+		DataMap.SetStringField("Namespace", Namespace);
 
-		AssetMetadata fieldData;
+		MemoryMap fieldData;
 		if (Fields)
 		{
 			for (auto& field : *Fields)
@@ -134,15 +134,15 @@ namespace Engine
 			}
 		}
 
-		Metadata.SetField("Fields", fieldData);
+		DataMap.SetField("Fields", fieldData);
 	}
 
-	void ScriptComponent::OnDeserialize(AssetMetadata& Metadata)
+	void ScriptComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		Name = Metadata.GetStringField<char>("Name");
-		Namespace = Metadata.GetStringField<char>("Namespace");
+		Name = DataMap.GetStringField<char>("Name");
+		Namespace = DataMap.GetStringField<char>("Namespace");
 
-		AssetMetadata& fieldData = Metadata.GetField<AssetMetadata>("Fields");
+		MemoryMap& fieldData = DataMap.GetField<MemoryMap>("Fields");
 		Fields = &ScriptEngine::GetScriptData(Namespace, Name)->GetFields();
 
 		for (auto& tuple : fieldData)
@@ -162,59 +162,59 @@ namespace Engine
 		}
 	}
 
-	void Rigidbody2DComponent::OnSerialize(AssetMetadata& Metadata)
+	void Rigidbody2DComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetField("Type", Type);
-		Metadata.SetField("FixedRotation", FixedRotation);
+		DataMap.SetField("Type", Type);
+		DataMap.SetField("FixedRotation", FixedRotation);
 	}
 
-	void Rigidbody2DComponent::OnDeserialize(AssetMetadata& Metadata)
+	void Rigidbody2DComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		Type = Metadata.GetField<BodyType>("Type");
-		FixedRotation = Metadata.GetField<bool>("FixedRotation");
+		Type = DataMap.GetField<BodyType>("Type");
+		FixedRotation = DataMap.GetField<bool>("FixedRotation");
 	}
 
-	void BoxCollider2DComponent::OnSerialize(AssetMetadata& Metadata)
+	void BoxCollider2DComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetField("Offset", Offset);
-		Metadata.SetField("Size", Size);
+		DataMap.SetField("Offset", Offset);
+		DataMap.SetField("Size", Size);
 
-		Metadata.SetField("Density", Density);
-		Metadata.SetField("Friction", Friction);
-		Metadata.SetField("Restitution", Restitution);
-		Metadata.SetField("RestitutionThreshold", RestitutionThreshold);
+		DataMap.SetField("Density", Density);
+		DataMap.SetField("Friction", Friction);
+		DataMap.SetField("Restitution", Restitution);
+		DataMap.SetField("RestitutionThreshold", RestitutionThreshold);
 	}
 
-	void BoxCollider2DComponent::OnDeserialize(AssetMetadata& Metadata)
+	void BoxCollider2DComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		Offset = Metadata.GetField<glm::vec2>("Offset");
-		Size = Metadata.GetField<glm::vec2>("Size");
+		Offset = DataMap.GetField<glm::vec2>("Offset");
+		Size = DataMap.GetField<glm::vec2>("Size");
 
-		Density = Metadata.GetField<float>("Density");
-		Friction = Metadata.GetField<float>("Friction");
-		Restitution = Metadata.GetField<float>("Restitution");
-		RestitutionThreshold = Metadata.GetField<float>("RestitutionThreshold");
+		Density = DataMap.GetField<float>("Density");
+		Friction = DataMap.GetField<float>("Friction");
+		Restitution = DataMap.GetField<float>("Restitution");
+		RestitutionThreshold = DataMap.GetField<float>("RestitutionThreshold");
 	}
 
-	void CircleCollider2DComponent::OnSerialize(AssetMetadata& Metadata)
+	void CircleCollider2DComponent::OnSerialize(MemoryMap& DataMap)
 	{
-		Metadata.SetField("Offset", Offset);
-		Metadata.SetField("Radius", Radius);
+		DataMap.SetField("Offset", Offset);
+		DataMap.SetField("Radius", Radius);
 
-		Metadata.SetField("Density", Density);
-		Metadata.SetField("Friction", Friction);
-		Metadata.SetField("Restitution", Restitution);
-		Metadata.SetField("RestitutionThreshold", RestitutionThreshold);
+		DataMap.SetField("Density", Density);
+		DataMap.SetField("Friction", Friction);
+		DataMap.SetField("Restitution", Restitution);
+		DataMap.SetField("RestitutionThreshold", RestitutionThreshold);
 	}
 
-	void CircleCollider2DComponent::OnDeserialize(AssetMetadata& Metadata)
+	void CircleCollider2DComponent::OnDeserialize(const MemoryMap& DataMap)
 	{
-		Offset = Metadata.GetField<glm::vec2>("Offset");
-		Radius = Metadata.GetField<float>("Radius");
+		Offset = DataMap.GetField<glm::vec2>("Offset");
+		Radius = DataMap.GetField<float>("Radius");
 
-		Density = Metadata.GetField<float>("Density");
-		Friction = Metadata.GetField<float>("Friction");
-		Restitution = Metadata.GetField<float>("Restitution");
-		RestitutionThreshold = Metadata.GetField<float>("RestitutionThreshold");
+		Density = DataMap.GetField<float>("Density");
+		Friction = DataMap.GetField<float>("Friction");
+		Restitution = DataMap.GetField<float>("Restitution");
+		RestitutionThreshold = DataMap.GetField<float>("RestitutionThreshold");
 	}
 }

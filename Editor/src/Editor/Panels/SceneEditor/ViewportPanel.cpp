@@ -103,9 +103,9 @@ namespace Engine
 				{
 					Ref<Asset> asset = AssetManager::LoadAsset(Item.GetID());
 
-					EditorScene* NewScene = EditorSceneManager::CreateEditorScene(asset->GetName());
+					EditorScene* NewScene = EditorSceneManager::CreateEditorScene(asset->GetInfo().Name);
 
-					SceneSerializer::Deserialize(NewScene, asset->GetData());
+					SceneSerializer::Deserialize(NewScene, asset->Metadata);
 				}
 
 			}

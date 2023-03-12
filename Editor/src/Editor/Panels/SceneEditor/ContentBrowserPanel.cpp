@@ -125,7 +125,7 @@ namespace Engine
 
 							if (Item.ItemType != AssetType::Folder)
 							{
-								AssetManager::MoveAsset(Item.GetID(), it.GetPathName());
+								AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), it.GetPathName());
 								Reload();
 							}
 						}
@@ -171,7 +171,7 @@ namespace Engine
 
 						if (Item.ItemType != AssetType::Folder)
 						{
-							AssetManager::MoveAsset(Item.GetID(), L"");
+							AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), L"");
 							Reload();
 						}
 					}
@@ -341,11 +341,22 @@ namespace Engine
 				Scene* ActiveScene = EditorSceneManager::GetEditorScene();
 				if (ActiveScene && !EditorTool::IsSimulating())
 				{
-					AssetMetadata data;
+					Ref<AssetMetadata> data = AssetMetadata::Create();
 
 					SceneSerializer::Serialize(ActiveScene, data);
 
-					AssetManager::CreateAsset(CurrentDirectory, ActiveScene->GetName(), data, AssetType::Scene, true);
+					if (AssetManager::AssetExists(CurrentDirectory, ActiveScene->GetName()))
+					{
+						Ref<Asset> SceneAsset = AssetManager::LoadAsset(CurrentDirectory, ActiveScene->GetName());
+						SceneAsset->Metadata = data;
+
+						AssetManager::SaveAsset(SceneAsset);
+					}
+					else
+					{
+						AssetManager::CreateAsset(CurrentDirectory, ActiveScene->GetName(), AssetType::Scene, data);
+					}
+
 					Reload();
 				}
 			}
@@ -477,7 +488,7 @@ namespace Engine
 				}
 				else
 				{
-					AssetManager::RemoveAsset(Entry.GetPath(), Entry.GetName());
+					AssetManager::RemoveAsset(AssetManager::GetAsset(Entry.GetPath(), Entry.GetName()));
 					Panel->Reload();
 					DidReload = true;
 				}
@@ -537,7 +548,7 @@ namespace Engine
 
 					if (Item.ItemType != AssetType::Folder)
 					{
-						AssetManager::MoveAsset(Item.GetID(), Entry.GetPathName());
+						AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), Entry.GetPathName());
 						Panel->Reload();
 						DidReload = true;
 					}
@@ -610,26 +621,36 @@ namespace Engine
 			}
 			else if (Type == AssetType::Scene)
 			{
-				if (AssetManager::RenameAsset(Entry.GetID(), NewName))
+				if (AssetManager::RenameAsset(AssetManager::GetAsset(Entry.GetID()), NewName))
 				{
 					// Rename Scene
 					Ref<Asset> SceneAsset = AssetManager::LoadAsset(Entry.GetID());
 
 					EditorScene* NewScene = new EditorScene(NewName);
-					SceneSerializer::Deserialize(NewScene, SceneAsset->GetData());
+					SceneSerializer::Deserialize(NewScene, SceneAsset->Metadata);
 					NewScene->SetName(NewName);
 
-					AssetMetadata SceneData;
+					Ref<AssetMetadata> SceneData = AssetMetadata::Create();
 					SceneSerializer::Serialize(NewScene, SceneData);
 
-					AssetManager::CreateAsset(Entry.GetPath(), Entry.GetName(), SceneData, AssetType::Scene, true);
+					if (AssetManager::AssetExists(Entry.GetPath(), Entry.GetName()))
+					{
+						Ref<Asset> SceneAsset = AssetManager::LoadAsset(Entry.GetPath(), Entry.GetName());
+						SceneAsset->Metadata = SceneData;
+
+						AssetManager::SaveAsset(SceneAsset);
+					}
+					else
+					{
+						AssetManager::CreateAsset(Entry.GetPath(), Entry.GetName(), AssetType::Scene, SceneData);
+					}
 
 					delete NewScene;
 				}
 			}
 			else
 			{
-				AssetManager::RenameAsset(Entry.GetID(), NewName);
+				AssetManager::RenameAsset(AssetManager::GetAsset(Entry.GetID()), NewName);
 			}
 
 			Panel->Reload();
@@ -670,15 +691,15 @@ namespace Engine
 			std::string ScriptName = Content->RenameBuffer;
 			if (ProjectManager::CreateScript(ScriptName))
 			{
-				AssetMetadata data;
-				data.SetStringField("Name", ScriptName);
+				Ref<AssetMetadata> data = AssetMetadata::Create();
+				data->GetFields().SetStringField("Name", ScriptName);
 
 				return AssetManager::CreateAsset(
 					CurrentDirectory,
 					TypeUtils::FromUTF8(ScriptName),
-					data,
-					AssetType::Script
-				);
+					AssetType::Script,
+					data
+				) != nullptr;
 			}
 
 			return false;
@@ -688,18 +709,18 @@ namespace Engine
 			CString SceneName = TypeUtils::FromUTF8(Content->RenameBuffer);
 			EditorScene* NewScene = new EditorScene(SceneName);
 
-			AssetMetadata data;
+			Ref<AssetMetadata> data = AssetMetadata::Create();
 			SceneSerializer::Serialize(NewScene, data);
 
-			bool result = AssetManager::CreateAsset(
+			Ref<Asset> result = AssetManager::CreateAsset(
 				CurrentDirectory,
 				SceneName,
-				data,
-				AssetType::Scene
+				AssetType::Scene,
+				data
 			);
 
 			delete NewScene;
-			return result;
+			return result != nullptr;
 		}
 		default:
 			return false;

@@ -12,19 +12,19 @@ namespace Engine
 	class SceneSerializer
 	{
 	public:
-		static void Serialize(Scene* scene, AssetMetadata& metadata);
+		static void Serialize(Scene* scene, Ref<AssetMetadata> Metadata);
 
-		static void Deserialize(Scene* scene, const AssetMetadata& metadata);
+		static void Deserialize(Scene* scene, Ref<AssetMetadata> Metadata);
 
 	private:
-		static void SerializeEntity(AssetMetadata& out, Entity entity);
+		static void SerializeEntity(MemoryMap& out, Entity entity);
 
-		static Entity DeserializeEntity(AssetMetadata& in, Scene* scene);
+		static Entity DeserializeEntity(const MemoryMap& in, Scene* scene);
 
 		template<typename T>
 		static T DeserializeComponent(void* DataPtr)
 		{
-			AssetMetadata* data = (AssetMetadata*)DataPtr;
+			MemoryMap* data = (MemoryMap*)DataPtr;
 
 			T comp = T();
 			comp.OnDeserialize(*data);
