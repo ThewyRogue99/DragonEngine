@@ -2,7 +2,6 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Shader.h"
 #include "VertexArray.h"
 #include "Buffer.h"
 
@@ -11,33 +10,27 @@
 namespace Engine
 {
 	template<typename T>
-	class ShapeBuffer
+	class BatchShapeBuffer
 	{
 	public:
-		ShapeBuffer(size_t ShapeCount, size_t ShapeVertexCount)
+		BatchShapeBuffer(size_t ShapeCount, size_t ShapeVertexCount)
 			: ShapeCount(ShapeCount), ShapeVertexCount(ShapeVertexCount) { }
 
 		void CreateBuffer(const BufferLayout& Layout)
 		{
-			m_VertexArray = VertexArray::Create();
+			VertexArrayRef = VertexArray::Create();
 
 			size_t VertexCount = GetMaxBufferVertexCount();
-			m_VertexBuffer = VertexBuffer::Create((uint32_t)(VertexCount * sizeof(T)));
-			m_VertexBuffer->SetLayout(Layout);
+			VertexBufferRef = VertexBuffer::Create((uint32_t)(VertexCount * sizeof(T)));
+			VertexBufferRef->SetLayout(Layout);
 
-			m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+			VertexArrayRef->AddVertexBuffer(VertexBufferRef);
 
 			BufferBase = new T[VertexCount];
 		}
 
-		void SetShader(Ref<Shader> NewShader)
-		{
-			m_Shader = NewShader;
-		}
-
-		Ref<Shader> GetShader() const { return m_Shader; }
-		Ref<VertexArray> GetVertexArray() const { return m_VertexArray; }
-		Ref<VertexBuffer> GetVertexBuffer() const { return m_VertexBuffer; }
+		Ref<VertexArray> GetVertexArray() const { return VertexArrayRef; }
+		Ref<VertexBuffer> GetVertexBuffer() const { return VertexBufferRef; }
 
 		void Begin()
 		{
@@ -97,12 +90,12 @@ namespace Engine
 			if (VertexIndex > 0)
 			{
 				uint32_t dataSize = (uint32_t)((uint8_t*)BufferPtr - (uint8_t*)BufferBase);
-				m_VertexBuffer->SetData(BufferBase, dataSize);
+				VertexBufferRef->SetData(BufferBase, dataSize);
 
-				if (m_Shader)
-					m_Shader->Bind();
-
-				OnFlushCallback();
+				if (OnFlushCallback)
+				{
+					OnFlushCallback();
+				}
 			}
 		}
 
@@ -122,9 +115,8 @@ namespace Engine
 
 		std::function<void()> OnFlushCallback = nullptr;
 
-		Ref<Shader> m_Shader = nullptr;
-		Ref<VertexArray> m_VertexArray = nullptr;
-		Ref<VertexBuffer> m_VertexBuffer = nullptr;
+		Ref<VertexArray> VertexArrayRef = nullptr;
+		Ref<VertexBuffer> VertexBufferRef = nullptr;
 	};
 
 }

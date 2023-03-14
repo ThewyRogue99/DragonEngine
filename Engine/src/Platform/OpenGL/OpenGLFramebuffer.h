@@ -12,8 +12,8 @@ namespace Engine
 
 		void Invalidate();
 
-		virtual void Bind() override;
-		virtual void Unbind() override;
+		virtual void Bind() const;
+		virtual void Unbind() const;
 
 		virtual void Resize(uint32_t Width, uint32_t Height) override;
 

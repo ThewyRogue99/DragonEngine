@@ -12,8 +12,8 @@ namespace Engine
 
 		virtual ~OpenGLVertexBuffer();
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+		virtual void Bind() const;
+		virtual void Unbind() const;
 
 		virtual const BufferLayout& GetLayout() const override { return Layout; }
 		virtual void SetLayout(const BufferLayout& layout) override { Layout = layout; }
@@ -35,8 +35,8 @@ namespace Engine
 
 		virtual uint32_t GetCount() const override { return Count; }
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+		virtual void Bind() const;
+		virtual void Unbind() const;
 
 	private:
 		uint32_t BufferID;

@@ -21,7 +21,6 @@ namespace Engine
 		FragmentSource.clear();
 
 		glDeleteProgram(ShaderID);
-		Unbind();
 	}
 
 	bool OpenGLShader::Load()
@@ -142,41 +141,48 @@ namespace Engine
 	{
 		Bind();
 		glUniform1i(glGetUniformLocation(ShaderID, name), value);
+		Unbind();
 	}
 
 	void OpenGLShader::SetIntArray(const char* name, int* values, size_t count)
 	{
 		Bind();
 		glUniform1iv(glGetUniformLocation(ShaderID, name), (GLsizei)count, values);
+		Unbind();
 	}
 
 	void OpenGLShader::SetFloat3(const char* name, float v1, float v2, float v3)
 	{
 		Bind();
 		glUniform3f(glGetUniformLocation(ShaderID, name), v1, v2, v3);
+		Unbind();
 	}
 
 	void OpenGLShader::SetFloat3(const char* name, const glm::vec3& v)
 	{
 		Bind();
 		glUniform3f(glGetUniformLocation(ShaderID, name), v.x, v.y, v.z);
+		Unbind();
 	}
 
 	void OpenGLShader::SetFloat4(const char* name, float v1, float v2, float v3, float v4)
 	{
 		Bind();
 		glUniform4f(glGetUniformLocation(ShaderID, name), v1, v2, v3, v4);
+		Unbind();
 	}
 
 	void OpenGLShader::SetFloat4(const char* name, const glm::vec4& v)
 	{
 		Bind();
 		glUniform4f(glGetUniformLocation(ShaderID, name), v.x, v.y, v.z, v.w);
+		Unbind();
 	}
 
 	void OpenGLShader::SetMat4(const char* name, const glm::mat4& val)
 	{
 		Bind();
 		glUniformMatrix4fv(glGetUniformLocation(ShaderID, name), 1, GL_FALSE, glm::value_ptr(val));
+		Unbind();
 	}
 }

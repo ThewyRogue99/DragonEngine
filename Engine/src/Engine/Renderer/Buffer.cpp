@@ -53,7 +53,7 @@ namespace Engine
 			}
 			case RendererAPI::API::OpenGL:
 			{
-				return std::make_shared<OpenGLVertexBuffer>(size);
+				return CreateRef<OpenGLVertexBuffer>(size);
 			}
 			default:
 			{

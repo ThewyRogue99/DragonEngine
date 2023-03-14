@@ -37,12 +37,6 @@ namespace Engine
 		size_t GetEntityCount() const { return SceneRegistry.size(); }
 		std::vector<Entity> GetEntities();
 
-		friend class Entity;
-		friend class SceneManager;
-		friend class SceneSerializer;
-		friend class PhysicsWorld2D;
-		friend class SceneHierarchyPanel;
-
 		inline const CString& GetName() const { return SceneName; }
 		inline void SetName(const CString& Name) { SceneName = Name; }
 
@@ -53,13 +47,18 @@ namespace Engine
 		virtual void OnSceneBegin();
 		virtual void OnSceneEnd();
 
+		friend class Entity;
+		friend class SceneManager;
+		friend class SceneSerializer;
+		friend class PhysicsWorld2D;
+		friend class SceneHierarchyPanel;
+		friend class SceneRenderer;
+
 	protected:
 		Scene(const CString& Name = TEXT("Scene"));
 		Scene(const Scene&) = default;
 
 		~Scene() = default;
-
-		void Render(float DeltaTime);
 
 	private:
 		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);

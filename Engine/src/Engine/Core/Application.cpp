@@ -4,7 +4,6 @@
 #include "Engine/Debug/Debug.h"
 
 #include "Engine/Renderer/Renderer2D.h"
-#include "Engine/Renderer/RenderCommand.h"
 #include "Platform/Platform.h"
 
 #include "Engine/Audio/AudioEngine.h"
@@ -30,12 +29,13 @@ namespace Engine
 		if (!AppSpecification.WorkingDirectory.empty())
 			std::filesystem::current_path(AppSpecification.WorkingDirectory);
 
-		RenderCommand::Init();
+		Renderer::Init();
 
 		AppWindow = Window::Create(WindowProps(NameUTF8.c_str()));
 		AppWindow->OnEvent().AddCallback(BIND_CLASS_FN(Application::OnEvent));
 
 		Renderer2D::Init();
+
 		ScriptEngine::Init();
 		AudioEngine::Init();
 
@@ -81,7 +81,8 @@ namespace Engine
 			AudioEngine::Shutdown();
 			ScriptEngine::Shutdown();
 
-			RenderCommand::Shutdown();
+			Renderer2D::Shutdown();
+			Renderer::Shutdown();
 
 			DE_WARN(
 				Application, "Shutting down Application: {0}",
@@ -140,7 +141,7 @@ namespace Engine
 		else
 			bIsMinimized = false;
 
-		RenderCommand::SetViewport(0, 0, width, height);
+		Renderer::GetRendererAPI()->SetViewport(0, 0, width, height);
 
 		return true;
 	}

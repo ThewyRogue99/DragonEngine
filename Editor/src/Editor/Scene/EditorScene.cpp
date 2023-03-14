@@ -19,8 +19,6 @@ namespace Engine
 
 		if (bShouldSimulate)
 			PhysicsWorld.Update(DeltaTime);
-
-		Render(DeltaTime);
 	}
 
 	void EditorScene::OnEvent(Event& event)

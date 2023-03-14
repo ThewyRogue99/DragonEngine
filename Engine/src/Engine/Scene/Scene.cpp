@@ -83,8 +83,6 @@ namespace Engine
 
 		PhysicsWorld.Update(DeltaTime);
 		ScriptEngine::Update(DeltaTime);
-
-		Render(DeltaTime);
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -129,44 +127,6 @@ namespace Engine
 		SceneRef->SceneName = SceneName;
 		SceneRef->ViewportHeight = ViewportHeight;
 		SceneRef->ViewportWidth = ViewportWidth;
-	}
-
-	void Scene::Render(float DeltaTime)
-	{
-		if (PrimaryCamera)
-		{
-			Renderer2D::BeginScene(*PrimaryCamera, PrimaryCamera->GetTransform());
-
-			// Sprite Rendering
-			{
-				auto view = SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
-				for (auto entity : view)
-				{
-					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-
-					Renderer2D::DrawQuadSprite(transform.GetTransformMat4(), sprite, (int)entity);
-				}
-			}
-
-			// Circle Rendering
-			{
-				auto view = SceneRegistry.view<TransformComponent, CircleRendererComponent>();
-				for (auto entity : view)
-				{
-					auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
-
-					Renderer2D::DrawCircle(
-						transform.GetTransformMat4(),
-						circle.Color,
-						circle.Thickness,
-						circle.Fade,
-						(int)entity
-					);
-				}
-			}
-
-			Renderer2D::EndScene();
-		}
 	}
 
 	void Scene::OnSceneBegin()

@@ -2,83 +2,48 @@
 
 #include "Engine/Core/Core.h"
 
-#include "Camera.h"
-#include "Engine/Scene/Components.h"
-
-#include "Texture.h"
+#include "Renderer.h"
 
 #include <glm/glm.hpp>
 
 namespace Engine
 {
+	class Framebuffer;
+	class Texture2D;
+
+	struct QuadDrawProperties
+	{
+		glm::mat4 Transform = glm::mat4(1.f);
+		glm::vec4 Color = glm::vec4(1.f);
+
+		Ref<Texture2D> TextureRef = nullptr;
+		float TilingFactor = 1.f;
+	};
+
+	struct CircleDrawProperties
+	{
+		glm::mat4 Transform = glm::mat4(1.f);
+		glm::vec4 Color = glm::vec4(1.f);
+		float Thickness = 1.f;
+		float Fade = 0.005f;
+	};
+
 	class Renderer2D
 	{
 	public:
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(const Camera& camera, const glm::mat4& transform);
-		static void EndScene();
-
-		static void StartBatch();
-		static void NextBatch();
-		static void Flush();
+		static void BeginFrame(Ref<Framebuffer> FramebufferRef);
+		static void EndFrame();
 
 		static void DrawQuad(
-			const glm::vec3& position,
-			const glm::vec2& size,
-			const glm::vec4& color
-		);
-
-		static void DrawQuad(
-			const glm::vec3& position,
-			const glm::vec2& size,
-			const Ref<Texture2D>& texture,
-			float tilingFactor,
-			const glm::vec4& tintColor
-		);
-
-		static void DrawQuad(
-			const glm::mat4& transform,
-			const glm::vec4& color,
+			const QuadDrawProperties& Props,
 			int entityID = -1
-		);
-
-		static void DrawQuad(
-			const glm::mat4& transform,
-			const Ref<Texture2D>& texture,
-			float tilingFactor,
-			const glm::vec4& tintColor,
-			int entityID = -1
-		);
-
-		static void DrawQuadSprite(
-			const glm::mat4& transform,
-			SpriteRendererComponent& src,
-			int EntityID = -1
-		);
-
-		static void DrawRotatedQuad(
-			const glm::vec3& position,
-			const glm::vec2& size,
-			float rotation,
-			const glm::vec4& color
-		);
-
-		static void DrawRotatedQuad(
-			const glm::vec3& position,
-			const glm::vec2& size,
-			float rotation,
-			const Ref<Texture2D>& texture,
-			float tilingFactor,
-			const glm::vec4& tintColor
 		);
 
 		static void DrawCircle(
-			const glm::mat4& transform,
-			const glm::vec4& color,
-			float thickness = 1.f,
-			float fade = 0.005f,
+			const CircleDrawProperties& Props,
 			int entityID = -1
 		);
 
@@ -94,15 +59,19 @@ namespace Engine
 			const glm::vec4& color
 		);
 
-		static void DrawRect(
-			const glm::mat4& transform,
-			const glm::vec4& color
-		);
-
 		static void SetLineWidth(float Width);
 		static float GetLineWidth();
 
 		static void ResetStats();
+
+	private:
+		static void StartBatch();
+		static void NextBatch();
+		static void Flush();
+
+		static void FlushQuads();
+		static void FlushCircles();
+		static void FlushLines();
 
 	public:
 		struct Statistics
@@ -114,7 +83,7 @@ namespace Engine
 			uint32_t GetTotalIndexCount() { return QuadCount * 6; }
 		};
 
-		static Statistics GetStats();
+		static const Statistics& GetStats();
 
 	private:
 		struct RenderProperties

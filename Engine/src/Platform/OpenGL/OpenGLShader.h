@@ -12,8 +12,8 @@ namespace Engine
 
 		bool Load();
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+		virtual void Bind() const;
+		virtual void Unbind() const;
 
 		virtual void SetInt(const char* name, int value) override;
 		virtual void SetIntArray(const char* name, int* values, size_t count) override;

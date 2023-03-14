@@ -1,12 +1,38 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
-#include "VertexArray.h"
 
 #include <glm/glm.hpp>
 
 namespace Engine
 {
+	class Shader;
+	class VertexArray;
+	class Framebuffer;
+
+	enum class DrawType
+	{
+		Triangle,
+		Line
+	};
+
+	struct DrawProperties
+	{
+		Ref<Shader> ShaderRef = nullptr;
+		Ref<VertexArray> VertexArrayRef = nullptr;
+		Ref<Framebuffer> FramebufferRef = nullptr;
+	};
+
+	struct IndexedDrawProperties : public DrawProperties
+	{
+		uint32_t IndexCount = 0;
+	};
+
+	struct LineDrawProperties : public DrawProperties
+	{
+		uint32_t VertexCount = 0;
+	};
+
 	class RendererAPI
 	{
 	public:
@@ -20,10 +46,10 @@ namespace Engine
 		virtual void Shutdown() = 0;
 
 		virtual void SetClearColor(const glm::vec4& color) = 0;
-		virtual void Clear() = 0;
+		virtual void Clear(Ref<Framebuffer> FramebufferRef) = 0;
 
-		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t IndexCount = 0) = 0;
-		virtual void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t VertexCount = 0) = 0;
+		virtual void DrawIndexed(const IndexedDrawProperties& Props) = 0;
+		virtual void DrawLine(const LineDrawProperties& Props) = 0;
 
 		virtual void SetLineWidth(float width) = 0;
 

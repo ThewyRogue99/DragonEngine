@@ -6,6 +6,10 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include "OpenGLShader.h"
+#include "OpenGLVertexArray.h"
+#include "OpenGLFramebuffer.h"
+
 namespace Engine
 {
 	static void GLFWErrorCallback(int error, const char* description)
@@ -39,23 +43,40 @@ namespace Engine
 		glClearColor(color.r, color.g, color.b, color.w);
 	}
 
-	void OpenGLRendererAPI::Clear()
+	void OpenGLRendererAPI::Clear(Ref<Framebuffer> FramebufferRef)
 	{
+		std::dynamic_pointer_cast<OpenGLFramebuffer>(FramebufferRef)->Bind();
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		std::dynamic_pointer_cast<OpenGLFramebuffer>(FramebufferRef)->Unbind();
 	}
 
-	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t IndexCount)
+	void OpenGLRendererAPI::DrawIndexed(const IndexedDrawProperties& Props)
 	{
-		uint32_t count = IndexCount > 0 ? IndexCount : vertexArray->GetIndexBuffer()->GetCount();
+		std::dynamic_pointer_cast<OpenGLVertexArray>(Props.VertexArrayRef)->Bind();
+		std::dynamic_pointer_cast<OpenGLFramebuffer>(Props.FramebufferRef)->Bind();
+		std::dynamic_pointer_cast<OpenGLShader>(Props.ShaderRef)->Bind();
 
-		vertexArray->Bind();
+		uint32_t count = Props.IndexCount > 0 ? Props.IndexCount : Props.VertexArrayRef->GetIndexBuffer()->GetCount();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+		std::dynamic_pointer_cast<OpenGLVertexArray>(Props.VertexArrayRef)->Unbind();
+		std::dynamic_pointer_cast<OpenGLFramebuffer>(Props.FramebufferRef)->Unbind();
+		std::dynamic_pointer_cast<OpenGLShader>(Props.ShaderRef)->Unbind();
 	}
 
-	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t VertexCount)
+	void OpenGLRendererAPI::DrawLine(const LineDrawProperties& Props)
 	{
-		vertexArray->Bind();
-		glDrawArrays(GL_LINES, 0, VertexCount);
+		std::dynamic_pointer_cast<OpenGLVertexArray>(Props.VertexArrayRef)->Bind();
+		std::dynamic_pointer_cast<OpenGLFramebuffer>(Props.FramebufferRef)->Bind();
+		std::dynamic_pointer_cast<OpenGLShader>(Props.ShaderRef)->Bind();
+
+		glDrawArrays(GL_LINES, 0, Props.VertexCount);
+
+		std::dynamic_pointer_cast<OpenGLVertexArray>(Props.VertexArrayRef)->Unbind();
+		std::dynamic_pointer_cast<OpenGLFramebuffer>(Props.FramebufferRef)->Unbind();
+		std::dynamic_pointer_cast<OpenGLShader>(Props.ShaderRef)->Unbind();
 	}
 
 	void OpenGLRendererAPI::SetLineWidth(float Width)

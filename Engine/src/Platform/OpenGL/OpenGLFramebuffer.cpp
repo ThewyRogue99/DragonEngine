@@ -131,7 +131,8 @@ namespace Engine
 		}
 
 		glCreateFramebuffers(1, &RendererID);
-		glBindFramebuffer(GL_FRAMEBUFFER, RendererID);
+
+		Bind();
 
 		// Attachments
 
@@ -219,18 +220,17 @@ namespace Engine
 			glDrawBuffer(GL_NONE);
 		}
 
-		DE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
+		Unbind();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		DE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete");
 	}
 
-	void OpenGLFramebuffer::Bind()
+	void OpenGLFramebuffer::Bind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, RendererID);
-		glViewport(0, 0, BufferSpecification.Width, BufferSpecification.Height);
 	}
 
-	void OpenGLFramebuffer::Unbind()
+	void OpenGLFramebuffer::Unbind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -241,6 +241,10 @@ namespace Engine
 		BufferSpecification.Height = Height;
 
 		Invalidate();
+
+		Bind();
+		glViewport(0, 0, BufferSpecification.Width, BufferSpecification.Height);
+		Unbind();
 	}
 
 	int OpenGLFramebuffer::ReadPixel(uint32_t AttachmentIndex, int x, int y)
@@ -253,6 +257,8 @@ namespace Engine
 		int pixelData;
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
 
+		Unbind();
+
 		return pixelData;
 	}
 
@@ -262,6 +268,7 @@ namespace Engine
 
 		auto& spec = ColorAttachmentSpecifications[AttachmentIndex];
 
+		Bind();
 		glClearTexImage(
 			ColorAttachments[AttachmentIndex],
 			0,
@@ -269,5 +276,6 @@ namespace Engine
 			GL_INT,
 			&value
 		);
+		Unbind();
 	}
 }

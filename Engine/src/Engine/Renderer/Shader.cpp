@@ -26,7 +26,6 @@ namespace Engine
 				}
 
 				shader->ShaderName = ShaderName;
-				shader->Bind();
 
 				return shader;
 			}

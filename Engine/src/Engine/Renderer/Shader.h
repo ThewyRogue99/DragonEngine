@@ -12,9 +12,6 @@ namespace Engine
 	public:
 		virtual ~Shader() = default;
 
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
-
 		static Ref<Shader> Create(
 			const CString& ShaderName,
 			const std::string& VertexSource,

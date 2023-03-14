@@ -3,10 +3,11 @@
 
 #include "PanelDragPayload.h"
 
-#include "Engine/Renderer/RenderCommand.h"
-
 #include <glm/glm.hpp>
 #include "Engine/Math/Math.h"
+
+#include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/SceneRenderer.h"
 
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Components.h"
@@ -66,20 +67,17 @@ namespace Engine
 			else
 				HoveredEntity = { (entt::entity)pixelData, ActiveScene };
 		}
+
+		ActiveScene->OnUpdate(DeltaTime);
 	}
 
 	void ViewportPanel::OnRender(float DeltaTime)
 	{
 		EditorPanel::OnRender(DeltaTime);
 
-		m_FrameBuffer->Bind();
+		SceneRenderer::BeginScene(ActiveScene, m_FrameBuffer);
 
-		RenderCommand::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
-		RenderCommand::Clear();
-
-		m_FrameBuffer->ClearAttachment(1, -1);
-
-		ActiveScene->OnUpdate(DeltaTime);
+		SceneRenderer::Render();
 
 		uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
 		ImGui::Image((void*)BufferID, GetSize(), ImVec2{0.f, 1.f}, ImVec2{1.f, 0.f});
@@ -206,7 +204,7 @@ namespace Engine
 				((EditorScene*)ActiveScene)->SetShouldBlockEvents(true);
 		}
 
-		m_FrameBuffer->Unbind();
+		SceneRenderer::EndScene();
 	}
 
 	void ViewportPanel::OnResize(uint32_t width, uint32_t height)

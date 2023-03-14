@@ -11,10 +11,10 @@ namespace Engine
 		virtual void Shutdown() override;
 
 		virtual void SetClearColor(const glm::vec4& color) override;
-		virtual void Clear() override;
+		virtual void Clear(Ref<Framebuffer> FramebufferRef) override;
 
-		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t IndexCount = 0) override;
-		virtual void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t VertexCount = 0) override;
+		virtual void DrawIndexed(const IndexedDrawProperties& Props) override;
+		virtual void DrawLine(const LineDrawProperties& Props) override;
 
 		virtual void SetLineWidth(float Width) override;
 

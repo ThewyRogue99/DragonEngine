@@ -52,9 +52,6 @@ namespace Engine
 	public:
 		virtual ~Framebuffer() = default;
 
-		virtual void Bind() = 0;
-		virtual void Unbind() = 0;
-
 		virtual void Resize(uint32_t Width, uint32_t Height) = 0;
 
 		virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;

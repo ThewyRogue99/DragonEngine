@@ -3,6 +3,8 @@
 
 #include "Engine/Debug/Debug.h"
 
+#include "OpenGLBuffer.h"
+
 #include <glad/glad.h>
 
 namespace Engine
@@ -44,6 +46,18 @@ namespace Engine
 	void OpenGLVertexArray::Bind() const
 	{
 		glBindVertexArray(ArrayID);
+
+		// Bind Vertex Buffers
+		for (auto& buff : VertexBuffers)
+		{
+			std::dynamic_pointer_cast<OpenGLVertexBuffer>(buff)->Bind();
+		}
+
+		// Bind Index Buffers
+		if (indexBuffer)
+		{
+			std::dynamic_pointer_cast<OpenGLIndexBuffer>(indexBuffer)->Bind();
+		}
 	}
 
 	void OpenGLVertexArray::Unbind() const
@@ -56,7 +70,8 @@ namespace Engine
 		DE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
 		glBindVertexArray(ArrayID);
-		vertexBuffer->Bind();
+
+		std::dynamic_pointer_cast<OpenGLVertexBuffer>(vertexBuffer)->Bind();
 
 		uint32_t index = 0;
 		const auto& layout = vertexBuffer->GetLayout();
@@ -131,13 +146,14 @@ namespace Engine
 		}
 
 		VertexBuffers.push_back(vertexBuffer);
+
+		glBindVertexArray(0);
 	}
 
 	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
 	{
-		glBindVertexArray(ArrayID);
-		indexBuffer->Bind();
-
+		Bind();
 		this->indexBuffer = indexBuffer;
+		Unbind();
 	}
 }
