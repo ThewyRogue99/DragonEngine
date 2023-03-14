@@ -18,8 +18,6 @@ namespace Engine
 
 		~AudioDevice() { CloseDevice(); };
 
-		friend class AudioEngine;
-
 		static Ref<AudioDevice> OpenDevice(const char* DeviceName = nullptr);
 
 		bool SetCurrentContext();

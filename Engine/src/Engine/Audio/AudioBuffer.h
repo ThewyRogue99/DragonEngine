@@ -6,13 +6,35 @@
 
 namespace Engine
 {
-	struct AudioBufferData
+	class AudioBufferData
 	{
+	private:
+		struct phold;
+
+	public:
+		explicit AudioBufferData(const phold&) : AudioBufferData() { }
+
+		~AudioBufferData();
+
+		static Ref<AudioBufferData> Create(int Channels, int SampleSize, uint32_t SampleRate);
+
+		void SetData(const void* Src, size_t Size);
+
+		friend class AudioBuffer;
+
+	private:
+		AudioBufferData() = default;
+
+		struct phold {
+			explicit phold(int) {}
+		};
+
+	private:
 		int Channels = 0;
 		int SampleSize = 0;
 		uint32_t SampleRate = 0;
 
-		const void* Data = nullptr;
+		void* Data = nullptr;
 		size_t DataSize = 0;
 	};
 
@@ -22,22 +44,20 @@ namespace Engine
 		struct phold;
 
 	public:
-		bool SetAudioEffect(AudioBufferData& BuffData);
+		~AudioBuffer();
+
+		static Ref<AudioBuffer> Create();
+
+		bool SetAudioEffect(Ref<AudioBufferData> BuffData);
 		bool RemoveAudioEffect();
 
-		explicit AudioBuffer(const phold&) : AudioBuffer() { }
+		unsigned int GetBufferID() const { return AudioEffectBuffer; }
 
-		friend class AudioSource;
-		friend class AudioEngine;
+		explicit AudioBuffer(const phold&) : AudioBuffer() { }
 
 	private:
 		AudioBuffer() = default;
 		AudioBuffer(const AudioBuffer&) = default;
-
-		const AudioBuffer& operator =(const AudioBuffer& other)
-		{
-			AudioEffectBuffer = other.AudioEffectBuffer;
-		}
 
 		struct phold {
 			explicit phold(int) {}

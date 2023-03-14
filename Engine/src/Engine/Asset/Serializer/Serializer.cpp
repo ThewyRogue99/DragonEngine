@@ -5,19 +5,19 @@ namespace Engine
 {
 	namespace Serializer
 	{
-		AudioBufferData DeserializeAudio(Ref<AssetMetadata> Metadata)
+		Ref<AudioBufferData> DeserializeAudio(Ref<AssetMetadata> Metadata)
 		{
-			AudioBufferData result;
 			MemoryMap& MetadataMap = Metadata->GetFields();
 
-			result.Channels = MetadataMap.GetField<int>("Channels");
-			result.SampleSize = MetadataMap.GetField<int>("SampleSize");
-			result.SampleRate = MetadataMap.GetField<uint32_t>("SampleRate");
+			int Channels = MetadataMap.GetField<int>("Channels");
+			int SampleSize = MetadataMap.GetField<int>("SampleSize");
+			uint32_t SampleRate = MetadataMap.GetField<uint32_t>("SampleRate");
+
+			Ref<AudioBufferData> result = AudioBufferData::Create(Channels, SampleSize, SampleRate);
 
 			MemoryMap::FieldData FData = MetadataMap.GetFieldData("Data");
-			
-			memcpy((void*)result.Data, FData.DataPtr, FData.DataSize);
-			result.DataSize = FData.DataSize;
+
+			result->SetData(FData.DataPtr, FData.DataSize);
 
 			return result;
 		}

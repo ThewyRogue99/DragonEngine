@@ -15,6 +15,10 @@ namespace Engine
 	public:
 		explicit AudioSource(const phold& hold) : AudioSource() { }
 
+		~AudioSource();
+
+		unsigned int GetSourceID() const { return Source; }
+
 		void SetBuffer(Ref<AudioBuffer> Buff);
 		Ref<AudioBuffer> GetBuffer() const { return Buffer; }
 
@@ -56,7 +60,7 @@ namespace Engine
 
 		bool LoopSound = false;
 
-		unsigned int Source;
-		Ref<AudioBuffer> Buffer;
+		unsigned int Source = 0;
+		Ref<AudioBuffer> Buffer = nullptr;
 	};
 }

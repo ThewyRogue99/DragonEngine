@@ -107,11 +107,12 @@ namespace Engine
 
 		Ref<Asset> AudioAsset = AssetManager::LoadAsset(AudioID);
 
-		if (AudioAsset->GetInfo().Type == AssetType::Audio)
+		if (AudioAsset && AudioAsset->GetInfo().Type == AssetType::Audio)
 		{
 			Source = AudioEngine::CreateAudioSource();
 
-			Ref<AudioBuffer> Buff = AudioEngine::CreateAudioBuffer(Serializer::DeserializeAudio(AudioAsset->Metadata));
+			Ref<AudioBuffer> Buff = AudioBuffer::Create();
+			Buff->SetAudioEffect(Serializer::DeserializeAudio(AudioAsset->Metadata));
 
 			Source->SetBuffer(Buff);
 		}

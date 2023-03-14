@@ -11,6 +11,6 @@ namespace Engine
 {
 	namespace Serializer
 	{
-		AudioBufferData DeserializeAudio(Ref<AssetMetadata> Metadata);
+		Ref<AudioBufferData> DeserializeAudio(Ref<AssetMetadata> Metadata);
 	}
 }

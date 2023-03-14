@@ -12,13 +12,28 @@ namespace Engine
 
 	void AudioSource::Destroy()
 	{
-		alDeleteSources(1, &Source);
+		if (Source)
+		{
+			alDeleteSources(1, &Source);
+			Source = 0;
+		}
+
+		if (Buffer)
+		{
+			Buffer->RemoveAudioEffect();
+			Buffer = nullptr;
+		}
+	}
+
+	AudioSource::~AudioSource()
+	{
+		Destroy();
 	}
 
 	void AudioSource::SetBuffer(Ref<AudioBuffer> Buff)
 	{
 		Buffer = Buff;
-		alSourcei(Source, AL_BUFFER, Buffer->AudioEffectBuffer);
+		alSourcei(Source, AL_BUFFER, Buffer->GetBufferID());
 	}
 
 	void AudioSource::SetPitch(float pitch)
