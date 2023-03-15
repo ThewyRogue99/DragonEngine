@@ -306,63 +306,65 @@ namespace Engine
 
 	Ref<Asset> AssetManager::LoadAsset(const std::string& AssetID)
 	{
-		if (!bIsAssetManagerInit) return nullptr;
-
-		auto& it = AssetList.find(AssetID);
-		if (it != AssetList.end())
+		if (bIsAssetManagerInit)
 		{
-			WeakRef<Asset>& WeakAsset = it->second.second;
-
-			// Check if an asset is already loaded
-			if (WeakAsset.expired())
+			auto& it = AssetList.find(AssetID);
+			if (it != AssetList.end())
 			{
-				AssetInfo* info = it->second.first;
+				WeakRef<Asset>& WeakAsset = it->second.second;
 
-				CString w_id = TypeUtils::FromUTF8(AssetID);
-				CString FullPath = (ContentPath / info->Path) / (w_id + L".deasset");
-
-				std::ifstream f(FullPath, std::ios::in | std::ios::binary);
-				if (f.is_open())
+				// Check if an asset is already loaded
+				if (WeakAsset.expired())
 				{
-					Ref<Asset> AssetRef = CreateRef<Asset>(Asset::phold{ 0 });
-					AssetRef->Info = info;
-					AssetRef->Metadata = AssetMetadata::Create();
-					AssetRef->Read(f);
+					AssetInfo* info = it->second.first;
 
-					WeakAsset = AssetRef;
-
-					f.close();
-
-					return AssetRef;
-				}
-			}
-			else
-			{
-				Ref<Asset> AssetRef = WeakAsset.lock();
-
-				if (AssetRef->IsLoaded())
-				{
-					return AssetRef;
-				}
-				else
-				{
 					CString w_id = TypeUtils::FromUTF8(AssetID);
-
-					CString FullPath = (ContentPath / AssetRef->GetInfo().Path) / (w_id + L".deasset");
+					CString FullPath = (ContentPath / info->Path) / (w_id + L".deasset");
 
 					std::ifstream f(FullPath, std::ios::in | std::ios::binary);
 					if (f.is_open())
 					{
+						Ref<Asset> AssetRef = CreateRef<Asset>(Asset::phold{ 0 });
+						AssetRef->Info = info;
 						AssetRef->Metadata = AssetMetadata::Create();
 						AssetRef->Read(f);
+
+						WeakAsset = AssetRef;
 
 						f.close();
 
 						return AssetRef;
 					}
 				}
+				else
+				{
+					Ref<Asset> AssetRef = WeakAsset.lock();
+
+					if (AssetRef->IsLoaded())
+					{
+						return AssetRef;
+					}
+					else
+					{
+						CString w_id = TypeUtils::FromUTF8(AssetID);
+
+						CString FullPath = (ContentPath / AssetRef->GetInfo().Path) / (w_id + L".deasset");
+
+						std::ifstream f(FullPath, std::ios::in | std::ios::binary);
+						if (f.is_open())
+						{
+							AssetRef->Metadata = AssetMetadata::Create();
+							AssetRef->Read(f);
+
+							f.close();
+
+							return AssetRef;
+						}
+					}
+				}
 			}
 		}
+
 
 		return nullptr;
 	}

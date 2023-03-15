@@ -8,14 +8,14 @@ namespace Engine
 	class OpenGLTexture2D : public Texture2D
 	{
 	public:
-		OpenGLTexture2D(uint32_t width, uint32_t height);
+		OpenGLTexture2D(uint32_t width, uint32_t height, uint32_t channels = 4);
 
 		virtual ~OpenGLTexture2D();
 
 		inline virtual uint32_t GetWidth() const override { return Width; }
 		inline virtual uint32_t GetHeight() const override { return Height; }
 
-		virtual void SetData(void* data, uint32_t size, uint32_t channels = 4) override;
+		virtual void SetData(void* data, uint32_t size) override;
 
 		virtual void Bind(uint32_t slot = 0) const override;
 

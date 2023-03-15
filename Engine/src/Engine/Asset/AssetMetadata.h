@@ -26,53 +26,6 @@ namespace Engine
 		AssetMetadata() = default;
 		AssetMetadata(const AssetMetadata&) = default;
 
-	private:
-		class TableHeader
-		{
-		public:
-			TableHeader() = default;
-			TableHeader(const TableHeader&) = default;
-
-			std::string fieldName;
-
-			friend std::ostream& operator <<(std::ostream& ss, const TableHeader& header)
-			{
-				return TableHeader::WriteStream(ss, header);
-			}
-
-			friend std::istream& operator >>(std::istream& ss, TableHeader& header)
-			{
-				return TableHeader::ReadStream(ss, header);
-			}
-
-		private:
-			static std::ostream& WriteStream(std::ostream& ss, const TableHeader& header);
-			static std::istream& ReadStream(std::istream& ss, TableHeader& header);
-		};
-
-		class FieldHeader
-		{
-		public:
-			FieldHeader() = default;
-			FieldHeader(const FieldHeader&) = default;
-
-			MemoryMap::FieldData Data;
-
-			friend std::ostream& operator <<(std::ostream& ss, const FieldHeader& header)
-			{
-				return FieldHeader::WriteStream(ss, header);
-			}
-
-			friend std::istream& operator >>(std::istream& ss, FieldHeader& header)
-			{
-				return FieldHeader::ReadStream(ss, header);
-			}
-
-		private:
-			static std::ostream& WriteStream(std::ostream& ss, const FieldHeader& header);
-			static std::istream& ReadStream(std::istream& ss, FieldHeader& header);
-		};
-
 		struct phold {
 			explicit phold(int) {}
 		};

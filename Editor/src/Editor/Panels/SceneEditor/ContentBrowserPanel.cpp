@@ -415,7 +415,9 @@ namespace Engine
 			DrawCreatedContent(DidReload);
 		}
 		else
+		{
 			DrawUncreatedContent();
+		}
 	}
 
 	void ContentBrowserPanel::BrowserContent::DrawUncreatedContent()

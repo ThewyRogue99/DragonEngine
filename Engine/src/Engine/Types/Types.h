@@ -3,6 +3,9 @@
 // These types are temporary
 #include <string>
 
+#include <ostream>
+#include <istream>
+
 #pragma warning(push, 0)
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/bundled/format.h>
@@ -78,6 +81,9 @@ namespace Engine
 			return s;
 		}
 
+		void Write(std::ostream& ss);
+		void Read(std::istream& ss);
+
 		FieldData& GetFieldData(const std::string& field);
 		const FieldData& GetFieldData(const std::string& field) const;
 
@@ -105,6 +111,53 @@ namespace Engine
 
 			return *this;
 		}
+
+	private:
+		class TableHeader
+		{
+		public:
+			TableHeader() = default;
+			TableHeader(const TableHeader&) = default;
+
+			std::string fieldName;
+
+			friend std::ostream& operator <<(std::ostream& ss, const TableHeader& header)
+			{
+				return TableHeader::WriteStream(ss, header);
+			}
+
+			friend std::istream& operator >>(std::istream& ss, TableHeader& header)
+			{
+				return TableHeader::ReadStream(ss, header);
+			}
+
+		private:
+			static std::ostream& WriteStream(std::ostream& ss, const TableHeader& header);
+			static std::istream& ReadStream(std::istream& ss, TableHeader& header);
+		};
+
+		class FieldHeader
+		{
+		public:
+			FieldHeader() = default;
+			FieldHeader(const FieldHeader&) = default;
+
+			MemoryMap::FieldData Data;
+
+			friend std::ostream& operator <<(std::ostream& ss, const FieldHeader& header)
+			{
+				return FieldHeader::WriteStream(ss, header);
+			}
+
+			friend std::istream& operator >>(std::istream& ss, FieldHeader& header)
+			{
+				return FieldHeader::ReadStream(ss, header);
+			}
+
+		private:
+			static std::ostream& WriteStream(std::ostream& ss, const FieldHeader& header);
+			static std::istream& ReadStream(std::istream& ss, FieldHeader& header);
+		};
 
 	private:
 		FieldMap FieldTable = { };

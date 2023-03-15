@@ -39,8 +39,8 @@ namespace Engine
 				unsigned char* data = stbi_load(path_str.c_str(), &width, &height, &channels, 0);
 				if (data)
 				{
-					Ref<Texture2D> IconTexture = Texture2D::Create(width, height);
-					IconTexture->SetData(data, width * height * channels, channels);
+					Ref<Texture2D> IconTexture = Texture2D::Create(width, height, channels);
+					IconTexture->SetData(data, width * height * channels);
 
 					IconMap[entryPath.stem()] = IconTexture;
 				}

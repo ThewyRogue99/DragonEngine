@@ -22,8 +22,8 @@ namespace Engine
 
 		if (data.DataPtr)
 		{
-			Ref<Texture2D> result = Texture2D::Create(width, height);
-			result->SetData(data.DataPtr, (uint32_t)data.DataSize, (uint32_t)channels);
+			Ref<Texture2D> result = Texture2D::Create(width, height, (uint32_t)channels);
+			result->SetData(data.DataPtr, (uint32_t)data.DataSize);
 
 			return result;
 		}
