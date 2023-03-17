@@ -26,7 +26,8 @@ namespace Engine
 			new SceneHierarchyPanel(),
 			new ToolbarPanel(),
 			new ConsolePanel(),
-			new ContentBrowserPanel()
+			new ContentBrowserPanel(),
+			new PerformancePanel()
 		});
 
 		if (!ProjectManager::IsProjectLoaded())
@@ -155,6 +156,18 @@ namespace Engine
 						else
 						{
 							PManager.GetPanel("Content Browser")->ClosePanel();
+						}
+					}
+
+					if (ImGui::MenuItem("Performance", nullptr, &(Data.bContentBrowserOpen)))
+					{
+						if (Data.bContentBrowserOpen)
+						{
+							PManager.GetPanel("Performance")->OpenPanel();
+						}
+						else
+						{
+							PManager.GetPanel("Performance")->ClosePanel();
 						}
 					}
 

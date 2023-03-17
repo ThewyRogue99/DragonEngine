@@ -5,3 +5,4 @@
 #include "ViewportPanel.h"
 #include "ToolbarPanel.h"
 #include "ConsolePanel.h"
+#include "PerformancePanel.h"

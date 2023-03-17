@@ -43,20 +43,33 @@ namespace Engine
 
 	void SceneRenderer::Render()
 	{
+		DE_PROFILE_FUNCTION();
+
 		if (ActiveScene)
 		{
 			// Sprite Rendering
 			{
-				auto view = ActiveScene->SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
+				entt::basic_view<entt::entity, entt::get_t<Engine::TransformComponent, Engine::SpriteRendererComponent>, entt::exclude_t<>, void> view;
+
+				{
+					DE_PROFILE_SCOPE("Creating View");
+					view = ActiveScene->SceneRegistry.view<TransformComponent, SpriteRendererComponent>();
+				}
+
 				for (auto entity : view)
 				{
-					auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-
 					QuadDrawProperties Props;
-					Props.Transform = transform.GetTransformMat4();
-					Props.Color = sprite.Color;
-					Props.TextureRef = sprite.Texture;
-					Props.TilingFactor = sprite.TilingFactor;
+
+					{
+						DE_PROFILE_SCOPE("Getting Components");
+
+						auto& [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+
+						Props.Transform = transform.GetTransformMat4();
+						Props.Color = sprite.Color;
+						Props.TextureRef = sprite.Texture;
+						Props.TilingFactor = sprite.TilingFactor;
+					}
 
 					Renderer2D::DrawQuad(Props, (int)entity);
 				}

@@ -362,6 +362,8 @@ namespace Engine
 
 	void Renderer2D::FlushQuads()
 	{
+		DE_PROFILE_FUNCTION();
+
 		// Bind textures
 		for (uint32_t i = 0; i < CurrentFrameData.TextureSlotIndex; i++)
 			CurrentFrameData.TextureSlots[i]->Bind(i);
