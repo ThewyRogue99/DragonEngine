@@ -72,7 +72,12 @@
 		}
 	}
 
-	public class Rigidbody2DComponent : Component
+    public class SpriteRendererComponent : Component
+    {
+
+    }
+
+    public class Rigidbody2DComponent : Component
 	{
 		public void ApplyLinearImpulse(Vector2 impulse, Vector2 worldPosition, bool wake)
 		{

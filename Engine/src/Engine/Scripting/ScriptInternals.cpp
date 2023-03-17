@@ -21,6 +21,7 @@ namespace Engine
 #define DE_ADD_INTERNAL_CALL(Name) mono_add_internal_call("DragonEngine.InternalCalls::" #Name, Name)
 
 	static std::unordered_map<MonoType*, std::function<bool(Entity)>> EntityHasComponentFunctions = { };
+	static std::unordered_map<MonoType*, std::function<bool(Entity)>> EntityAddComponentFunctions = { };
 
 	template<typename... Component>
 	static void RegisterComponent()
@@ -41,6 +42,7 @@ namespace Engine
 			}
 
 			EntityHasComponentFunctions[managedType] = [](Entity entity) { return entity.HasComponent<Component>(); };
+			EntityAddComponentFunctions[managedType] = [](Entity entity) { entity.AddComponent<Component>(); return true; };
 		}(), ...);
 	}
 
@@ -253,6 +255,23 @@ namespace Engine
 			if (type)
 			{
 				return EntityHasComponentFunctions.at(type)(entity);
+			}
+		}
+
+		return false;
+	}
+
+	static bool Entity_AddComponent(MonoString* EntityID, MonoReflectionType* ComponentType)
+	{
+		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+
+		if (entity.IsValid())
+		{
+			MonoType* type = mono_reflection_type_get_type(ComponentType);
+
+			if (type)
+			{
+				return EntityAddComponentFunctions.at(type)(entity);
 			}
 		}
 
@@ -665,6 +684,7 @@ namespace Engine
 
 		// Entity
 		DE_ADD_INTERNAL_CALL(Entity_HasComponent);
+		DE_ADD_INTERNAL_CALL(Entity_AddComponent);
 
 		// TagComponent
 		DE_ADD_INTERNAL_CALL(TagComponent_GetTag);

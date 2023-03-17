@@ -56,6 +56,9 @@ namespace DragonEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal extern static bool Entity_HasComponent(string EntityID, Type ComponentType);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal extern static bool Entity_AddComponent(string EntityID, Type ComponentType);
+
         #endregion
 
         #region TagComponent

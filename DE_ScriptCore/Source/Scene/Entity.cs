@@ -42,6 +42,21 @@ namespace DragonEngine
             return component;
         }
 
+        public T AddComponent<T>() where T : Component, new()
+        {
+            if (HasComponent<T>())
+                return null;
+
+            Type componentType = typeof(T);
+            if (InternalCalls.Entity_AddComponent(ID, componentType))
+            {
+                T component = new T() { Entity = this };
+                return component;
+            }
+
+            return null;
+        }
+
         public override bool Equals(object obj)
         {
             if(obj != null)
