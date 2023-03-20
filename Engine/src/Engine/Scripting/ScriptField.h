@@ -28,65 +28,60 @@ namespace Engine
 		Hidden
 	};
 
-	class ScriptField
+	class ScriptFieldInfo
 	{
 	public:
-		ScriptField(MonoClassField* Field);
-
 		const std::string& GetName() const { return Name; }
 		const ScriptFieldType GetFieldType() const { return FieldType; }
 		const ScriptFieldVisibility GetFieldVisibility() const { return FieldVisibility; }
 
-		void Set(Script* ScriptObject);
+		size_t GetFieldSize() const;
 
-		template<typename T>
-		void SetValue(Script* ScriptObject, T* value);
+		bool IsSameField(const ScriptFieldInfo& field);
 
-		template<typename T>
-		void SetBufferValue(T* value)
-		{
-			if (FieldBuffer)
-				delete FieldBuffer;
-
-			FieldBuffer = new T(*value);
-			BufferSize = sizeof(T);
-		}
-
-		void Get(Script* ScriptObject);
-
-		template<typename T>
-		const T& GetValue(Script* ScriptObject);
-
-		template<typename T>
-		const T& GetBufferValue()
-		{
-			if (!FieldBuffer)
-			{
-				FieldBuffer = new T();
-				BufferSize = sizeof(T);
-			}
-
-			return *((T*)FieldBuffer);
-		}
-
-		void* GetBufferData() const { return FieldBuffer; }
-		size_t GetBufferSize() const { return BufferSize; }
-
-		void SetBufferData(void* Data, size_t size);
-
-		bool IsSameField(const ScriptField& field);
-
+		friend class ScriptField;
 		friend class ScriptEngine;
+
+	private:
+		ScriptFieldInfo(MonoClassField* Field);
 
 	private:
 		MonoClassField* ClassField = nullptr;
 
 		std::string Name;
 
-		void* FieldBuffer = nullptr;
-		size_t BufferSize = 0;
-
 		ScriptFieldType FieldType = ScriptFieldType::None;
 		ScriptFieldVisibility FieldVisibility = ScriptFieldVisibility::Hidden;
+	};
+
+	class ScriptField
+	{
+	public:
+		bool IsValid() const { return ScriptObject && Info; }
+
+		const ScriptFieldInfo* GetInfo() const { return Info; }
+
+		void SetValue(void* value) const;
+
+		void GetValue(void* value) const;
+
+		template<typename T>
+		void Set(T* value) const;
+
+		template<typename T>
+		void Get(T* value) const;
+
+		friend class Script;
+
+	private:
+		ScriptField() : ScriptField(nullptr, nullptr) { }
+
+		ScriptField(MonoObject* ScriptObject, const ScriptFieldInfo* Info)
+			: ScriptObject(ScriptObject), Info(Info) { }
+
+	private:
+		MonoObject* ScriptObject;
+
+		const ScriptFieldInfo* Info ;
 	};
 }

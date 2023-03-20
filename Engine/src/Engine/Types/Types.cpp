@@ -54,7 +54,7 @@ namespace Engine
 		}
 	}
 
-	void MemoryMap::SetField(const std::string& field, MemoryMap& data)
+	void MemoryMap::SetMapField(const std::string& field, MemoryMap& data)
 	{
 		MemoryMap* copyData = new MemoryMap();
 		data.Copy(*copyData);
@@ -91,7 +91,7 @@ namespace Engine
 		return FieldTable.at(field);
 	}
 
-	void MemoryMap::Copy(MemoryMap& CopyData)
+	void MemoryMap::Copy(MemoryMap& CopyData) const
 	{
 		FieldMap& CopyTable = CopyData.FieldTable;
 		CopyTable.clear();

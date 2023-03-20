@@ -13,6 +13,18 @@ namespace Engine
 		Clear();
 	}
 
+	void Script::GenerateFields()
+	{
+		const std::vector<ScriptFieldInfo>& FieldInfos = Info->GetScriptFieldInfos();
+
+		Fields.clear();
+
+		for (int i = 0; i < FieldInfos.size(); i++)
+		{
+			Fields.push_back(ScriptField(ScriptObject, &(FieldInfos[i])));
+		}
+	}
+
 	bool Script::BeginPlay()
 	{
 		if (ScriptObject && BeginPlayMethod)
@@ -76,6 +88,21 @@ namespace Engine
 				mono_runtime_invoke(AttachToEntityMethod, ScriptObject, (void**)&str, nullptr);
 			}
 		}
+	}
+
+	ScriptField Script::GetField(const std::string& FieldName) const
+	{
+		auto it = std::find_if(Fields.begin(), Fields.end(), [FieldName](const ScriptField& field)
+		{
+			return field.GetInfo()->GetName() == FieldName;
+		});
+
+		if (it != Fields.end())
+		{
+			return *it;
+		}
+
+		return ScriptField(nullptr, nullptr);
 	}
 
 	void Script::Clear()

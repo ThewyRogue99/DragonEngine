@@ -14,6 +14,8 @@
 #include "Engine/Asset/TextureManager.h"
 #include "Editor/Asset/Serializer/Serializer.h"
 
+#include "Engine/Scripting/ScriptEngine.h"
+
 #include "Editor/Tools/EditorTool.h"
 #include "Editor/Tools/ResourceTool.h"
 

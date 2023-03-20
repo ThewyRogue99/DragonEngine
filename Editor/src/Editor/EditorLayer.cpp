@@ -94,8 +94,6 @@ namespace Engine
 			EditorTool::EditorDockspaceID = dockspace_id;
 		}
 
-		auto stats = Engine::Renderer2D::GetStats();
-
 		PManager.Render(DeltaTime);
 
 		style.WindowMinSize.x = minWinSizeX;

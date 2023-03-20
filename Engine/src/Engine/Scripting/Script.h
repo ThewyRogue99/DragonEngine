@@ -13,26 +13,43 @@ extern "C" {
 
 namespace Engine
 {
+	class ScriptInfo;
+
 	class Script
 	{
 	public:
 		~Script();
 
-		bool BeginPlay();
-
-		bool Update(float DeltaTime);
-
 		void AttachToEntity(Entity entity);
 
-		friend class ScriptEngine;
-		friend class ScriptField;
+		ScriptField GetField(const std::string& FieldName) const;
+		const std::vector<ScriptField>& GetFields() const { return Fields; }
+
+		MonoObject* GetScriptObject() const { return ScriptObject; }
 
 		Script(const Script&) = delete;
 		const Script& operator =(const Script&) = delete;
 
+		friend class ScriptEngine;
+
 	private:
-		Script(MonoObject* ScriptObject, uint32_t GCHandle)
-			: ScriptObject(ScriptObject), GCHandle(GCHandle) { }
+		struct phold {
+			explicit phold(int) {}
+		};
+
+	public:
+		explicit Script(const phold&, MonoObject* ScriptObject, uint32_t GCHandle, ScriptInfo* Info)
+			: Script(ScriptObject, GCHandle, Info) { }
+
+	private:
+		Script(MonoObject* ScriptObject, uint32_t GCHandle, ScriptInfo* Info)
+			: ScriptObject(ScriptObject), GCHandle(GCHandle), Info(Info) { GenerateFields(); }
+
+		void GenerateFields();
+
+		bool BeginPlay();
+
+		bool Update(float DeltaTime);
 
 		void Clear();
 
@@ -42,20 +59,26 @@ namespace Engine
 		MonoObject* ScriptObject = nullptr;
 		uint32_t GCHandle = 0;
 
+		ScriptInfo* Info = nullptr;
+
+		std::vector<ScriptField> Fields = { };
+
 		MonoMethod* AttachToEntityMethod = nullptr;
 		MonoMethod* BeginPlayMethod = nullptr;
 		MonoMethod* UpdateMethod = nullptr;
 	};
 
-	class ScriptData
+	class ScriptInfo
 	{
 	public:
 		const std::string& GetName() const { return Name; }
 		const std::string& GetNameSpace() const { return NameSpace; }
 		const MonoClass* GetClass() const { return Class; }
-		std::vector<ScriptField>& GetFields() { return Fields; }
 
-		bool IsSame(const ScriptData& Data) const
+		const std::vector<ScriptFieldInfo>& GetScriptFieldInfos() const
+			{ return ScriptFieldInfoList; }
+
+		bool IsSame(const ScriptInfo& Data) const
 		{
 			return (Data.Name == Name) && (Data.NameSpace == NameSpace);
 		}
@@ -63,8 +86,8 @@ namespace Engine
 		friend class ScriptEngine;
 
 	private:
-		ScriptData(const std::string& Name, const std::string& NameSpace, MonoClass* Class)
-			: Name(Name), NameSpace(NameSpace), Class(Class) { }
+		ScriptInfo(const std::string& NameSpace,const std::string& Name, MonoClass* Class)
+			: NameSpace(NameSpace), Name(Name), Class(Class) { }
 
 	private:
 		std::string Name;
@@ -72,6 +95,6 @@ namespace Engine
 
 		MonoClass* Class = nullptr;
 
-		std::vector<ScriptField> Fields = { };
+		std::vector<ScriptFieldInfo> ScriptFieldInfoList = { };
 	};
 }

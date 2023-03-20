@@ -154,12 +154,12 @@ namespace Engine
 
 	COMPONENT_CLASS(ScriptComponent,
 	public:
-		Script* ScriptObject;
+		Ref<Script> ScriptObject = nullptr;
 
 		std::string Name = "";
 		std::string Namespace = "";
 
-		std::vector<ScriptField>* Fields = nullptr;
+		MemoryMap Fields;
 
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;

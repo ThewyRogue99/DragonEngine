@@ -1,5 +1,6 @@
 #include "ProjectTools.h"
 
+#include "Editor/Scene/EditorSceneManager.h"
 #include "Engine/Scripting/ScriptEngine.h"
 
 #include "Engine/Debug/Debug.h"
@@ -14,7 +15,7 @@ namespace Engine
 	namespace ProjectTools
 	{
 #ifdef ENGINE_PLATFORM_WINDOWS
-	#ifdef ENGINE_BUILD_DEBUG
+	#if !defined(ENGINE_BUILD_DIST)
 		#define PREMAKE_PATH "..\\vendor\\premake\\bin\\premake5.exe"
 		#define SCRIPT_CORE_PATH L"..\\bin\\Resources\\Scripts\\DE_ScriptCore.dll"
 	#else
@@ -114,6 +115,19 @@ namespace Engine
 
 			bool result = ScriptEngine::Load(bShouldReload);
 			bShouldReload = true;
+
+			Scene* ActiveScene = EditorSceneManager::GetEditorScene();
+
+			// Update fields
+			for (auto& ent : ActiveScene->GetEntities())
+			{
+				if (ent.HasComponent<ScriptComponent>())
+				{
+					auto& sc = ent.GetComponent<ScriptComponent>();
+
+					ScriptEngine::GetScriptDefaultFields(sc.Namespace, sc.Name, sc.Fields);
+				}
+			}
 
 			return result;
 		}

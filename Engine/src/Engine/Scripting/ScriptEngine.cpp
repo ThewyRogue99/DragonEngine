@@ -37,8 +37,8 @@ namespace Engine
 	static AssemblyInfo CoreAssembly;
 	static AssemblyInfo AppAssembly;
 
-	static std::vector<Script*> ScriptObjectList = { };
-	static std::vector<ScriptData> ScriptDataList = { };
+	static std::vector<Ref<Script>> ScriptObjectList = { };
+	static std::vector<ScriptInfo*> ScriptInfoList = { };
 
 	namespace Utils
 	{
@@ -85,6 +85,7 @@ namespace Engine
 				const char* errorMessage = mono_image_strerror(status);
 				DE_ERROR(ScriptEngine, errorMessage);
 
+				mono_free((void*)errorMessage);
 				delete[] data.Data;
 				return nullptr;
 			}
@@ -118,7 +119,10 @@ namespace Engine
 
 		mono_jit_cleanup(RootDomain);
 
-		ScriptDataList.clear();
+		for (auto info : ScriptInfoList)
+			delete info;
+
+		ScriptInfoList.clear();
 
 		DE_WARN(ScriptEngine, "Shutting down ScriptEngine");
 	}
@@ -137,10 +141,31 @@ namespace Engine
 
 		DE_INFO(ScriptEngine, "Running ScriptEngine");
 
-		for (auto script : ScriptObjectList)
+		std::vector<std::vector<Ref<Script>>::iterator> itList;
+
+		for (auto it = ScriptObjectList.begin(); it != ScriptObjectList.end(); it++)
 		{
-			if(script)
-				script->BeginPlay();
+			if (*it)
+			{
+				if (it->use_count() > 1)
+				{
+					(*it)->BeginPlay();
+				}
+				else
+				{
+					it->reset();
+					itList.push_back(it);
+				}
+			}
+			else
+			{
+				itList.push_back(it);
+			}
+		}
+
+		for (auto& it : itList)
+		{
+			ScriptObjectList.erase(it);
 		}
 	}
 
@@ -149,9 +174,6 @@ namespace Engine
 		bShouldRun = false;
 
 		DE_WARN(ScriptEngine, "Stopping ScriptEngine");
-
-		for (auto ptr : ScriptObjectList)
-			delete ptr;
 
 		ScriptObjectList.clear();
 	}
@@ -213,22 +235,22 @@ namespace Engine
 		return LoadCore() && LoadApp(Reload);
 	}
 
-	void ScriptEngine::GetFields(ScriptData& data)
+	void ScriptEngine::GetScriptFields(ScriptInfo* info)
 	{
 		// Get Fields
-		int fieldCount = mono_class_num_fields(data.Class);
+		int fieldCount = mono_class_num_fields(info->Class);
 		MonoClassField* iterator = nullptr;
 
 		for (int i = 0; i < fieldCount; i++)
 		{
-			mono_class_get_fields(data.Class, (void**)&iterator);
+			mono_class_get_fields(info->Class, (void**)&iterator);
 
 			ScriptFieldVisibility visibility = ScriptFieldVisibility::Hidden;
 
 			if ((mono_field_get_flags(iterator) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK) == MONO_FIELD_ATTR_PUBLIC)
 				visibility = ScriptFieldVisibility::Visible;
 
-			MonoCustomAttrInfo* inf = mono_custom_attrs_from_field(data.Class, iterator);
+			MonoCustomAttrInfo* inf = mono_custom_attrs_from_field(info->Class, iterator);
 			if (inf)
 			{
 				MonoArray* attrArray = mono_custom_attrs_construct(inf);
@@ -254,29 +276,22 @@ namespace Engine
 
 			if (visibility != ScriptFieldVisibility::Hidden)
 			{
-				ScriptField f(iterator);
+				ScriptFieldInfo f(iterator);
 				f.FieldVisibility = visibility;
 
-				auto& it = std::find_if(data.Fields.begin(), data.Fields.end(), [&f](const ScriptField& field)
-				{
-					return f.GetName() == field.GetName();
-				});
-
-				if (it != data.Fields.end())
-				{
-					(*it).FieldVisibility = visibility;
-					(*it).ClassField = iterator;
-				}
-				else
-				{
-					data.Fields.push_back(f);
-				}
+				info->ScriptFieldInfoList.push_back(f);
 			}
 		}
 	}
 
 	void ScriptEngine::LoadAllScripts(bool Reload)
 	{
+		for (auto info : ScriptInfoList)
+			delete info;
+
+		ScriptInfoList.clear();
+		ScriptObjectList.clear();
+
 		MonoImage* CoreImage = CoreAssembly.Image;
 		MonoImage* AppImage = AppAssembly.Image;
 
@@ -302,81 +317,63 @@ namespace Engine
 				bool isScript = mono_class_is_subclass_of(scriptClass, scriptBaseClass, false);
 				if (isScript)
 				{
-					ScriptData data(name, nameSpace, scriptClass);
-					
-					if (Reload)
-					{
-						auto& it = std::find_if(ScriptDataList.begin(), ScriptDataList.end(), [data](const ScriptData& d)
-						{
-							return data.IsSame(d);
-						});
+					ScriptInfo* data = new ScriptInfo(nameSpace, name, scriptClass);
 
-						if (it != ScriptDataList.end())
-						{
-							(*it).Class = scriptClass;
-							GetFields(*it);
-						}
-					}
-					else
-					{
-						GetFields(data);
-						ScriptDataList.push_back(data);
+					GetScriptFields(data);
 
-						DE_LOG(ScriptEngine, "Loading Script: {0}.{1}", nameSpace, name);
-					}
+					DE_LOG(ScriptEngine, "Loaded Script: {0}.{1}", nameSpace, name);
+
+					ScriptInfoList.push_back(data);
 				}
 			}
 		}
 	}
 
-	ScriptData* ScriptEngine::GetScriptData(const std::string& ScriptNamespace, const std::string& ScriptName)
+	ScriptInfo* ScriptEngine::GetScriptInfo(const std::string& ScriptNamespace, const std::string& ScriptName)
 	{
 		if (!ScriptName.empty())
 		{
-			auto it = std::find_if(ScriptDataList.begin(), ScriptDataList.end(), [ScriptNamespace, ScriptName](const ScriptData& data)
+			auto it = std::find_if(ScriptInfoList.begin(), ScriptInfoList.end(), [ScriptNamespace, ScriptName](ScriptInfo* info)
 			{
-				return (data.Name == ScriptName) && (data.NameSpace == ScriptNamespace);
+				return (info->Name == ScriptName) && (info->NameSpace == ScriptNamespace);
 			});
 
-			if (it != ScriptDataList.end())
+			if (it != ScriptInfoList.end())
 			{
-				return &(*it);
+				return (*it);
 			}
 		}
 
 		return nullptr;
 	}
 
-	Script* ScriptEngine::NewScript(const std::string& ScriptNamespace, const std::string& ScriptName)
+	Ref<Script> ScriptEngine::NewScript(const std::string& ScriptNamespace, const std::string& ScriptName)
 	{
-		const ScriptData* data = GetScriptData(ScriptNamespace, ScriptName);
+		ScriptInfo* info = GetScriptInfo(ScriptNamespace, ScriptName);
 
-		if (data)
+		MonoObject* ScriptObject = mono_object_new(AppDomain, info->Class);
+		if (ScriptObject)
 		{
-			MonoObject* ScriptObject = mono_object_new(AppDomain, data->Class);
-			if (ScriptObject)
-			{
-				mono_runtime_object_init(ScriptObject);
+			DE_INFO(ScriptEngine, "Created Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
 
-				uint32_t GCHandle = mono_gchandle_new(ScriptObject, false);
-				Script* newScript = new Script(ScriptObject, GCHandle);
+			mono_runtime_object_init(ScriptObject);
 
-				MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
+			uint32_t GCHandle = mono_gchandle_new(ScriptObject, false);
+			Ref<Script> newScript = CreateRef<Script>(Script::phold{ 0 }, ScriptObject, GCHandle, info);
 
-				MonoMethod* vMethod = mono_class_get_method_from_name(scriptBaseClass, "AttachToEntity", 1);
-				newScript->AttachToEntityMethod = mono_object_get_virtual_method(ScriptObject, vMethod);
+			MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
 
-				newScript->BeginPlayMethod = mono_class_get_method_from_name(data->Class, "BeginPlay", 0);
-				newScript->UpdateMethod = mono_class_get_method_from_name(data->Class, "Update", 1);
+			MonoMethod* vMethod = mono_class_get_method_from_name(scriptBaseClass, "AttachToEntity", 1);
+			newScript->AttachToEntityMethod = mono_object_get_virtual_method(ScriptObject, vMethod);
 
-				newScript->ScriptObject = ScriptObject;
+			newScript->BeginPlayMethod = mono_class_get_method_from_name(info->Class, "BeginPlay", 0);
+			newScript->UpdateMethod = mono_class_get_method_from_name(info->Class, "Update", 1);
 
-				DE_INFO("Creating Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
+			newScript->ScriptObject = ScriptObject;
 
-				ScriptObjectList.push_back(newScript);
+			ScriptObjectList.push_back(newScript);
 
-				return newScript;
-			}
+			return newScript;
 		}
 
 		DE_INFO("Failed to find Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
@@ -385,22 +382,121 @@ namespace Engine
 
 	bool ScriptEngine::ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName)
 	{
-		return GetScriptData(ScriptNamespace, ScriptName);
+		return GetScriptInfo(ScriptNamespace, ScriptName) != nullptr;
 	}
 
-	std::vector<ScriptData>& ScriptEngine::GetScriptDataList()
+	static void CopyFieldToMap(const ScriptField& Field, MemoryMap& Map)
 	{
-		return ScriptDataList;
+		const size_t buffSize = Field.GetInfo()->GetFieldSize();
+		uint8_t* buff = new uint8_t[buffSize];
+
+		Field.GetValue(buff);
+
+		MemoryMap FMap;
+
+		const ScriptFieldInfo* Info = Field.GetInfo();
+
+		ScriptFieldType Type = Info->GetFieldType();
+		ScriptFieldVisibility Visibility = Info->GetFieldVisibility();
+		FMap.SetField("Type", Type);
+		FMap.SetField("Visibility", Visibility);
+		FMap.SetField("Data", buff, buffSize);
+
+		Map.SetField(Info->GetName(), FMap);
+
+		delete[] buff;
+	}
+
+	void ScriptEngine::GetScriptDefaultFields(const std::string& ScriptNamespace, const std::string& ScriptName, MemoryMap& Result)
+	{
+		Ref<Script> defScript = NewScript(ScriptNamespace, ScriptName);
+		
+		if (Result.Empty())
+		{
+			for (auto& field : defScript->GetFields())
+			{
+				CopyFieldToMap(field, Result);
+			}
+		}
+		else
+		{
+			MemoryMap mRet;
+
+			for (auto& field : defScript->GetFields())
+			{
+				const ScriptFieldInfo* Info = field.GetInfo();
+
+				if (Result.FieldExists(Info->GetName()))
+				{
+					MemoryMap& ResultField = Result.GetField<MemoryMap>(Info->GetName());
+
+					ScriptFieldType FieldType = Info->GetFieldType();
+					ScriptFieldVisibility FieldVisibility = Info->GetFieldVisibility();
+
+					ScriptFieldType ResultType = ResultField.GetField<ScriptFieldType>("Type");
+					ScriptFieldVisibility ResultVisibility = ResultField.GetField<ScriptFieldVisibility>("Visibility");
+
+					if (ResultType == FieldType)
+					{
+						if (FieldVisibility != ScriptFieldVisibility::Hidden)
+						{
+							mRet.SetField(Info->GetName(), ResultField);
+						}
+					}
+					else
+					{
+						if (FieldVisibility != ScriptFieldVisibility::Hidden)
+						{
+							CopyFieldToMap(field, mRet);
+						}
+					}
+				}
+				else
+				{
+					CopyFieldToMap(field, mRet);
+				}
+			}
+
+			Result = mRet;
+		}
+
+		ScriptObjectList.erase(ScriptObjectList.end() - 1);
+	}
+
+	const std::vector<ScriptInfo*>& ScriptEngine::GetScriptInfoList()
+	{
+		return ScriptInfoList;
 	}
 
 	void ScriptEngine::Update(float DeltaTime)
 	{
 		if (bShouldRun)
 		{
-			for (auto script : ScriptObjectList)
+			std::vector<std::vector<Ref<Script>>::iterator> itList;
+
+			for (auto it = ScriptObjectList.begin(); it != ScriptObjectList.end(); it++)
 			{
-				if(script)
-					script->Update(DeltaTime);
+				if (*it)
+				{
+					if (it->use_count() > 1)
+					{
+						(*it)->Update(DeltaTime);
+					}
+					else
+					{
+						it->reset();
+						itList.push_back(it);
+					}
+				}
+				else
+				{
+					itList.push_back(it);
+				}
+			}
+
+			for (auto& it : itList)
+			{
+				ScriptObjectList.erase(it);
 			}
 		}
 	}

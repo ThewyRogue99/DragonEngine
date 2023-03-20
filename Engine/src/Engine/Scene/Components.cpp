@@ -123,19 +123,7 @@ namespace Engine
 		DataMap.SetStringField("Name", Name);
 		DataMap.SetStringField("Namespace", Namespace);
 
-		MemoryMap fieldData;
-		if (Fields)
-		{
-			for (auto& field : *Fields)
-			{
-				void* Data = field.GetBufferData();
-				size_t size = field.GetBufferSize();
-
-				fieldData.SetField(field.GetName(), Data, size);
-			}
-		}
-
-		DataMap.SetField("Fields", fieldData);
+		DataMap.SetField("Fields", Fields);
 	}
 
 	void ScriptComponent::OnDeserialize(const MemoryMap& DataMap)
@@ -143,24 +131,7 @@ namespace Engine
 		Name = DataMap.GetStringField<char>("Name");
 		Namespace = DataMap.GetStringField<char>("Namespace");
 
-		MemoryMap& fieldData = DataMap.GetField<MemoryMap>("Fields");
-		Fields = &ScriptEngine::GetScriptData(Namespace, Name)->GetFields();
-
-		for (auto& tuple : fieldData)
-		{
-			auto& fieldName = tuple.first;
-			auto& field = tuple.second;
-
-			auto& it = std::find_if(Fields->begin(), Fields->end(), [fieldName](const ScriptField& field)
-			{
-				return field.GetName() == fieldName;
-			});
-
-			if (it != Fields->end())
-			{
-				(*it).SetBufferData(field.DataPtr, field.DataSize);
-			}
-		}
+		Fields = DataMap.GetField<MemoryMap>("Fields");
 	}
 
 	void Rigidbody2DComponent::OnSerialize(MemoryMap& DataMap)

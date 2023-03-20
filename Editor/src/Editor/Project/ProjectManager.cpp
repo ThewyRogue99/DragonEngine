@@ -121,7 +121,6 @@ namespace Engine
 				ProjectData.Path = ParentPath;
 
 				SetAssetManager(ParentPath);
-				OnProjectLoad(ProjectData);
 
 				// Set Default Scene
 				Ref<Asset> SceneAsset = AssetManager::LoadAsset(ProjectData.StartSceneID);
@@ -147,6 +146,8 @@ namespace Engine
 					}
 					else return false;
 				}
+
+				OnProjectLoad(ProjectData);
 
 				bIsProjectLoaded = true;
 				Dispatcher.Run(ProjectData);

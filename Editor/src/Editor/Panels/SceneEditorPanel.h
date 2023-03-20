@@ -32,6 +32,7 @@ namespace Engine
 			bool bConsoleOpen = true;
 			bool bContentBrowserOpen = true;
 			bool bSceneHierarchyOpen = true;
+			bool bPerformanceOpen = false;
 		} Data;
 
 	private:

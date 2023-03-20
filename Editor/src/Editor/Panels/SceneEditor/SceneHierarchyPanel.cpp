@@ -250,27 +250,162 @@ namespace Engine
 		ImGui::PopID();
 	}
 
-	template <typename T>
-	static void HandleField(ScriptField& field, ScriptComponent& component, bool isPlaying, std::function<bool(T&)> UIFunction)
+	static void DrawFields(ScriptComponent& component)
 	{
-		if (isPlaying)
+		Ref<Script>& ScriptRef = component.ScriptObject;
+		if (ScriptRef)
 		{
-			if (component.ScriptObject)
+			for (auto& field : ScriptRef->GetFields())
 			{
-				auto& val = field.GetValue<T>(component.ScriptObject);
-				T buff = val;
+				ImGui::BeginDisabled(true);
 
-				UIFunction(buff);
+				const ScriptFieldInfo* Info = field.GetInfo();
+				const std::string& FieldName = Info->GetName();
+
+				switch (Info->GetFieldType())
+				{
+				case Engine::ScriptFieldType::Float:
+				{
+					float buff;
+					field.Get(&buff);
+
+					ImGui::DragFloat(FieldName.c_str(), &buff);
+				} break;
+				case Engine::ScriptFieldType::Double:
+					break;
+				case Engine::ScriptFieldType::Bool:
+				{
+					bool buff;
+					field.Get(&buff);
+
+					ImGui::Checkbox(FieldName.c_str(), &buff);
+				} break;
+				case Engine::ScriptFieldType::Char:
+					break;
+				case Engine::ScriptFieldType::Short:
+					break;
+				case Engine::ScriptFieldType::Int:
+				{
+					int buff;
+					field.Get(&buff);
+
+					ImGui::DragInt(FieldName.c_str(), &buff);
+				} break;
+				case Engine::ScriptFieldType::Long:
+					break;
+				case Engine::ScriptFieldType::Byte:
+					break;
+				case Engine::ScriptFieldType::UShort:
+					break;
+				case Engine::ScriptFieldType::UInt:
+					break;
+				case Engine::ScriptFieldType::ULong:
+					break;
+				case Engine::ScriptFieldType::Vector2:
+				{
+					glm::vec2 buff;
+					field.Get(&buff);
+
+					ImGui::DragFloat2(FieldName.c_str(), glm::value_ptr(buff));
+				} break;
+				case Engine::ScriptFieldType::Vector3:
+				{
+					glm::vec3 buff;
+					field.Get(&buff);
+
+					ImGui::DragFloat3(FieldName.c_str(), glm::value_ptr(buff));
+				} break;
+				case Engine::ScriptFieldType::Vector4:
+				{
+					glm::vec4 buff;
+					field.Get(&buff);
+
+					ImGui::DragFloat4(FieldName.c_str(), glm::value_ptr(buff));
+				} break;
+				case Engine::ScriptFieldType::Entity:
+					break;
+				default:
+					break;
+				}
+
+				ImGui::EndDisabled();
 			}
 		}
 		else
 		{
-			auto& val = field.GetBufferValue<T>();
-			T buff = val;
-
-			if (UIFunction(buff))
+			MemoryMap& Fields = component.Fields;
+			if (Fields.size() > 0)
 			{
-				field.SetBufferValue(&buff);
+				std::vector<ScriptFieldInfo> FieldInfos = ScriptEngine::GetScriptInfo(
+					component.Namespace,
+					component.Name
+				)->GetScriptFieldInfos();
+
+				for (auto& Info : FieldInfos)
+				{
+					const std::string& FieldName = Info.GetName();
+					MemoryMap::FieldData FData = Fields.GetField<MemoryMap>(FieldName).GetFieldData("Data");
+
+					switch (Info.GetFieldType())
+					{
+					case Engine::ScriptFieldType::Float:
+					{
+						float* buff = (float*)FData.DataPtr;
+
+						ImGui::DragFloat(FieldName.c_str(), buff);
+					} break;
+					case Engine::ScriptFieldType::Double:
+						break;
+					case Engine::ScriptFieldType::Bool:
+					{
+						bool* buff = (bool*)FData.DataPtr;
+
+						ImGui::Checkbox(FieldName.c_str(), buff);
+					} break;
+					case Engine::ScriptFieldType::Char:
+						break;
+					case Engine::ScriptFieldType::Short:
+						break;
+					case Engine::ScriptFieldType::Int:
+					{
+						int* buff = (int*)FData.DataPtr;
+
+						ImGui::DragInt(FieldName.c_str(), buff);
+					} break;
+					case Engine::ScriptFieldType::Long:
+						break;
+					case Engine::ScriptFieldType::Byte:
+						break;
+					case Engine::ScriptFieldType::UShort:
+						break;
+					case Engine::ScriptFieldType::UInt:
+						break;
+					case Engine::ScriptFieldType::ULong:
+						break;
+					case Engine::ScriptFieldType::Vector2:
+					{
+						glm::vec2* buff = (glm::vec2*)FData.DataPtr;
+
+						ImGui::DragFloat2(FieldName.c_str(), glm::value_ptr(*buff));
+					} break;
+					case Engine::ScriptFieldType::Vector3:
+					{
+						glm::vec3* buff = (glm::vec3*)FData.DataPtr;
+
+						ImGui::DragFloat3(FieldName.c_str(), glm::value_ptr(*buff));
+					} break;
+					case Engine::ScriptFieldType::Vector4:
+					{
+						glm::vec4* buff = (glm::vec4*)FData.DataPtr;
+
+						ImGui::DragFloat4(FieldName.c_str(), glm::value_ptr(*buff));
+					} break;
+					case Engine::ScriptFieldType::Entity:
+						break;
+					default:
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -543,17 +678,17 @@ namespace Engine
 
 		DrawComponent<ScriptComponent>("Script", entity, [](ScriptComponent& component)
 		{
-			auto& ScriptDataList = ScriptEngine::GetScriptDataList();
+			auto& ScriptInfoList = ScriptEngine::GetScriptInfoList();
 
-			size_t size = ScriptDataList.size();
+			size_t size = ScriptInfoList.size();
 			std::vector<std::string> FullScriptNameList(size);
 
 			for (size_t i = 0; i < size; i++)
 			{
-				auto& data = ScriptDataList[i];
+				auto& info = ScriptInfoList[i];
 
-				auto& Namespace = data.GetNameSpace();
-				auto& Name = data.GetName();
+				auto& Namespace = info->GetNameSpace();
+				auto& Name = info->GetName();
 
 				FullScriptNameList[i] = (Namespace.empty() ? "" : Namespace + ".") + Name;
 			}
@@ -569,107 +704,17 @@ namespace Engine
 
 					if (ImGui::Selectable(FullScriptNameList[i].c_str(), selected))
 					{
-						component.Name = ScriptDataList[i].GetName();
-						component.Namespace = ScriptDataList[i].GetNameSpace();
+						component.Name = ScriptInfoList[i]->GetName();
+						component.Namespace = ScriptInfoList[i]->GetNameSpace();
 
-						component.Fields = &ScriptDataList[i].GetFields();
+						ScriptEngine::GetScriptDefaultFields(component.Namespace, component.Name, component.Fields);
 					}
 				}
 
 				ImGui::EndCombo();
 			}
 
-			if (component.Fields)
-			{
-				bool isPlaying = EditorTool::IsPlaying();
-
-				for (auto& field : *component.Fields)
-				{
-					const char* FieldName = field.GetName().c_str();
-
-					ImGui::BeginDisabled(isPlaying);
-
-					switch (field.GetFieldType())
-					{
-					case Engine::ScriptFieldType::Float:
-					{
-						HandleField<float>(
-							field,
-							component,
-							isPlaying,
-							[FieldName](auto& buff) { return ImGui::DragFloat(FieldName, &buff); }
-						);
-					} break;
-					case Engine::ScriptFieldType::Double:
-						break;
-					case Engine::ScriptFieldType::Bool:
-					{
-						HandleField<bool>(
-							field,
-							component,
-							isPlaying,
-							[FieldName](auto& buff) { return ImGui::Checkbox(FieldName, &buff); }
-						);
-					} break;
-					case Engine::ScriptFieldType::Char:
-						break;
-					case Engine::ScriptFieldType::Short:
-						break;
-					case Engine::ScriptFieldType::Int:
-					{
-						HandleField<int>(
-							field,
-							component,
-							isPlaying,
-							[FieldName](auto& buff) { return ImGui::DragInt(FieldName, &buff); }
-						);
-					} break;
-					case Engine::ScriptFieldType::Long:
-						break;
-					case Engine::ScriptFieldType::Byte:
-						break;
-					case Engine::ScriptFieldType::UShort:
-						break;
-					case Engine::ScriptFieldType::UInt:
-						break;
-					case Engine::ScriptFieldType::ULong:
-						break;
-					case Engine::ScriptFieldType::Vector2:
-					{
-						HandleField<glm::vec2>(
-							field,
-							component,
-							isPlaying,
-							[FieldName](auto& buff) { return ImGui::DragFloat2(FieldName, glm::value_ptr(buff)); }
-						);
-					} break;
-					case Engine::ScriptFieldType::Vector3:
-					{
-						HandleField<glm::vec3>(
-							field,
-							component,
-							isPlaying,
-							[FieldName](auto& buff) { return ImGui::DragFloat3(FieldName, glm::value_ptr(buff)); }
-						);
-					} break;
-					case Engine::ScriptFieldType::Vector4:
-					{
-						HandleField<glm::vec4>(
-							field,
-							component,
-							isPlaying,
-							[FieldName](auto& buff) { return ImGui::DragFloat4(FieldName, glm::value_ptr(buff)); }
-						);
-					} break;
-					case Engine::ScriptFieldType::Entity:
-						break;
-					default:
-						break;
-					}
-
-					ImGui::EndDisabled();
-				}
-			}
+			DrawFields(component);
 		});
 
 		DrawComponent<AudioComponent>("Audio Component", entity, [](AudioComponent& component)

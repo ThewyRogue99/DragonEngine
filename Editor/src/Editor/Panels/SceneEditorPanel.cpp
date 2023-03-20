@@ -30,6 +30,8 @@ namespace Engine
 			new PerformancePanel()
 		});
 
+		PManager.GetPanel("Performance")->ClosePanel();
+
 		if (!ProjectManager::IsProjectLoaded())
 			PManager.DisableAllPanels();
 
@@ -159,9 +161,9 @@ namespace Engine
 						}
 					}
 
-					if (ImGui::MenuItem("Performance", nullptr, &(Data.bContentBrowserOpen)))
+					if (ImGui::MenuItem("Performance", nullptr, &(Data.bPerformanceOpen)))
 					{
-						if (Data.bContentBrowserOpen)
+						if (Data.bPerformanceOpen)
 						{
 							PManager.GetPanel("Performance")->OpenPanel();
 						}

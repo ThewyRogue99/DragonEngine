@@ -3,8 +3,6 @@
 
 #include "Engine/Debug/Debug.h"
 
-#include "Engine/Scene/Entity.h"
-
 #include "Script.h"
 
 #include <mono/metadata/object.h>
@@ -48,41 +46,53 @@ namespace Engine
 		return it->second;
 	}
 
-	ScriptField::ScriptField(MonoClassField* Field)
+	ScriptFieldInfo::ScriptFieldInfo(MonoClassField* Field)
 	{
 		Name = mono_field_get_name(Field);
 		ClassField = Field;
 		FieldType = MonoTypeToScriptFieldData(mono_field_get_type(Field));
 	}
 
-	void ScriptField::Set(Script* ScriptObject)
+	size_t ScriptFieldInfo::GetFieldSize() const
 	{
-		if (FieldBuffer)
+		switch (FieldType)
 		{
-			mono_field_set_value(ScriptObject->ScriptObject, ClassField, FieldBuffer);
+		case Engine::ScriptFieldType::Float:
+			return sizeof(float);
+		case Engine::ScriptFieldType::Double:
+			return sizeof(double);
+		case Engine::ScriptFieldType::Bool:
+			return sizeof(bool);
+		case Engine::ScriptFieldType::Char:
+			return sizeof(char);
+		case Engine::ScriptFieldType::Short:
+			return sizeof(short);
+		case Engine::ScriptFieldType::Int:
+			return sizeof(int);
+		case Engine::ScriptFieldType::Long:
+			return sizeof(long);
+		case Engine::ScriptFieldType::Byte:
+			return sizeof(unsigned char);
+		case Engine::ScriptFieldType::UShort:
+			return sizeof(unsigned short);
+		case Engine::ScriptFieldType::UInt:
+			return sizeof(unsigned int);
+		case Engine::ScriptFieldType::ULong:
+			return sizeof(unsigned long);
+		case Engine::ScriptFieldType::Vector2:
+			return sizeof(glm::vec2);
+		case Engine::ScriptFieldType::Vector3:
+			return sizeof(glm::vec3);
+		case Engine::ScriptFieldType::Vector4:
+			return sizeof(glm::vec4);
+		case Engine::ScriptFieldType::Entity:
+			return 0;
+		default:
+			return 0;
 		}
 	}
 
-	void ScriptField::Get(Script* ScriptObject)
-	{
-		if (FieldBuffer)
-		{
-			mono_field_get_value(ScriptObject->ScriptObject, ClassField, FieldBuffer);
-		}
-	}
-
-	void ScriptField::SetBufferData(void* Data, size_t size)
-	{
-		if (!FieldBuffer)
-		{
-			FieldBuffer = new uint8_t[size];
-			BufferSize = size;
-		}
-
-		memcpy(FieldBuffer, Data, size);
-	}
-
-	bool ScriptField::IsSameField(const ScriptField& field)
+	bool ScriptFieldInfo::IsSameField(const ScriptFieldInfo& field)
 	{
 		if (mono_field_get_parent(ClassField) == mono_field_get_parent(field.ClassField))
 		{
@@ -93,47 +103,39 @@ namespace Engine
 		return false;
 	}
 
+	void ScriptField::SetValue(void* value) const
+	{
+		mono_field_set_value(ScriptObject, Info->ClassField, (void*)value);
+	}
+
+	void ScriptField::GetValue(void* value) const
+	{
+		mono_field_get_value(ScriptObject, Info->ClassField, (void*)value);
+	}
+
 #define FIELD_TYPE_FUNCTIONS_DEFINITION(Type, ScriptFieldType) \
 template<> \
-void ScriptField::SetValue(Script* ScriptObject, Type* value) \
+void ScriptField::Set(Type* value) const \
 { \
-	if (ScriptObject && value) \
+	if (value) \
 	{ \
-		DE_ASSERT(FieldType == ScriptFieldType, "Cannot set a ScriptField of another type"); \
+		DE_ASSERT(Info->FieldType == ScriptFieldType, "Cannot set a ScriptField of another type"); \
 \
-		mono_field_set_value(ScriptObject->ScriptObject, ClassField, (void*)value); \
-		SetBufferValue(value); \
+		SetValue((void*)value); \
 	} \
 } \
 \
 template<> \
-const Type& ScriptField::GetValue(Script* ScriptObject) \
+void ScriptField::Get(Type* value) const \
 { \
-	const Type& value = GetBufferValue<Type>(); \
-	Get(ScriptObject); \
-	if (ScriptObject) \
+	if (value) \
 	{ \
-		DE_ASSERT(FieldType == ScriptFieldType, "Cannot get a ScriptField of another type"); \
+		DE_ASSERT(Info->FieldType == ScriptFieldType, "Cannot get a ScriptField of another type"); \
 \
-		mono_field_get_value(ScriptObject->ScriptObject, ClassField, (void*)&value); \
+		GetValue((void*)value); \
 	} \
-	return value; \
 \
 }
-
-	template<typename T>
-	void ScriptField::SetValue(Script* ScriptObject, T* value)
-	{
-		DE_CORE_ASSERT(false, "Cannot set undefined ScriptFieldType");
-	}
-
-	template<typename T>
-	const T& ScriptField::GetValue(Script* ScriptObject)
-	{
-		DE_CORE_ASSERT(false, "Cannot get undefined ScriptFieldType");
-
-		return *((T*)FieldBuffer);
-	}
 
 	FIELD_TYPE_FUNCTIONS_DEFINITION(float, ScriptFieldType::Float);
 	FIELD_TYPE_FUNCTIONS_DEFINITION(double, ScriptFieldType::Double);

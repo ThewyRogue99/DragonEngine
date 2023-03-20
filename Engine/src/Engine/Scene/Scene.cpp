@@ -154,22 +154,24 @@ namespace Engine
 			auto view = SceneRegistry.view<ScriptComponent>();
 			for (auto entity : view)
 			{
-				auto& script = SceneRegistry.get<ScriptComponent>(entity);
+				auto& sc = SceneRegistry.get<ScriptComponent>(entity);
 				
-				if (!script.Name.empty())
+				if (!sc.Name.empty())
 				{
-					Script* scriptObject = ScriptEngine::NewScript(script.Namespace, script.Name);
+					Ref<Script> scriptObject = ScriptEngine::NewScript(sc.Namespace, sc.Name);
 					if (scriptObject)
 					{
 						scriptObject->AttachToEntity({ entity, this });
 
-						script.ScriptObject = scriptObject;
+						sc.ScriptObject = scriptObject;
 
 						// Set Fields
 						{
-							for (auto& field : *(script.Fields))
+							for (auto& [name, data] : sc.Fields)
 							{
-								field.Set(scriptObject);
+								MemoryMap* FieldMap = (MemoryMap*)data.DataPtr;
+
+								scriptObject->GetField(name).SetValue(FieldMap->GetFieldData("Data").DataPtr);
 							}
 						}
 					}

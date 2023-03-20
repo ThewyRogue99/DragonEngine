@@ -35,7 +35,7 @@ namespace Engine
 	{
 	public:
 		MemoryMap() = default;
-		MemoryMap(MemoryMap& Map)
+		MemoryMap(const MemoryMap& Map)
 		{
 			Map.Copy(*this);
 		}
@@ -45,6 +45,9 @@ namespace Engine
 		template<typename T>
 		void SetField(const std::string& field, T& value) { SetField(field, (void*)&value, sizeof(T)); }
 
+		template<>
+		void SetField(const std::string& field, MemoryMap& value) { SetMapField(field, value); }
+
 		template<typename T>
 		void SetStringField(const std::string& field, const StringBase<T>& value)
 		{
@@ -52,8 +55,6 @@ namespace Engine
 		}
 
 		void SetField(const std::string& field, void* buff, size_t buffsize);
-
-		void SetField(const std::string& field, MemoryMap& data);
 
 		struct FieldData
 		{
@@ -87,7 +88,7 @@ namespace Engine
 		FieldData& GetFieldData(const std::string& field);
 		const FieldData& GetFieldData(const std::string& field) const;
 
-		void Copy(MemoryMap& CopyData);
+		void Copy(MemoryMap& CopyData) const;
 
 		bool Empty() { return FieldTable.size() == 0; }
 
@@ -111,6 +112,9 @@ namespace Engine
 
 			return *this;
 		}
+
+	private:
+		void SetMapField(const std::string& field, MemoryMap& value);
 
 	private:
 		class TableHeader
