@@ -161,6 +161,11 @@ namespace Engine
 
 		MemoryMap Fields;
 
+		bool HasScript() const
+		{
+			return !Name.empty();
+		}
+
 		ScriptComponent() = default;
 		ScriptComponent(const ScriptComponent&) = default;
 

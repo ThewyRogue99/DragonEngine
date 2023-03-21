@@ -57,10 +57,42 @@ namespace Engine
 			ImGui::EndPopup();
 		}
 
-		Context->SceneRegistry.each([&](auto entityID)
+		auto& view = Context->SceneRegistry.view<TagComponent>();
+
+		ImGuiListClipper clipper;
+		clipper.Begin(view.size());
+
+		while (clipper.Step())
 		{
-			DrawEntityNode({ entityID, Context });
-		});
+			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+			{
+				// Get the entity ID
+				Entity entity(*(std::next(view.begin(), i)), Context);
+
+				auto& tag = entity.GetComponent<TagComponent>().Tag;
+
+				std::string tag_str = TypeUtils::FromUTF16(tag);
+
+				if (ImGui::Selectable(tag_str.c_str(), SelectedEntity == entity, ImGuiSelectableFlags_SpanAvailWidth))
+				{
+					SetSelectedEntity(entity);
+				}
+
+				if (ImGui::BeginPopupContextItem(entity.GetUUID().GetString().c_str()))
+				{
+					if (ImGui::MenuItem("Delete Entity"))
+					{
+						Context->DestroyEntity(entity);
+
+						if (SelectedEntity == entity)
+							SetSelectedEntity({ });
+					}
+					ImGui::EndPopup();
+				}
+			}
+		}
+
+		clipper.End();
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			SetSelectedEntity({ });

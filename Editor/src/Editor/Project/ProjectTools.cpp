@@ -125,7 +125,10 @@ namespace Engine
 				{
 					auto& sc = ent.GetComponent<ScriptComponent>();
 
-					ScriptEngine::GetScriptDefaultFields(sc.Namespace, sc.Name, sc.Fields);
+					if (sc.HasScript())
+					{
+						ScriptEngine::GetScriptDefaultFields(sc.Namespace, sc.Name, sc.Fields);
+					}
 				}
 			}
 

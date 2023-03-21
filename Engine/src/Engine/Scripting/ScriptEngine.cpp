@@ -351,29 +351,32 @@ namespace Engine
 	{
 		ScriptInfo* info = GetScriptInfo(ScriptNamespace, ScriptName);
 
-		MonoObject* ScriptObject = mono_object_new(AppDomain, info->Class);
-		if (ScriptObject)
+		if (info)
 		{
-			DE_INFO(ScriptEngine, "Created Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
+			MonoObject* ScriptObject = mono_object_new(AppDomain, info->Class);
+			if (ScriptObject)
+			{
+				DE_INFO(ScriptEngine, "Created Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
 
-			mono_runtime_object_init(ScriptObject);
+				mono_runtime_object_init(ScriptObject);
 
-			uint32_t GCHandle = mono_gchandle_new(ScriptObject, false);
-			Ref<Script> newScript = CreateRef<Script>(Script::phold{ 0 }, ScriptObject, GCHandle, info);
+				uint32_t GCHandle = mono_gchandle_new(ScriptObject, false);
+				Ref<Script> newScript = CreateRef<Script>(Script::phold{ 0 }, ScriptObject, GCHandle, info);
 
-			MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
+				MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
 
-			MonoMethod* vMethod = mono_class_get_method_from_name(scriptBaseClass, "AttachToEntity", 1);
-			newScript->AttachToEntityMethod = mono_object_get_virtual_method(ScriptObject, vMethod);
+				MonoMethod* vMethod = mono_class_get_method_from_name(scriptBaseClass, "AttachToEntity", 1);
+				newScript->AttachToEntityMethod = mono_object_get_virtual_method(ScriptObject, vMethod);
 
-			newScript->BeginPlayMethod = mono_class_get_method_from_name(info->Class, "BeginPlay", 0);
-			newScript->UpdateMethod = mono_class_get_method_from_name(info->Class, "Update", 1);
+				newScript->BeginPlayMethod = mono_class_get_method_from_name(info->Class, "BeginPlay", 0);
+				newScript->UpdateMethod = mono_class_get_method_from_name(info->Class, "Update", 1);
 
-			newScript->ScriptObject = ScriptObject;
+				newScript->ScriptObject = ScriptObject;
 
-			ScriptObjectList.push_back(newScript);
+				ScriptObjectList.push_back(newScript);
 
-			return newScript;
+				return newScript;
+			}
 		}
 
 		DE_INFO("Failed to find Script: {0}.{1}", ScriptNamespace.c_str(), ScriptName.c_str());
@@ -470,6 +473,8 @@ namespace Engine
 
 	void ScriptEngine::Update(float DeltaTime)
 	{
+		DE_PROFILE_FUNCTION();
+
 		if (bShouldRun)
 		{
 			std::vector<std::vector<Ref<Script>>::iterator> itList;
