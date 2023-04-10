@@ -288,12 +288,20 @@ namespace Engine
 		auto& it = AssetList.find(AssetID);
 		if (it != AssetList.end())
 		{
-			Ref<Asset> AssetRef = CreateRef<Asset>(Asset::phold{ 0 });
-			AssetRef->Info = it->second.first;
+			WeakRef<Asset> WeakAsset = it->second.second;
+			if (WeakAsset.expired())
+			{
 
-			it->second.second = AssetRef;
+				Ref<Asset> AssetRef = CreateRef<Asset>(Asset::phold{ 0 });
+				AssetRef->Info = it->second.first;
+				WeakAsset = AssetRef;
 
-			return AssetRef;
+				return AssetRef;
+			}
+			else
+			{
+				return WeakAsset.lock();
+			}
 		}
 
 		return nullptr;
@@ -444,7 +452,7 @@ namespace Engine
 
 		std::filesystem::path fullPath = (ContentPath / Path) / Name;
 
-		if(std::filesystem::exists(fullPath))
+		if (std::filesystem::exists(fullPath))
 			return std::filesystem::remove(fullPath);
 
 		return false;

@@ -35,7 +35,7 @@ namespace Engine
 		void OnEndPlay();
 
 	private:
-		Scene* Context = nullptr;
+		Scene* ActiveScene = nullptr;
 
 		Entity SelectedEntity = { };
 	};

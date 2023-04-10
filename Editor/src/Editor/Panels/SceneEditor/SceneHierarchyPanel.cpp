@@ -17,6 +17,8 @@
 #include "Editor/Tools/ResourceTool.h"
 #include "Editor/Tools/EditorTool.h"
 
+#include "IconsFontAwesome6.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -24,7 +26,7 @@ namespace Engine
 {
 	static Ref<Texture2D> CheckerboardTexture = nullptr;
 
-	SceneHierarchyPanel::SceneHierarchyPanel() : EditorPanel("Scene Hierarchy")
+	SceneHierarchyPanel::SceneHierarchyPanel() : EditorPanel(ICON_FA_LIST "  Scene Hierarchy")
 	{
 
 	}
@@ -33,10 +35,9 @@ namespace Engine
 	{
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.f, 5.f));
 
-		if(!CheckerboardTexture)
-			CheckerboardTexture = ResourceTool::GetIcon(TEXT("Checkerboard"));
+		CheckerboardTexture = ResourceTool::GetImageIcon(TEXT("Checkerboard"));
 
-		Context = EditorSceneManager::GetEditorScene();
+		ActiveScene = EditorSceneManager::GetEditorScene();
 
 		EditorSceneManager::OnEditorSceneChange().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnEditorSceneChange));
 		EditorTool::OnBeginPlay().AddCallback(BIND_CLASS_FN(SceneHierarchyPanel::OnBeginPlay));
@@ -51,27 +52,30 @@ namespace Engine
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
 			{
-				Context->CreateEntity(TEXT("Empty Entity"));
+				ActiveScene->CreateEntity(TEXT("Empty Entity"));
 			}
 
 			ImGui::EndPopup();
 		}
 
-		auto& view = Context->SceneRegistry.view<TagComponent>();
+		auto& view = ActiveScene->SceneRegistry.view<TagComponent>();
 
 		ImGuiListClipper clipper;
-		clipper.Begin(view.size());
+		clipper.Begin((int)view.size());
+
+		std::vector<Entity> DeleteEntityList = { };
 
 		while (clipper.Step())
 		{
 			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
 			{
 				// Get the entity ID
-				Entity entity(*(std::next(view.begin(), i)), Context);
+				Entity entity(*(std::next(view.begin(), i)), ActiveScene);
 
 				auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-				std::string tag_str = TypeUtils::FromUTF16(tag);
+				std::string tag_str = ICON_FA_CUBE;
+				tag_str += "  " + TypeUtils::FromUTF16(tag);
 
 				if (ImGui::Selectable(tag_str.c_str(), SelectedEntity == entity, ImGuiSelectableFlags_SpanAvailWidth))
 				{
@@ -82,14 +86,19 @@ namespace Engine
 				{
 					if (ImGui::MenuItem("Delete Entity"))
 					{
-						Context->DestroyEntity(entity);
-
-						if (SelectedEntity == entity)
-							SetSelectedEntity({ });
+						DeleteEntityList.push_back(entity);
 					}
 					ImGui::EndPopup();
 				}
 			}
+		}
+
+		for (auto& entity : DeleteEntityList)
+		{
+			ActiveScene->DestroyEntity(entity);
+
+			if (SelectedEntity == entity)
+				SetSelectedEntity({ });
 		}
 
 		clipper.End();
@@ -97,7 +106,7 @@ namespace Engine
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			SetSelectedEntity({ });
 
-		ImGui::Begin("Properties");
+		ImGui::Begin(ICON_FA_CIRCLE_INFO "  Properties");
 
 		if (SelectedEntity.IsValid())
 			DrawComponents(SelectedEntity);
@@ -144,7 +153,7 @@ namespace Engine
 		{
 			if (ImGui::MenuItem("Delete Entity"))
 			{
-				Context->DestroyEntity(entity);
+				ActiveScene->DestroyEntity(entity);
 
 				if (SelectedEntity == entity)
 					SetSelectedEntity({ });
@@ -206,6 +215,9 @@ namespace Engine
 			{
 				OnRemoveComponent<T>(entity);
 			}
+
+			ImGui::Spacing();
+			ImGui::Spacing();
 		}
 	}
 
@@ -469,7 +481,7 @@ namespace Engine
 		{
 			if (!SelectedEntity.HasComponent<CameraComponent>())
 			{
-				if (ImGui::MenuItem("Camera"))
+				if (ImGui::MenuItem(ICON_FA_VIDEO "  Camera"))
 				{
 					SelectedEntity.AddComponent<CameraComponent>();
 					ImGui::CloseCurrentPopup();
@@ -478,7 +490,7 @@ namespace Engine
 
 			if (!SelectedEntity.HasComponent<SpriteRendererComponent>())
 			{
-				if (ImGui::MenuItem("Sprite Renderer"))
+				if (ImGui::MenuItem(ICON_FA_SQUARE_PLUS "  Sprite Renderer"))
 				{
 					SelectedEntity.AddComponent<SpriteRendererComponent>();
 					ImGui::CloseCurrentPopup();
@@ -487,7 +499,7 @@ namespace Engine
 
 			if (!SelectedEntity.HasComponent<CircleRendererComponent>())
 			{
-				if (ImGui::MenuItem("Circle Renderer"))
+				if (ImGui::MenuItem(ICON_FA_CIRCLE_PLUS "  Circle Renderer"))
 				{
 					SelectedEntity.AddComponent<CircleRendererComponent>();
 					ImGui::CloseCurrentPopup();
@@ -496,7 +508,7 @@ namespace Engine
 
 			if (!SelectedEntity.HasComponent<Rigidbody2DComponent>())
 			{
-				if (ImGui::MenuItem("Rigidbody 2D"))
+				if (ImGui::MenuItem(ICON_FA_CIRCLE_DOT "  Rigidbody 2D"))
 				{
 					SelectedEntity.AddComponent<Rigidbody2DComponent>();
 					ImGui::CloseCurrentPopup();
@@ -505,7 +517,7 @@ namespace Engine
 
 			if (!SelectedEntity.HasComponent<BoxCollider2DComponent>())
 			{
-				if (ImGui::MenuItem("Box Collider 2D"))
+				if (ImGui::MenuItem(ICON_FA_SQUARE_FULL "  Box Collider 2D"))
 				{
 					SelectedEntity.AddComponent<BoxCollider2DComponent>();
 					ImGui::CloseCurrentPopup();
@@ -514,7 +526,7 @@ namespace Engine
 
 			if (!SelectedEntity.HasComponent<CircleCollider2DComponent>())
 			{
-				if (ImGui::MenuItem("Circle Collider 2D"))
+				if (ImGui::MenuItem(ICON_FA_CIRCLE "  Circle Collider 2D"))
 				{
 					SelectedEntity.AddComponent<CircleCollider2DComponent>();
 					ImGui::CloseCurrentPopup();
@@ -523,7 +535,7 @@ namespace Engine
 
 			if (!SelectedEntity.HasComponent<AudioComponent>())
 			{
-				if (ImGui::MenuItem("Audio Component"))
+				if (ImGui::MenuItem(ICON_FA_VOLUME_HIGH "  Audio Component"))
 				{
 					SelectedEntity.AddComponent<AudioComponent>();
 					ImGui::CloseCurrentPopup();
@@ -532,7 +544,7 @@ namespace Engine
 
 			if (!SelectedEntity.HasComponent<ScriptComponent>())
 			{
-				if (ImGui::MenuItem("Script"))
+				if (ImGui::MenuItem(ICON_FA_CODE "  Script"))
 				{
 					SelectedEntity.AddComponent<ScriptComponent>();
 					ImGui::CloseCurrentPopup();
@@ -544,14 +556,14 @@ namespace Engine
 
 		ImGui::PopItemWidth();
 
-		DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
+		DrawComponent<TransformComponent>(ICON_FA_ARROWS_TO_CIRCLE "  Transform", entity, [](TransformComponent& component)
 		{
 			DrawVec3Control("Position", component.Position);
 			DrawVec3Control("Rotation", component.Rotation);
 			DrawVec3Control("Scale", component.Scale, 1.f);
 		});
 
-		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component)
+		DrawComponent<SpriteRendererComponent>(ICON_FA_SQUARE_PLUS "  Sprite Renderer", entity, [](SpriteRendererComponent& component)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 
@@ -567,7 +579,11 @@ namespace Engine
 
 			if (ImGui::BeginDragDropTarget())
 			{
-				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM");
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
+
+				// Highlight when dragged to viewport
+				if (payload && payload->IsPreview())
+					ImGui::GetForegroundDrawList()->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 0, 255));
 
 				if (payload && payload->IsDelivery())
 				{
@@ -595,14 +611,14 @@ namespace Engine
 			}
 		});
 
-		DrawComponent<CircleRendererComponent>("Circle Renderer", entity, [](CircleRendererComponent& component)
+		DrawComponent<CircleRendererComponent>(ICON_FA_CIRCLE_PLUS "  Circle Renderer", entity, [](CircleRendererComponent& component)
 		{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
 			ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.f, 1.f);
 			ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.f, 1.f);
 		});
 
-		DrawComponent<CameraComponent>("Camera", entity, [](CameraComponent& component)
+		DrawComponent<CameraComponent>(ICON_FA_VIDEO "  Camera", entity, [](CameraComponent& component)
 		{
 			auto& camera = component.Camera;
 
@@ -663,7 +679,7 @@ namespace Engine
 			ImGui::Checkbox("Primary", &component.Primary);
 		});
 
-		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](Rigidbody2DComponent& component)
+		DrawComponent<Rigidbody2DComponent>(ICON_FA_CIRCLE_DOT "  Rigidbody 2D", entity, [](Rigidbody2DComponent& component)
 		{
 			const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };
 			const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
@@ -688,7 +704,7 @@ namespace Engine
 			ImGui::Checkbox("Fixed Rotation", &component.FixedRotation);
 		});
 
-		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](BoxCollider2DComponent& component)
+		DrawComponent<BoxCollider2DComponent>(ICON_FA_SQUARE_FULL "  Box Collider 2D", entity, [](BoxCollider2DComponent& component)
 		{
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
 			ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
@@ -698,7 +714,7 @@ namespace Engine
 			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
 		});
 
-		DrawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](CircleCollider2DComponent& component)
+		DrawComponent<CircleCollider2DComponent>(ICON_FA_CIRCLE "  Circle Collider 2D", entity, [](CircleCollider2DComponent& component)
 		{
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
 			ImGui::DragFloat("Radius", &component.Radius);
@@ -708,7 +724,7 @@ namespace Engine
 			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
 		});
 
-		DrawComponent<ScriptComponent>("Script", entity, [](ScriptComponent& component)
+		DrawComponent<ScriptComponent>(ICON_FA_CODE "  Script", entity, [](ScriptComponent& component)
 		{
 			auto& ScriptInfoList = ScriptEngine::GetScriptInfoList();
 
@@ -749,7 +765,7 @@ namespace Engine
 			DrawFields(component);
 		});
 
-		DrawComponent<AudioComponent>("Audio Component", entity, [](AudioComponent& component)
+		DrawComponent<AudioComponent>(ICON_FA_VOLUME_HIGH "  Audio Component", entity, [](AudioComponent& component)
 		{
 			ImGui::Button("Audio", { 100.f, 0.f });
 			
@@ -816,20 +832,20 @@ namespace Engine
 	void SceneHierarchyPanel::OnEditorSceneChange(EditorScene* NewScene)
 	{
 		if (!EditorTool::IsPlaying())
-			Context = NewScene;
+			ActiveScene = NewScene;
 	}
 
 	void SceneHierarchyPanel::OnBeginPlay()
 	{
-		SceneManager::OnSetActiveScene().AddCallback([&] (Scene* NewScene) { Context = NewScene; });
+		SceneManager::OnSetActiveScene().AddCallback([&] (Scene* NewScene) { ActiveScene = NewScene; });
 
-		Context = SceneManager::GetActiveScene();
+		ActiveScene = SceneManager::GetActiveScene();
 		SelectedEntity = { };
 	}
 
 	void SceneHierarchyPanel::OnEndPlay()
 	{
-		Context = EditorSceneManager::GetEditorScene();
+		ActiveScene = EditorSceneManager::GetEditorScene();
 		SelectedEntity = { };
 	}
 }

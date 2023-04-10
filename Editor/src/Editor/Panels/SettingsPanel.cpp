@@ -1,13 +1,21 @@
 #include "SettingsPanel.h"
 
+#include "IconsFontAwesome6.h"
+
 namespace Engine
 {
-	void SettingsPanel::OnRender(float DeltaTime)
+    SettingsPanel::SettingsPanel() : EditorPanel(ICON_FA_GEAR "  Settings")
+    {
+        SetShowCloseButton(true);
+    }
+
+    void SettingsPanel::OnRender(float DeltaTime)
 	{
         ImGui::Columns(2, "SettingsColumns");
-        ImGui::SetColumnWidth(0, 300);
 
         uint32_t CategoryCount = sizeof(AvailableCategories) / sizeof(SettingsCategory);
+
+        ImGui::BeginChild("##categories");
 
         // Show categories on the left
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
@@ -23,6 +31,8 @@ namespace Engine
             }
         }
         ImGui::PopStyleVar();
+
+        ImGui::EndChild();
 
         ImGui::NextColumn();
 

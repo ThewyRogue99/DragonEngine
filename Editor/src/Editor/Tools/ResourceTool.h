@@ -4,15 +4,24 @@
 #include "Engine/Types/Types.h"
 #include "Engine/Renderer/Texture.h"
 
+struct ImFont;
+
 namespace Engine
 {
+	enum class FontIconType
+	{
+		FontAwesome6_Regular
+	};
+
 	class ResourceTool
 	{
 	public:
 		static void LoadResources();
 
-		static void LoadIcons();
+		static void LoadFontIcons();
+		static void LoadImageIcons();
 
-		static Ref<Texture2D> GetIcon(const CString& IconName);
+		static Ref<Texture2D> GetImageIcon(const CString& IconName);
+		static ImFont* GetFontIcon(FontIconType Type);
 	};
 }

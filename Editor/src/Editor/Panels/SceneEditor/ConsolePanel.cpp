@@ -5,6 +5,8 @@
 
 #include <imgui_internal.h>
 
+#include "IconsFontAwesome6.h"
+
 static constexpr size_t DefaultBufferSize = 2046;
 
 namespace ImGui
@@ -34,7 +36,7 @@ namespace ImGui
 
 namespace Engine
 {
-	ConsolePanel::ConsolePanel() : EditorPanel("Console")
+	ConsolePanel::ConsolePanel() : EditorPanel(ICON_FA_CODE "  Console")
 	{
         Buffer.resize(DefaultBufferSize);
 
@@ -162,7 +164,7 @@ namespace Engine
 
     void ConsolePanel::DrawFilterBar()
     {
-        m_TextFilter.Draw("Filter", ImGui::GetWindowWidth() * 0.25f);
+        m_TextFilter.Draw(ICON_FA_FILTER "  Filter", ImGui::GetWindowWidth() * 0.25f);
         ImGui::Separator();
     }
 
@@ -175,21 +177,30 @@ namespace Engine
         // Only reclaim after enter key is pressed!
         bool reclaimFocus = false;
 
-        ImGui::PushItemWidth(-ImGui::GetStyle().ItemSpacing.x * 7);
-        if (ImGui::InputText("Input", &Buffer, inputTextFlags))
+        ImGui::BeginChild("##input_bar", ImGui::GetContentRegionAvail());
         {
-            CommandSystem::RunCommand(Buffer);
+            ImGui::SetCursorPosY(5.f);
+            ImGui::Text(ICON_FA_TERMINAL);
+            ImGui::SameLine();
+            ImGui::SetCursorPosY(0.f);
 
-            reclaimFocus = true;
-            ScrollToBottom();
+            ImGui::PushItemWidth(-ImGui::GetStyle().ItemSpacing.x * 5.f);
+            if (ImGui::InputText("Input", &Buffer, inputTextFlags))
+            {
+                CommandSystem::RunCommand(Buffer);
 
-            Buffer.clear();
+                reclaimFocus = true;
+                ScrollToBottom();
+
+                Buffer.clear();
+            }
+            ImGui::PopItemWidth();
+
+            // Auto-focus on window apparition
+            ImGui::SetItemDefaultFocus();
+            if (reclaimFocus)
+                ImGui::SetKeyboardFocusHere(-1); // Focus on command line after clearing.
         }
-        ImGui::PopItemWidth();
-
-        // Auto-focus on window apparition
-        ImGui::SetItemDefaultFocus();
-        if (reclaimFocus)
-            ImGui::SetKeyboardFocusHere(-1); // Focus on command line after clearing.
+        ImGui::EndChild();
     }
 }

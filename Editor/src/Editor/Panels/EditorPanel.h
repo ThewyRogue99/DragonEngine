@@ -14,7 +14,7 @@ namespace Engine
 	class EditorPanel
 	{
 	public:
-		EditorPanel(const std::string& Name = "Panel", uint32_t Width = 1280, uint32_t Height = 720);
+		EditorPanel(const std::string& Title = "Panel", uint32_t Width = 1280, uint32_t Height = 720);
 		~EditorPanel();
 
 		virtual void OnCreate();
@@ -36,22 +36,17 @@ namespace Engine
 
 		void SetFocus();
 
-		ImVec2 GetPanelAvailableSize() const { return PanelAvailableSize; }
-		uint32_t GetPanelAvailableWidth() const { return (uint32_t)PanelAvailableSize.x; }
-		uint32_t GetPanelAvailableHeight() const { return (uint32_t)PanelAvailableSize.y; }
-
 		ImVec2 GetSize() const { return PanelSize; }
 		uint32_t GetWidth() const { return (uint32_t)PanelSize.x; }
 		uint32_t GetHeight() const { return (uint32_t)PanelSize.y; }
 
 		ImVec2 GetPanelRelativeMousePos();
 
-		const std::string& GetName() const { return PanelName; }
+		const std::string& GetTitle() const { return PanelTitle; }
 
 		friend class PanelManager;
 
 	protected:
-		void* GetData(const CString& name);
 		void AddData(const CString& name, void* Data, size_t size);
 
 		virtual void OnData(const CString& Name, void* Data, size_t size);
@@ -83,7 +78,7 @@ namespace Engine
 		};
 
 	protected:
-		std::string PanelName;
+		std::string PanelTitle;
 
 		bool IsDisabled = false;
 		bool bIsOpen = true;
@@ -95,8 +90,6 @@ namespace Engine
 		ImVec2 PanelPosition;
 		ImVec2 PanelSize;
 
-		ImVec2 PanelAvailableSize;
-
 		ImVec2 PanelBounds[2];
 
 		ImGuiWindowFlags WindowFlag = ImGuiWindowFlags_None;
@@ -104,6 +97,6 @@ namespace Engine
 		std::vector<StyleVar> PanelStyles;
 		std::vector<StyleColor> PanelColors;
 
-		PanelManager* manager = nullptr;
+		PanelManager* Manager = nullptr;
 	};
 }

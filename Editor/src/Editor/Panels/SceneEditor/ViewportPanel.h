@@ -40,6 +40,16 @@ namespace Engine
 		void OnBeginPlay();
 		void OnEndPlay();
 
+		void RenderToolbar(float CursorPosY);
+
+	private:
+		struct SnapGridInfo
+		{
+			bool Enabled = false;
+			bool ShowPopup = false;
+			float Value = 1.f;
+		};
+
 	private:
 		Scene* ActiveScene = nullptr;
 		Ref<Framebuffer> m_FrameBuffer = nullptr;
@@ -49,7 +59,12 @@ namespace Engine
 
 		int GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
-		bool bIsViewportFocused = false, bIsViewportHovered = false;
-		bool bIsCopyingEntity = false;
+		bool bIsViewportFocused = false,
+			bIsViewportHovered = false,
+			bIsCopyingEntity = false;
+
+		SnapGridInfo PositionSnap = { false, false, 1.f },
+			RotationSnap = { false, false, 10.f },
+			ScaleSnap = { false, false, 0.25f };
 	};
 }

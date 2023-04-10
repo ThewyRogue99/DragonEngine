@@ -16,9 +16,9 @@ namespace Engine
 
 	void ToolbarPanel::OnCreate()
 	{
-		PlayIcon =  ResourceTool::GetIcon(TEXT("PlayButton"));
-		StopIcon = ResourceTool::GetIcon(TEXT("StopButton"));
-		SimulateIcon = ResourceTool::GetIcon(TEXT("SimulateButton"));
+		PlayIcon =  ResourceTool::GetImageIcon(TEXT("PlayButton"));
+		StopIcon = ResourceTool::GetImageIcon(TEXT("StopButton"));
+		SimulateIcon = ResourceTool::GetImageIcon(TEXT("SimulateButton"));
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 2.f));
 		SetPanelStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0.f, 0.f));

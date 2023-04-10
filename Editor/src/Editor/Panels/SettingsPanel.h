@@ -10,10 +10,7 @@ namespace Engine
 	class SettingsPanel : public EditorPanel
 	{
 	public:
-		SettingsPanel() : EditorPanel("Settings")
-		{
-			SetShowCloseButton(true);
-		}
+		SettingsPanel();
 
 		virtual void OnRender(float DeltaTime) override;
 

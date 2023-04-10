@@ -32,11 +32,11 @@ namespace Engine
 		ResourceTool::LoadResources();
 
 		PManager.AddPanels({
-			new SceneEditorPanel(),
-			new SettingsPanel()
+			{ TEXT("SceneEditor"), new SceneEditorPanel() },
+			{ TEXT("Settings"), new SettingsPanel() }
 		});
 
-		PManager.GetPanel("Settings")->ClosePanel();
+		PManager.GetPanel(TEXT("Settings"))->ClosePanel();
 
 		EditorScene* EScene = EditorSceneManager::CreateEditorScene(TEXT("Scene"));
 
@@ -108,7 +108,7 @@ namespace Engine
 
 	void EditorLayer::OpenSettingsPanel()
 	{
-		EditorPanel* Panel = PManager.GetPanel("Settings");
+		EditorPanel* Panel = PManager.GetPanel(TEXT("Settings"));
 		Panel->OpenPanel();
 		Data.bIsSettingsOpen = true;
 

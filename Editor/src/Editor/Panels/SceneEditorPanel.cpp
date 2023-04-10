@@ -10,8 +10,15 @@
 #include <nfd.h>
 #include <imgui_internal.h>
 
+#include "IconsFontAwesome6.h"
+
 namespace Engine
 {
+	SceneEditorPanel::SceneEditorPanel() : EditorPanel(ICON_FA_CUBES "  Scene Editor")
+	{
+
+	}
+
 	void SceneEditorPanel::OnCreate()
 	{
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
@@ -22,15 +29,15 @@ namespace Engine
 		SetWindowFlag(window_flags);
 
 		PManager.AddPanels({
-			new ViewportPanel(),
-			new SceneHierarchyPanel(),
-			new ToolbarPanel(),
-			new ConsolePanel(),
-			new ContentBrowserPanel(),
-			new PerformancePanel()
+			{ TEXT("Viewport"), new ViewportPanel()},
+			{ TEXT("SceneHierarchy"), new SceneHierarchyPanel() },
+			{ TEXT("Toolbar"), new ToolbarPanel() },
+			{ TEXT("Console"), new ConsolePanel() },
+			{ TEXT("ContentBrowser"), new ContentBrowserPanel() },
+			{ TEXT("Performance"), new PerformancePanel() }
 		});
 
-		PManager.GetPanel("Performance")->ClosePanel();
+		PManager.GetPanel(TEXT("Performance"))->ClosePanel();
 
 		if (!ProjectManager::IsProjectLoaded())
 			PManager.DisableAllPanels();
@@ -61,11 +68,11 @@ namespace Engine
 		{
 			if (ImGui::BeginMenu("Editor"))
 			{
-				if (ImGui::MenuItem("Settings"))
+				if (ImGui::MenuItem(ICON_FA_GEAR "  Settings"))
 				{
 					EditorTool::GetEditorLayer()->OpenSettingsPanel();
 				}
-				if (ImGui::MenuItem("Exit"))
+				if (ImGui::MenuItem(ICON_FA_DOOR_OPEN "  Exit"))
 				{
 					Engine::Application::Get().Close();
 				}
@@ -75,7 +82,7 @@ namespace Engine
 
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New Project", "Ctrl+N"))
+				if (ImGui::MenuItem(ICON_FA_FOLDER_PLUS "  New Project", "Ctrl+N"))
 				{
 					nfdchar_t* outPath = nullptr;
 					nfdresult_t result = NFD_PickFolder(nullptr, &outPath);
@@ -98,7 +105,7 @@ namespace Engine
 						DE_ERROR(FileDialog, "Error: {0}", NFD_GetError());
 					}
 				}
-				if (ImGui::MenuItem("Load Project", "Ctrl+L"))
+				if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN "  Load Project", "Ctrl+L"))
 				{
 					nfdchar_t* outPath = nullptr;
 					nfdresult_t result = NFD_OpenDialog("deproject;", nullptr, &outPath);
@@ -131,33 +138,33 @@ namespace Engine
 					{
 						if (Data.bSceneHierarchyOpen)
 						{
-							PManager.GetPanel("Scene Hierarchy")->OpenPanel();
+							PManager.GetPanel(TEXT("SceneHierarchy"))->OpenPanel();
 						}
 						else
 						{
-							PManager.GetPanel("Scene Hierarchy")->ClosePanel();
+							PManager.GetPanel(TEXT("SceneHierarchy"))->ClosePanel();
 						}
 					}
 					if (ImGui::MenuItem("Console", nullptr, &(Data.bConsoleOpen)))
 					{
 						if (Data.bConsoleOpen)
 						{
-							PManager.GetPanel("Console")->OpenPanel();
+							PManager.GetPanel(TEXT("Console"))->OpenPanel();
 						}
 						else
 						{
-							PManager.GetPanel("Console")->ClosePanel();
+							PManager.GetPanel(TEXT("Console"))->ClosePanel();
 						}
 					}
 					if (ImGui::MenuItem("Content Browser", nullptr, &(Data.bContentBrowserOpen)))
 					{
 						if (Data.bContentBrowserOpen)
 						{
-							PManager.GetPanel("Content Browser")->OpenPanel();
+							PManager.GetPanel(TEXT("ContentBrowser"))->OpenPanel();
 						}
 						else
 						{
-							PManager.GetPanel("Content Browser")->ClosePanel();
+							PManager.GetPanel(TEXT("ContentBrowser"))->ClosePanel();
 						}
 					}
 
@@ -165,11 +172,11 @@ namespace Engine
 					{
 						if (Data.bPerformanceOpen)
 						{
-							PManager.GetPanel("Performance")->OpenPanel();
+							PManager.GetPanel(TEXT("Performance"))->OpenPanel();
 						}
 						else
 						{
-							PManager.GetPanel("Performance")->ClosePanel();
+							PManager.GetPanel(TEXT("Performance"))->ClosePanel();
 						}
 					}
 

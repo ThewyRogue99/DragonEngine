@@ -9,75 +9,70 @@ namespace Engine
     PanelManager::~PanelManager()
     {
         RemoveAllPanels();
-        ClearData();
     }
 
-    void PanelManager::AddPanel(EditorPanel* panel)
+    void PanelManager::AddPanel(const CString& PanelName, EditorPanel* Panel)
     {
-        Panels.push_back(panel);
-        panel->manager = this;
+        PanelMap[PanelName] = Panel;
+        Panel->Manager = this;
 
-        panel->OnCreate();
+        Panel->OnCreate();
     }
 
-    void PanelManager::AddPanels(std::initializer_list<EditorPanel*> panels)
+    void PanelManager::AddPanels(std::initializer_list<std::pair<CString, EditorPanel*>> Panels)
     {
-        for (auto& panel : panels)
-            AddPanel(panel);
+        for (auto& [PanelName, Panel] : Panels)
+            AddPanel(PanelName, Panel);
     }
 
-    EditorPanel* PanelManager::GetPanel(const std::string& PanelName)
+    EditorPanel* PanelManager::GetPanel(const CString& PanelName)
     {
-        auto it = std::find_if(
-            Panels.begin(),
-            Panels.end(),
-            [&, PanelName](EditorPanel* panel) { return PanelName == panel->GetName(); }
-        );
+        auto it = PanelMap.find(PanelName);
 
-        if (it != Panels.end())
-            return *it;
+        if (it != PanelMap.end())
+            return it->second;
 
         return nullptr;
     }
 
-    void PanelManager::RemovePanel(const std::string& PanelName)
+    bool PanelManager::RemovePanel(const CString& PanelName)
     {
-        for (uint32_t i = 0; i < Panels.size(); i++)
+        auto it = PanelMap.find(PanelName);
+
+        if (it != PanelMap.end())
         {
-            auto panel = Panels[i];
+            it->second->OnDelete();
+            delete it->second;
 
-            if (panel->PanelName == PanelName)
-            {
-                Panels.erase(Panels.begin() + i);
-                panel->OnDelete();
+            PanelMap.erase(it);
 
-                delete panel;
-                break;
-            }
+            return true;
         }
+
+        return false;
     }
 
     void PanelManager::RemoveAllPanels()
     {
-        for (auto& panel : Panels)
+        for (auto& [PanelName, Panel] : PanelMap)
         {
-            panel->OnDelete();
-            delete panel;
+            Panel->OnDelete();
+            delete Panel;
         }
 
-        Panels.clear();
+        PanelMap.clear();
     }
 
     void PanelManager::Update(float DeltaTime)
     {
-        for (auto& panel : Panels)
-            panel->OnUpdate(DeltaTime);
+        for (auto& [PanelName, Panel] : PanelMap)
+            Panel->OnUpdate(DeltaTime);
     }
 
     void PanelManager::Render(float DeltaTime)
     {
-        for (auto& panel : Panels)
-            panel->Render(DeltaTime);
+        for (auto& [PanelName, Panel] : PanelMap)
+            Panel->Render(DeltaTime);
     }
 
     void PanelManager::AddData(const CString& Name, void* Data, size_t size)
@@ -86,107 +81,55 @@ namespace Engine
 
         memcpy(Buffer, Data, size);
 
-        auto it = std::find_if(DataList.begin(), DataList.end(), [Name](const PanelData& data)
-        {
-            return data.name == Name;
-        });
+        for (auto& [PanelName, Panel] : PanelMap)
+            Panel->OnData(Name, Buffer, size);
 
-        if (it != DataList.end())
-        {
-            void* ptr = (*it).Data;
-
-            (*it).name = Name;
-            (*it).Data = Buffer;
-            (*it).size = size;
-
-            delete[] ptr;
-        }
-        else
-        {
-            DataList.push_back({ Name, Buffer, size });
-        }
-
-        for (auto& panel : Panels)
-            panel->OnData(Name, Buffer, size);
-    }
-
-    void PanelManager::RemoveData(const CString& name)
-    {
-        auto end = std::remove_if(DataList.begin(), DataList.end(), [name](const PanelData& data)
-        {
-            if (data.name == name)
-            {
-                delete[] data.Data;
-                return true;
-            }
-
-            return false;
-        });
-
-        DataList.erase(end, DataList.end());
-    }
-
-    void PanelManager::ClearData()
-    {
-        std::for_each(DataList.begin(), DataList.end(), [](const PanelData& data)
-        {
-            delete[] data.Data;
-        });
-
-        DataList.clear();
+        delete[] Buffer;
     }
 
     void PanelManager::OnEvent(Event& event)
     {
-        for (auto panel : Panels)
+        for (auto& [PanelName, Panel] : PanelMap)
         {
-            panel->OnEvent(event);
+            Panel->OnEvent(event);
         }
     }
 
-    void PanelManager::DisablePanel(const std::string& PanelName)
+    bool PanelManager::DisablePanel(const CString& PanelName)
     {
-        for (auto& panel : Panels)
+        auto it = PanelMap.find(PanelName);
+
+        if (it != PanelMap.end())
         {
-            if (panel->PanelName == PanelName)
-            {
-                panel->IsDisabled = true;
-                break;
-            }
+            it->second->IsDisabled = true;
+            return true;
         }
+
+        return false;
     }
 
     void PanelManager::DisableAllPanels()
     {
-        for (auto& panel : Panels)
-            panel->IsDisabled = true;
+        for (auto& [PanelName, Panel] : PanelMap)
+            Panel->IsDisabled = true;
     }
 
-    void PanelManager::ActivatePanel(const std::string& PanelName)
+    bool PanelManager::ActivatePanel(const CString& PanelName)
     {
-        for (auto& panel : Panels)
+        auto it = PanelMap.find(PanelName);
+
+        if (it != PanelMap.end())
         {
-            if (panel->PanelName == PanelName)
-            {
-                panel->IsDisabled = false;
-                break;
-            }
+            it->second->IsDisabled = false;
+            return true;
         }
+
+        return false;
     }
 
     void PanelManager::ActivateAllPanels()
     {
-        for (auto& panel : Panels)
-            panel->IsDisabled = false;
-    }
-
-    PanelManager::PanelData& PanelManager::GetData(const CString& name)
-    {
-        auto it = std::find_if(DataList.begin(), DataList.end(), [name](const PanelData& data)
-        {
-            return data.name == name;
-        });
-
-        return *it;
+        for (auto& [PanelName, Panel] : PanelMap)
+            Panel->IsDisabled = false;
     }
 }

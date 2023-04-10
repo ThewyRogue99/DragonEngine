@@ -8,7 +8,7 @@
 namespace Engine
 {
 	EditorPanel::EditorPanel(const std::string& Name, uint32_t Width, uint32_t Height)
-		: PanelName(Name), PanelSize(Width, Height)
+		: PanelTitle(Name), PanelSize(Width, Height)
 	{
 
 	}
@@ -45,7 +45,7 @@ namespace Engine
 
 	void EditorPanel::SetFocus()
 	{
-		ImGui::SetWindowFocus(PanelName.c_str());
+		ImGui::SetWindowFocus(PanelTitle.c_str());
 	}
 
 	void EditorPanel::OnUpdate(float DeltaTime)
@@ -88,14 +88,12 @@ namespace Engine
 		return ImVec2(-1.f, -1.f);
 	}
 
-	void* EditorPanel::GetData(const CString& name)
-	{
-		return manager->GetData(name).Data;
-	}
-
 	void EditorPanel::AddData(const CString& name, void* Data, size_t size)
 	{
-		manager->AddData(name, Data, size);
+		if (Manager)
+		{
+			Manager->AddData(name, Data, size);
+		}
 	}
 
 	void EditorPanel::OnData(const CString& Name, void* Data, size_t size)
@@ -137,7 +135,7 @@ namespace Engine
 				ImGui::PushStyleColor(color.style, color.value);
 
 			ImGui::BeginDisabled(IsDisabled);
-			if (ImGui::Begin(PanelName.c_str(), bShowCloseButton ? &bIsOpen : nullptr, WindowFlag))
+			if (ImGui::Begin(PanelTitle.c_str(), bShowCloseButton ? &bIsOpen : nullptr, WindowFlag))
 			{
 				if (bBeginRender)
 				{
@@ -156,10 +154,10 @@ namespace Engine
 				ImVec2 CurrentSize = ImGui::GetWindowSize();
 
 				if (CurrentSize.x != PanelSize.x || CurrentSize.y != PanelSize.y)
+				{
 					OnResize((uint32_t)CurrentSize.x, (uint32_t)CurrentSize.y);
-
-				PanelSize = CurrentSize;
-				PanelAvailableSize = ImGui::GetContentRegionAvail();
+					PanelSize = CurrentSize;
+				}
 
 				OnRender(DeltaTime);
 			}

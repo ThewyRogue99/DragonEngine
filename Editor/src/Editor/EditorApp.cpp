@@ -14,12 +14,12 @@ namespace Engine
 	public:
 		EditorApp(const ApplicationSpecification& Specs) : Application(Specs)
 		{
+			AppImGuiLayer = new ImGuiLayer();
+			PushOverlay(AppImGuiLayer);
+
 			AppEditorLayer = new EditorLayer();
 			PushLayer(AppEditorLayer);
 			EditorTool::SetEditorLayer(AppEditorLayer);
-
-			AppImGuiLayer = new ImGuiLayer();
-			PushOverlay(AppImGuiLayer);
 		}
 
 	protected:

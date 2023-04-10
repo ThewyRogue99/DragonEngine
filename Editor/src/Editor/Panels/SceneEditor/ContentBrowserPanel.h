@@ -39,24 +39,47 @@ namespace Engine
 
 		void ChangeCurrentDirectory(const std::filesystem::path& NewDirectory);
 
+	private:
 		class BrowserContent
 		{
 		public:
 			BrowserContent() = default;
 
-			BrowserContent(ContentBrowserPanel* panel, const DirectoryEntry& entry)
-				: Panel(panel), Entry(entry), Type(entry.GetType()) { }
+			BrowserContent(const DirectoryEntry& entry)
+				: Entry(entry), Type(entry.GetType()) { }
 
-			void Draw(float ThumbnailSize, bool& DidReload);
-
-			void DrawUncreatedContent();
-			void DrawCreatedContent(bool &DidReload);
+			void Draw(int ContentIndex);
 
 			void StartRename();
-			void StopRename(bool& DidReload);
+			void StopRename();
 
+			enum class ContentEvent;
+
+			inline void OnEvent(std::function<bool(BrowserContent&, ContentEvent)> Callback)
+				{ OnEventCallback = Callback; }
+
+			static ImVec2 GetSize() { return Size; }
+
+			friend class ContentBrowserPanel;
+
+		public:
+			enum class ContentEvent
+			{
+				Create,
+				Delete,
+				Rename,
+				Open,
+				Move
+			};
+
+		private:
+			void DrawUncreatedContent();
+			void DrawCreatedContent();
+
+			bool RunEvent(ContentEvent CEvent);
+
+		private:
 			DirectoryEntry Entry;
-			ContentBrowserPanel* Panel = nullptr;
 
 			AssetType Type = AssetType::Undefined;
 
@@ -64,20 +87,32 @@ namespace Engine
 			bool bIsCreated = true;
 			bool bIsError = false;
 
+			static const ImVec2 Size;
+
 			char* RenameBuffer = nullptr;
+			static const size_t RenameBufferSize = 256;
 
 			Ref<Texture2D> ContentIcon = nullptr;
 
-			static const size_t RenameBufferSize = 256;
+			std::function<bool(BrowserContent&, ContentEvent)> OnEventCallback = nullptr;
 		};
 
+	private:
+		bool OnContentEvent(BrowserContent& Content, BrowserContent::ContentEvent CEvent);
+
 		bool OnCreateContent(BrowserContent* Content);
+		bool OnRenameContent(BrowserContent* Content);
 
 	private:
+		bool bShouldReload = false;
+
 		std::filesystem::path CurrentDirectory = L"";
+		std::filesystem::path LastDirectory = L"";
 
 		const Project* LoadedProject = nullptr;
 
-		std::vector<BrowserContent> ContentList = { };
+		std::vector<BrowserContent>* ContentList = nullptr;
+
+		ImGuiTextFilter m_TextFilter;
 	};
 }

@@ -22,6 +22,8 @@
 #include "Editor/Project/ProjectManager.h"
 #include "Editor/Project/ProjectTools.h"
 
+#include "IconsFontAwesome6.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <nfd.h>
@@ -34,37 +36,27 @@ namespace Engine
 	static Ref<Texture2D> ScriptFileIcon = nullptr;
 	static Ref<Texture2D> AudioFileIcon = nullptr;
 
-	ContentBrowserPanel::ContentBrowserPanel() : EditorPanel("Content Browser")
+	const ImVec2 ContentBrowserPanel::BrowserContent::Size = ImVec2(110.f, 150.f);
+
+	ContentBrowserPanel::ContentBrowserPanel() : EditorPanel(ICON_FA_FOLDER_OPEN "  Content Browser")
 	{
-		DirectoryIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/DirectoryIcon"));
-		FileIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/FileIcon"));
-		SceneFileIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/SceneFileIcon"));
-		ScriptFileIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/ScriptFileIcon"));
-		AudioFileIcon = ResourceTool::GetIcon(TEXT("ContentBrowser/AudioFileIcon"));
-		
-		ProjectManager::OnLoadProject().AddCallback(BIND_EVENT_FN(ContentBrowserPanel::OnLoadProject));
+		ContentList = new std::vector<BrowserContent>();
 	}
 
 	void ContentBrowserPanel::OnCreate()
 	{
 		EditorPanel::OnCreate();
 
-		if(!DirectoryIcon)
-			DirectoryIcon = ResourceTool::GetIcon(TEXT("DirectoryIcon"));
-
-		if(!FileIcon)
-			FileIcon = ResourceTool::GetIcon(TEXT("FileIcon"));
-
-		if (!SceneFileIcon)
-			SceneFileIcon = ResourceTool::GetIcon(TEXT("SceneFileIcon"));
-
-		if (!ScriptFileIcon)
-			ScriptFileIcon = ResourceTool::GetIcon(TEXT("ScriptFileIcon"));
-
-		if (!AudioFileIcon)
-			AudioFileIcon = ResourceTool::GetIcon(TEXT("AudioFileIcon"));
+		DirectoryIcon = ResourceTool::GetImageIcon(TEXT("DirectoryIcon"));
+		FileIcon = ResourceTool::GetImageIcon(TEXT("FileIcon"));
+		SceneFileIcon = ResourceTool::GetImageIcon(TEXT("SceneFileIcon"));
+		ScriptFileIcon = ResourceTool::GetImageIcon(TEXT("ScriptFileIcon"));
+		AudioFileIcon = ResourceTool::GetImageIcon(TEXT("AudioFileIcon"));
 
 		SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
+		SetWindowFlag(ImGuiWindowFlags_NoScrollbar);
+
+		ProjectManager::OnLoadProject().AddCallback(BIND_EVENT_FN(ContentBrowserPanel::OnLoadProject));
 	}
 
 	void ContentBrowserPanel::OnRender(float DeltaTime)
@@ -75,22 +67,16 @@ namespace Engine
 
 		ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable | ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_NoPadInnerX;
 
-		if (ImGui::BeginTable("ContentBrowser", 2, tableFlags, ImVec2(0.0f, 0.0f)))
+		if (ImGui::BeginTable("ContentBrowser", 2, tableFlags))
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-
-			ImGuiStyle& style = ImGui::GetStyle();
 			
 			DrawDirectoryBrowser();
 
 			ImGui::TableSetColumnIndex(1);
-
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, style.Colors[ImGuiCol_WindowBg]);
 			
 			DrawAssetBrowser();
-
-			ImGui::PopStyleColor();
 
 			ImGui::EndTable();
 		}
@@ -103,7 +89,7 @@ namespace Engine
 		{
 			if (it.GetType() == AssetType::Folder)
 			{
-				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
+				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow;
 
 				const CString& PathName = it.GetPathName();
 
@@ -112,56 +98,11 @@ namespace Engine
 
 				ImGui::PushID(idx++);
 
-				std::string name = TypeUtils::FromUTF16(it.GetName());
+				std::string name = ICON_FA_FOLDER "  ";
+				name += TypeUtils::FromUTF16(it.GetName());
 
-				if (ImGui::TreeNodeEx(&idx, flags, name.c_str()))
-				{
-					if (ImGui::BeginDragDropTarget())
-					{
-						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
+				bool isOpen = ImGui::TreeNodeEx(&idx, flags, name.c_str());
 
-						if (payload && payload->IsDelivery())
-						{
-							PanelDragPayload::ContentBrowserItem Item;
-							Item.FromData((uint8_t*)payload->Data);
-
-							if (Item.ItemType != AssetType::Folder)
-							{
-								AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), it.GetPathName());
-								Reload();
-							}
-						}
-						ImGui::EndDragDropTarget();
-					}
-
-					DrawDirectoryTree(PathName);
-
-					ImGui::TreePop();
-				}
-
-				ImGui::PopID();
-
-				if (ImGui::IsItemHovered() && ImGui::IsItemClicked())
-				{
-					ChangeCurrentDirectory(PathName);
-				}
-			}
-		}
-	}
-
-	void ContentBrowserPanel::DrawDirectoryBrowser()
-	{
-		ImGui::BeginChild("##directory_browser");
-		{
-			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
-
-			if (CurrentDirectory.empty())
-				flags |= ImGuiTreeNodeFlags_Selected;
-
-			std::string ProjectName = LoadedProject ? LoadedProject->Name : "Project";
-
-			if (ImGui::TreeNodeEx(ProjectName.c_str(), flags))
-			{
 				if (ImGui::BeginDragDropTarget())
 				{
 					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
@@ -173,45 +114,88 @@ namespace Engine
 
 						if (Item.ItemType != AssetType::Folder)
 						{
-							AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), L"");
+							AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), it.GetPathName());
 							Reload();
 						}
 					}
 					ImGui::EndDragDropTarget();
 				}
 
-				DrawDirectoryTree(L"");
-				ImGui::TreePop();
+				if (!ImGui::IsItemToggledOpen() && ImGui::IsItemClicked())
+				{
+					ChangeCurrentDirectory(PathName);
+				}
+
+				if (isOpen)
+				{
+					DrawDirectoryTree(PathName);
+
+					ImGui::TreePop();
+				}
+
+				ImGui::PopID();
+			}
+		}
+	}
+
+	void ContentBrowserPanel::DrawDirectoryBrowser()
+	{
+		ImGui::BeginChild("##directory_browser");
+		{
+			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
+
+			if (CurrentDirectory.empty())
+				flags |= ImGuiTreeNodeFlags_Selected;
+
+			std::string ProjectName = LoadedProject ? LoadedProject->Name : "Project";
+			std::string NodeName = ICON_FA_FOLDER_PLUS "  ";
+			NodeName += ProjectName;
+
+			bool isOpen = ImGui::TreeNodeEx(NodeName.c_str(), flags);
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
+
+				if (payload && payload->IsDelivery())
+				{
+					PanelDragPayload::ContentBrowserItem Item;
+					Item.FromData((uint8_t*)payload->Data);
+
+					if (Item.ItemType != AssetType::Folder)
+					{
+						AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), L"");
+						Reload();
+					}
+				}
+				ImGui::EndDragDropTarget();
 			}
 
-			if (ImGui::IsItemHovered() && ImGui::IsItemClicked())
+			if (!ImGui::IsItemToggledOpen() && ImGui::IsItemClicked())
 			{
 				ChangeCurrentDirectory(L"");
+			}
+
+			if (isOpen)
+			{
+				DrawDirectoryTree(L"");
+				ImGui::TreePop();
 			}
 		}
 		ImGui::EndChild();
 	}
 
-	static std::string _labelPrefix(const char* const label)
-	{
-		float width = ImGui::CalcItemWidth();
-
-		float x = ImGui::GetCursorPosX();
-		ImGui::Text(label);
-		ImGui::SameLine();
-		ImGui::SetCursorPosX(x + width * 0.5f + ImGui::GetStyle().ItemInnerSpacing.x);
-		ImGui::SetNextItemWidth(-1);
-
-		std::string labelID = "##";
-		labelID += label;
-
-		return labelID;
-	}
-
 	void ContentBrowserPanel::DrawAssetBrowser()
 	{
-		ImGui::BeginChild("##asset_browser");
+		ImGui::BeginChild("##asset_browser", ImGui::GetContentRegionAvail());
 		{
+			ImGui::SameLine(0.f, 5.f);
+
+			m_TextFilter.Draw(ICON_FA_MAGNIFYING_GLASS "  Search", ImGui::GetWindowWidth() * 0.25f);
+
+			ImGui::Separator();
+			ImGui::Spacing();
+
 			if (ImGui::BeginPopupContextWindow())
 			{
 				if (ImGui::MenuItem("Create Folder"))
@@ -234,144 +218,244 @@ namespace Engine
 				ImGui::EndPopup();
 			}
 
-			static float padding = 10.f;
-			static float thumbnailSize = 110.f;
-			float cellSize = thumbnailSize + padding;
+			static const float padding = 10.f;
+			static const float cellWidth = BrowserContent::GetSize().x + padding;
 
-			float browserWidth = ImGui::GetContentRegionAvail().x;
-			int columnCount = (int)(browserWidth / cellSize);
+			const float browserWidth = ImGui::GetContentRegionAvail().x;
+			int columnCount = (int)(browserWidth / cellWidth);
+
 			if (columnCount < 1)
 				columnCount = 1;
 
+			bShouldReload = false;
+
+			std::vector<BrowserContent>* DefaultContentList = ContentList;
+
 			ImGui::Columns(columnCount, "##asset", false);
 
-			int i = 0;
+			ImGuiWindow* window = GImGui->CurrentWindow;
 
-			for (size_t idx = 0; idx < ContentList.size(); idx++)
+			for (size_t idx = 0; idx < DefaultContentList->size(); idx++)
 			{
-				ImGui::PushID(i++);
+				BrowserContent& content = (*DefaultContentList)[idx];
 
-				bool r = false;
-				ContentList[idx].Draw(thumbnailSize, r);
+				std::string cName = TypeUtils::FromUTF16(content.Entry.GetName());
 
-				ImGui::PopID();
+				if (m_TextFilter.PassFilter(cName.c_str()))
+				{
+					content.Draw(idx);
+					ImGui::ItemSize(ImVec2(0.f, 20.f));
 
-				if (r) idx = 0;
+					ImGui::NextColumn();
+				}
 			}
 
 			ImGui::Columns(1);
+
+			if (bShouldReload)
+			{
+				delete DefaultContentList;
+				bShouldReload = false;
+			}
 		}
 		ImGui::EndChild();
-	}
-
-	namespace TopBarUtils
-	{
-		bool DrawTextButton(const char* label, const ImVec2& size = ImVec2(0, 0))
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 0.f));
-			ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.f, 0.f, 0.f, 0.f));
-
-			bool result = ImGui::Button(label, size);
-
-			ImGui::PopStyleColor(3);
-
-			return result;
-		}
 	}
 
 	void ContentBrowserPanel::DrawTopBar()
 	{
+		ImGui::Spacing();
+
 		ImGuiStyle& style = ImGui::GetStyle();
 
-		ImGui::PushStyleColor(ImGuiCol_ChildBg, style.Colors[ImGuiCol_TabActive]);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 0.f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.f);
+		ImGui::SetCursorPosX(5.f);
 
-		ImGui::BeginChild("##top_bar", ImVec2((float)GetPanelAvailableWidth(), 20.f), false, ImGuiWindowFlags_NoDecoration);
+		if (ImGui::Button(ICON_FA_ROTATE_LEFT))
 		{
-			if (TopBarUtils::DrawTextButton("<-"))
+			if (!CurrentDirectory.empty())
 			{
-				if (!CurrentDirectory.empty())
-				{
-					ChangeCurrentDirectory(CurrentDirectory.parent_path());
-				}
+				ChangeCurrentDirectory(CurrentDirectory.parent_path());
 			}
+		}
 
-			ImGui::SameLine(0.f, 5.f);
-			TopBarUtils::DrawTextButton("->");
-			ImGui::SameLine(0.f, 15.f);
+		ImGui::SameLine(0.f, 5.f);
+		if (ImGui::Button(ICON_FA_ROTATE_RIGHT))
+		{
+			ChangeCurrentDirectory(LastDirectory);
+		}
+		ImGui::SameLine(0.f, 15.f);
 
-			if (TopBarUtils::DrawTextButton("Import Asset"))
+		if (ImGui::Button(ICON_FA_FILE_IMPORT "  Import"))
+		{
+			nfdchar_t* outPath = nullptr;
+			nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &outPath);
+
+			if (result == NFD_OKAY)
 			{
-				nfdchar_t* outPath = nullptr;
-				nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &outPath);
+				std::filesystem::path FPath = outPath;
+				free(outPath);
 
-				if (result == NFD_OKAY)
+				if (!std::filesystem::is_directory(FPath))
 				{
-					std::filesystem::path FPath = outPath;
-					free(outPath);
-
-					if (!std::filesystem::is_directory(FPath))
-					{
-						Serializer::CreateAssetFromFile(FPath, CurrentDirectory);
-						Reload();
-					}
-				}
-				else if (result == NFD_CANCEL)
-				{
-					DE_INFO(FileDialog, "User cancelled file dialog");
-				}
-				else
-				{
-					DE_INFO(FileDialog, "Error: {0}", NFD_GetError());
-				}
-			}
-
-			ImGui::SameLine(0.f, 5.f);
-
-			if (TopBarUtils::DrawTextButton("Compile"))
-			{
-				ProjectTools::CompileScriptProject();
-			}
-
-			ImGui::SameLine(0.f, 5.f);
-
-			if (TopBarUtils::DrawTextButton("Save"))
-			{
-				Scene* ActiveScene = EditorSceneManager::GetEditorScene();
-				if (ActiveScene && !EditorTool::IsSimulating())
-				{
-					Ref<AssetMetadata> data = AssetMetadata::Create();
-
-					SceneSerializer::Serialize(ActiveScene, data);
-
-					if (AssetManager::AssetExists(CurrentDirectory, ActiveScene->GetName()))
-					{
-						Ref<Asset> SceneAsset = AssetManager::LoadAsset(CurrentDirectory, ActiveScene->GetName());
-						SceneAsset->Metadata = data;
-
-						AssetManager::SaveAsset(SceneAsset);
-					}
-					else
-					{
-						AssetManager::CreateAsset(CurrentDirectory, ActiveScene->GetName(), AssetType::Scene, data);
-					}
-
+					Serializer::CreateAssetFromFile(FPath, CurrentDirectory);
 					Reload();
 				}
 			}
-
-			ImGui::SameLine(0.f, 5.f);
+			else if (result == NFD_CANCEL)
+			{
+				DE_INFO(FileDialog, "User cancelled file dialog");
+			}
+			else
+			{
+				DE_INFO(FileDialog, "Error: {0}", NFD_GetError());
+			}
 		}
-		ImGui::EndChild();
 
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(3);
+		ImGui::SameLine(0.f, 5.f);
+
+		if (ImGui::Button(ICON_FA_GEARS "  Compile"))
+		{
+			ProjectTools::CompileScriptProject();
+		}
+
+		ImGui::SameLine(0.f, 5.f);
+
+		if (ImGui::Button(ICON_FA_FLOPPY_DISK "  Save"))
+		{
+			Scene* ActiveScene = EditorSceneManager::GetEditorScene();
+			if (ActiveScene && !EditorTool::IsSimulating())
+			{
+				Ref<AssetMetadata> data = AssetMetadata::Create();
+
+				SceneSerializer::Serialize(ActiveScene, data);
+
+				if (AssetManager::AssetExists(CurrentDirectory, ActiveScene->GetName()))
+				{
+					Ref<Asset> SceneAsset = AssetManager::LoadAsset(CurrentDirectory, ActiveScene->GetName());
+					SceneAsset->Metadata = data;
+
+					AssetManager::SaveAsset(SceneAsset);
+				}
+				else
+				{
+					AssetManager::CreateAsset(CurrentDirectory, ActiveScene->GetName(), AssetType::Scene, data);
+				}
+
+				Reload();
+			}
+		}
+
+		ImGui::Separator();
 	}
 
-	void ContentBrowserPanel::BrowserContent::Draw(float ThumbnailSize, bool& DidReload)
+	static bool ContentButton(int ContentIndex, ImTextureID TextureID, const ImVec2& Size, std::function<void()> ContentRender, bool ButtonColorBehavior = true)
+	{
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems)
+			return false;
+
+		const ImGuiID& id = window->GetID(ContentIndex);
+
+		const ImGuiStyle& style = ImGui::GetStyle();
+
+		ImVec2& CursorPos = window->DC.CursorPos;
+
+		ImVec2 max(CursorPos.x + Size.x, CursorPos.y + Size.y);
+
+		const ImRect ButtonRect(CursorPos, max);
+
+		ImVec4 color = style.Colors[ImGuiCol_Button];
+
+		bool pressed = false;
+
+		if (ButtonColorBehavior)
+		{
+			bool hovered = false, held = false;
+			pressed = ImGui::ButtonBehavior(ButtonRect, id, &hovered, &held);
+
+			if (held)
+			{
+				color = style.Colors[ImGuiCol_ButtonActive];
+			}
+			else if (hovered)
+			{
+				color = style.Colors[ImGuiCol_ButtonHovered];
+			}
+		}
+
+		ImDrawList* draw_list = window->DrawList;
+
+		draw_list->AddRectFilled(ButtonRect.Min, ButtonRect.Max, ImGui::GetColorU32(color), 5.f, ImDrawFlags_RoundCornersAll);
+
+		// Draw Icon
+		{
+			ImVec2 ImageSize = ImVec2(Size.x - 10.f, (Size.y * 2.f / 3.f) - 10.f);
+
+			ImVec2 p_min = ImVec2(ButtonRect.Min.x + 5.f, ButtonRect.Min.y + 5.f);
+			ImVec2 p_max = ImVec2(p_min.x + ImageSize.x, p_min.y + ImageSize.y);
+
+			draw_list->AddImage(
+				TextureID,
+				p_min,
+				p_max,
+				{ 0.f, 1.f }, { 1.f, 0.f }
+			);
+
+			CursorPos = ImVec2(p_min.x, p_max.y + 5.f);
+		}
+
+		// Draw Separator
+		{
+			ImVec2 p1 = ImVec2(ButtonRect.Min.x, CursorPos.y + 5.f);
+			ImVec2 p2 = ImVec2(ButtonRect.Max.x, p1.y);
+
+			draw_list->AddLine(
+				p1,
+				p2,
+				ImGui::GetColorU32(style.Colors[ImGuiCol_Separator])
+			);
+
+			CursorPos = ImVec2(p1.x + 5.f, p1.y + 5.f);
+		}
+
+		// Draw Contents
+		ContentRender();
+
+		ImGui::ItemSize(ButtonRect);
+		ImGui::ItemAdd(ButtonRect, id);
+
+		CursorPos = ImVec2(ButtonRect.Min.x, ButtonRect.Max.y);
+
+		return pressed;
+	}
+
+	static void ContentDrag(const char* Label, ImTextureID TextureID, const ImVec2& Size)
+	{
+		ImGui::BeginChild("##content_drag", Size);
+
+		ImVec2 ImageSize = ImVec2(Size.x - 10.f, (Size.y * 2.f / 3.f) - 10.f);
+
+		// Draw Icon
+		{
+			ImGui::SetCursorPos(ImVec2(5.f, 5.f));
+
+			ImGui::Image(
+				TextureID,
+				ImageSize,
+				{ 0.f, 1.f }, { 1.f, 0.f }
+			);
+		}
+		
+		// Draw Text
+		{
+			ImGui::SetCursorPos(ImVec2(5.f, ImageSize.y + 10.f));
+
+			ImGui::Text(Label);
+		}
+
+		ImGui::EndChild();
+	}
+
+	void ContentBrowserPanel::BrowserContent::Draw(int ContentIndex)
 	{
 		if (!ContentIcon)
 		{
@@ -399,26 +483,102 @@ namespace Engine
 			}
 		}
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
-		ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.f, 0.f, 0.f, 0.f));
-		ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.f, 0.f, 0.f, 0.f));
-
-		ImGui::ImageButton((ImTextureID)ContentIcon->GetRendererID(), { ThumbnailSize, ThumbnailSize }, { 0.f, 1.f }, { 1.f, 0.f });
-		if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left) && ImGui::IsItemHovered())
-		{
-			if (Type == AssetType::Script)
-				ProjectTools::OpenScriptProject();
-		}
-
-		ImGui::PopStyleColor(3);
-
 		if (bIsCreated)
 		{
-			DrawCreatedContent(DidReload);
+			ContentButton(ContentIndex, (ImTextureID)ContentIcon->GetRendererID(), Size, [&]() {
+				DrawCreatedContent();
+			}, !bShouldRename);
+
+			if (!bShouldRename)
+			{
+				if (ImGui::BeginPopupContextItem())
+				{
+					if (Type != AssetType::Script)
+					{
+						if (ImGui::MenuItem("Rename"))
+						{
+							StartRename();
+						}
+					}
+					if (ImGui::MenuItem("Remove"))
+					{
+						RunEvent(ContentEvent::Delete);
+						ImGui::EndPopup();
+						return;
+					}
+
+					ImGui::EndPopup();
+				}
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					RunEvent(ContentEvent::Open);
+				}
+
+				if (Type == AssetType::Folder)
+				{
+					if (ImGui::BeginDragDropTarget())
+					{
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
+
+						if (payload)
+						{
+							if (payload->IsPreview())
+							{
+								ImGui::GetForegroundDrawList()->AddRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 255, 0, 255));
+							}
+							if (payload->IsDelivery())
+							{
+								PanelDragPayload::ContentBrowserItem Item;
+								Item.FromData((uint8_t*)payload->Data);
+
+								if (Item.ItemType != AssetType::Folder)
+								{
+									AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), Entry.GetPathName());
+									RunEvent(ContentEvent::Move);
+								}
+							}
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+				}
+				else
+				{
+					if (ImGui::BeginDragDropSource())
+					{
+						PanelDragPayload::ContentBrowserItem Item;
+
+						if (Type == AssetType::Folder)
+						{
+							Item.SetFolder(Entry.GetPath().c_str(), Entry.GetName().c_str());
+						}
+						else
+						{
+							Item.SetAsset(Entry.GetID().c_str());
+							Item.ItemType = Entry.GetType();
+						}
+
+						size_t size = 0;
+						uint8_t* data = Item.Data(size);
+
+						ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", data, size);
+
+						std::string cName = TypeUtils::FromUTF16(Entry.GetName());
+						ContentDrag(cName.c_str(), (ImTextureID)ContentIcon->GetRendererID(), Size);
+
+						delete[] data;
+
+						ImGui::EndDragDropSource();
+					}
+				}
+			}
 		}
 		else
 		{
-			DrawUncreatedContent();
+			ContentButton(ContentIndex, (ImTextureID)ContentIcon->GetRendererID(), Size, [&]() {
+				DrawUncreatedContent();
+			}, false);
 		}
 	}
 
@@ -432,19 +592,19 @@ namespace Engine
 			memset(RenameBuffer, 0, RenameBufferSize);
 		}
 
-		if (bIsError)
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1.f, 0.f, 0.f, 1.f));
-		}
+		ImGuiStyle& style = ImGui::GetStyle();
+
+		ImGui::PushItemWidth(Size.x - 10.f);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+		ImGui::PushStyleColor(ImGuiCol_Border, bIsError ? ImVec4(1.f, 0.f, 0.f, 1.f) : style.Colors[ImGuiCol_ButtonHovered]);
 
 		ImGui::InputText("##name", RenameBuffer, RenameBufferSize);
 
-		if (bIsError)
-		{
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor();
-		}
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+
+		ImGui::PopItemWidth();
 
 		ImGui::SetKeyboardFocusHere(-1);
 
@@ -452,7 +612,7 @@ namespace Engine
 			!ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left) ||
 			ImGui::IsItemFocused() && ImGui::IsKeyDown(ImGuiKey_Enter)
 		){
-			bIsError = !Panel->OnCreateContent(this);
+			bIsError = !RunEvent(ContentEvent::Create);
 
 			if (!bIsError)
 			{
@@ -460,136 +620,51 @@ namespace Engine
 
 				delete[] RenameBuffer;
 				RenameBuffer = nullptr;
-
-				Panel->Reload();
 			}
 		}
 	}
 
-	void ContentBrowserPanel::BrowserContent::DrawCreatedContent(bool& DidReload)
+	void ContentBrowserPanel::BrowserContent::DrawCreatedContent()
 	{
-		DidReload = false;
-
-		bool isDirectory = (Type == AssetType::Folder);
-		bool lastRenameState = bShouldRename;
-
-		if (ImGui::BeginPopupContextItem())
-		{
-			if (Type != AssetType::Script)
-			{
-				if (ImGui::MenuItem("Rename"))
-				{
-					StartRename();
-				}
-			}
-			if (ImGui::MenuItem("Remove"))
-			{
-				if (isDirectory)
-				{
-					AssetManager::RemoveFolder(Entry.GetPath(), Entry.GetName());
-					Panel->Reload();
-					DidReload = true;
-				}
-				else
-				{
-					AssetManager::RemoveAsset(AssetManager::GetAsset(Entry.GetPath(), Entry.GetName()));
-					Panel->Reload();
-					DidReload = true;
-				}
-			}
-
-			ImGui::EndPopup();
-		}
-		if (DidReload) return;
-
-		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-		{
-			if (isDirectory)
-			{
-				Panel->ChangeCurrentDirectory(Panel->CurrentDirectory / Entry.GetName());
-				DidReload = true;
-			}
-		}
-		if (DidReload) return;
-
 		std::string cName = TypeUtils::FromUTF16(Entry.GetName());
-
-		bool beginDrag = ImGui::BeginDragDropSource();
-		if (beginDrag)
-		{
-			PanelDragPayload::ContentBrowserItem Item;
-
-			if (Type == AssetType::Folder)
-			{
-				Item.SetFolder(Entry.GetPath().c_str(), Entry.GetName().c_str());
-			}
-			else
-			{
-				Item.SetAsset(Entry.GetID().c_str());
-				Item.ItemType = Entry.GetType();
-			}
-
-			size_t size = 0;
-			uint8_t* data = Item.Data(size);
-
-			ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", data, size);
-
-			delete[] data;
-
-			ImGui::EndDragDropSource();
-		}
-
-		if (Type == AssetType::Folder && !beginDrag)
-		{
-			if (ImGui::BeginDragDropTarget())
-			{
-				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM", ImGuiDragDropFlags_AcceptBeforeDelivery);
-
-				if (payload && payload->IsDelivery())
-				{
-					PanelDragPayload::ContentBrowserItem Item;
-					Item.FromData((uint8_t*)payload->Data);
-
-					if (Item.ItemType != AssetType::Folder)
-					{
-						AssetManager::MoveAsset(AssetManager::GetAsset(Item.GetID()), Entry.GetPathName());
-						Panel->Reload();
-						DidReload = true;
-					}
-				}
-
-				ImGui::EndDragDropTarget();
-			}
-		}
+		bool lastRenameState = bShouldRename;
 
 		if (bShouldRename)
 		{
+			ImGuiStyle& style = ImGui::GetStyle();
+
+			ImGui::PushItemWidth(Size.x - 10.f);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
+			ImGui::PushStyleColor(ImGuiCol_Border, bIsError ? ImVec4(1.f, 0.f, 0.f, 1.f) : style.Colors[ImGuiCol_ButtonHovered]);
+
 			ImGui::InputText("##name", RenameBuffer, RenameBufferSize, ImGuiInputTextFlags_AutoSelectAll);
 
-			if (!lastRenameState)
-				ImGui::SetKeyboardFocusHere(-1);
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+
+			ImGui::PopItemWidth();
+
+			ImGui::SetKeyboardFocusHere(-1);
 
 			if (!ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 			{
-				bool r = false;
-				StopRename(r);
-
-				DidReload |= r;
+				StopRename();
 			}
 			else if (ImGui::IsItemFocused() && ImGui::IsKeyDown(ImGuiKey_Enter))
 			{
-				bool r = false;
-				StopRename(r);
-
-				DidReload |= r;
+				StopRename();
 			}
 		}
 		else
 		{
 			ImGui::TextWrapped(cName.c_str());
 		}
+	}
 
-		ImGui::NextColumn();
+	bool ContentBrowserPanel::BrowserContent::RunEvent(ContentEvent CEvent)
+	{
+		return OnEventCallback(*this, CEvent);
 	}
 
 	void ContentBrowserPanel::BrowserContent::StartRename()
@@ -609,56 +684,13 @@ namespace Engine
 		}
 	}
 
-	void ContentBrowserPanel::BrowserContent::StopRename(bool& DidReload)
+	void ContentBrowserPanel::BrowserContent::StopRename()
 	{
-		DidReload = false;
-
 		if (bShouldRename)
 		{
 			bShouldRename = false;
 
-			CString NewName = TypeUtils::FromUTF8(RenameBuffer);
-
-			if (Type == AssetType::Folder)
-			{
-				AssetManager::RenameFolder(Entry.GetPath(), Entry.GetName(), NewName);
-			}
-			else if (Type == AssetType::Scene)
-			{
-				if (AssetManager::RenameAsset(AssetManager::GetAsset(Entry.GetID()), NewName))
-				{
-					// Rename Scene
-					Ref<Asset> SceneAsset = AssetManager::LoadAsset(Entry.GetID());
-
-					EditorScene* NewScene = new EditorScene(NewName);
-					SceneSerializer::Deserialize(NewScene, SceneAsset->Metadata);
-					NewScene->SetName(NewName);
-
-					Ref<AssetMetadata> SceneData = AssetMetadata::Create();
-					SceneSerializer::Serialize(NewScene, SceneData);
-
-					if (AssetManager::AssetExists(Entry.GetPath(), Entry.GetName()))
-					{
-						Ref<Asset> SceneAsset = AssetManager::LoadAsset(Entry.GetPath(), Entry.GetName());
-						SceneAsset->Metadata = SceneData;
-
-						AssetManager::SaveAsset(SceneAsset);
-					}
-					else
-					{
-						AssetManager::CreateAsset(Entry.GetPath(), Entry.GetName(), AssetType::Scene, SceneData);
-					}
-
-					delete NewScene;
-				}
-			}
-			else
-			{
-				AssetManager::RenameAsset(AssetManager::GetAsset(Entry.GetID()), NewName);
-			}
-
-			Panel->Reload();
-			DidReload = true;
+			RunEvent(ContentEvent::Rename);
 
 			delete[] RenameBuffer;
 		}
@@ -669,16 +701,130 @@ namespace Engine
 		BrowserContent content = BrowserContent();
 		content.bIsCreated = false;
 		content.Type = type;
-		content.Panel = this;
+		content.OnEvent(BIND_CLASS_FN(OnContentEvent));
 
-		ContentList.push_back(content);
+		ContentList->push_back(content);
 	}
 
 	void ContentBrowserPanel::ChangeCurrentDirectory(const std::filesystem::path& NewDirectory)
 	{
+		std::filesystem::path path = CurrentDirectory;
 		CurrentDirectory = NewDirectory;
+		LastDirectory = path;
 
 		Reload();
+	}
+
+	bool ContentBrowserPanel::OnContentEvent(BrowserContent& Content, BrowserContent::ContentEvent CEvent)
+	{
+		switch (CEvent)
+		{
+		case BrowserContent::ContentEvent::Create:
+		{
+			if (OnCreateContent(&Content))
+			{
+				Reload();
+				return true;
+			}
+
+			return false;
+		} break;
+		case BrowserContent::ContentEvent::Delete:
+		{
+			DirectoryEntry& Entry = Content.Entry;
+			bool isDirectory = Content.Type == AssetType::Folder;
+
+			if (isDirectory)
+			{
+				AssetManager::RemoveFolder(Entry.GetPath(), Entry.GetName());
+				Reload();
+			}
+			else
+			{
+				AssetManager::RemoveAsset(AssetManager::GetAsset(Entry.GetPath(), Entry.GetName()));
+				Reload();
+			}
+
+			return true;
+		} break;
+		case BrowserContent::ContentEvent::Rename:
+		{
+			if (OnRenameContent(&Content))
+			{
+				Reload();
+				return true;
+			}
+
+			return false;
+		} break;
+		case BrowserContent::ContentEvent::Open:
+		{
+			switch (Content.Type)
+			{
+			case AssetType::Folder:
+			{
+				ChangeCurrentDirectory(CurrentDirectory / Content.Entry.GetName());
+				return true;
+			} break;
+			case AssetType::Script:
+			{
+				ProjectTools::OpenScriptProject();
+				return true;
+			} break;
+			default:
+				return false;
+			}
+		} break;
+		case BrowserContent::ContentEvent::Move:
+		{
+			Reload();
+			return true;
+		} break;
+		default:
+			break;
+		}
+
+		return false;
+	}
+
+	bool ContentBrowserPanel::OnRenameContent(BrowserContent* Content)
+	{
+		DirectoryEntry& Entry = Content->Entry;
+		CString NewName = TypeUtils::FromUTF8(Content->RenameBuffer);
+
+		switch (Content->Type)
+		{
+		case AssetType::Folder:
+		{
+			return AssetManager::RenameFolder(Entry.GetPath(), Entry.GetName(), NewName);
+		} break;
+		case AssetType::Scene:
+		{
+			Ref<Asset> SceneAsset = AssetManager::LoadAsset(Entry.GetID());
+
+			if (AssetManager::RenameAsset(SceneAsset, NewName))
+			{
+				// Rename Scene
+				EditorScene* NewScene = new EditorScene(NewName);
+				SceneSerializer::Deserialize(NewScene, SceneAsset->Metadata);
+				NewScene->SetName(NewName);
+
+				Ref<AssetMetadata> SceneData = AssetMetadata::Create();
+				SceneSerializer::Serialize(NewScene, SceneData);
+
+				delete NewScene;
+
+				SceneAsset->Metadata = SceneData;
+				return AssetManager::SaveAsset(SceneAsset);
+			}
+
+			return false;
+		} break;
+		default:
+			return AssetManager::RenameAsset(AssetManager::GetAsset(Entry.GetID()), NewName);
+		}
+
+		return false;
 	}
 
 	bool ContentBrowserPanel::OnCreateContent(BrowserContent* Content)
@@ -735,14 +881,17 @@ namespace Engine
 	{
 		AssetIterator it(CurrentDirectory);
 
-		ContentList.clear();
+		ContentList = new std::vector<BrowserContent>();
 
 		for (auto& content : it)
 		{
-			BrowserContent data(this, content);
+			BrowserContent data(content);
+			data.OnEvent(BIND_CLASS_FN(OnContentEvent));
 
-			ContentList.push_back(data);
+			ContentList->push_back(data);
 		}
+
+		bShouldReload = true;
 	}
 
 	void ContentBrowserPanel::OnLoadProject(const Project& project)

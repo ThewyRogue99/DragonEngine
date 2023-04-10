@@ -12,8 +12,7 @@ namespace Engine
 	class SceneEditorPanel : public EditorPanel
 	{
 	public:
-		SceneEditorPanel(const std::string& Name = "Scene Editor")
-			: EditorPanel(Name) { }
+		SceneEditorPanel();
 
 		virtual void OnCreate() override;
 

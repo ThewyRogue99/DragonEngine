@@ -7,24 +7,31 @@
 #include <unordered_map>
 #include <filesystem>
 
+#include <imgui.h>
+
+#include "IconsFontAwesome6.h"
+
 #define ICON_PATH L"Resource/Icon"
 
 namespace Engine
 {
-	std::unordered_map<CString, Ref<Texture2D>> IconMap = { };
+	std::unordered_map<CString, Ref<Texture2D>> ImageIconMap = { };
+
+	std::unordered_map<FontIconType, ImFont*> FontIconMap = { };
 
 	void ResourceTool::LoadResources()
 	{
-		LoadIcons();
+		LoadImageIcons();
+		LoadFontIcons();
 	}
 
-	static void LoadDirIcons(std::filesystem::path Path = L"")
+	static void LoadDirImageIcons(std::filesystem::path Path = L"")
 	{
 		for (auto& entry : std::filesystem::directory_iterator(Path))
 		{
 			std::filesystem::path entryPath = entry.path();
 			if (entry.is_directory())
-				LoadDirIcons(entryPath);
+				LoadDirImageIcons(entryPath);
 
 			std::filesystem::path ext = entryPath.extension();
 
@@ -42,7 +49,7 @@ namespace Engine
 					Ref<Texture2D> IconTexture = Texture2D::Create(width, height, channels);
 					IconTexture->SetData(data, width * height * channels);
 
-					IconMap[entryPath.stem()] = IconTexture;
+					ImageIconMap[entryPath.stem()] = IconTexture;
 				}
 
 				stbi_image_free(data);
@@ -50,13 +57,41 @@ namespace Engine
 		}
 	}
 
-	void ResourceTool::LoadIcons()
+	void ResourceTool::LoadFontIcons()
 	{
-		LoadDirIcons(ICON_PATH);
+		ImGuiIO& io = ImGui::GetIO();
+
+		// Load FontAwesome6
+		{
+			static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+
+			ImFontConfig conf;
+			conf.MergeMode = true;
+
+			// Regular
+			ImFont* Regular = io.Fonts->AddFontFromFileTTF(
+				"Resource/Fonts/FontAwesome6/Font Awesome 6 Pro-Regular-400.otf",
+				16.0f,
+				&conf,
+				icon_ranges
+			);
+
+			FontIconMap[FontIconType::FontAwesome6_Regular] = Regular;
+		}
 	}
 
-	Ref<Texture2D> ResourceTool::GetIcon(const CString& IconName)
+	void ResourceTool::LoadImageIcons()
 	{
-		return IconMap[IconName];
+		LoadDirImageIcons(ICON_PATH);
+	}
+
+	Ref<Texture2D> ResourceTool::GetImageIcon(const CString& IconName)
+	{
+		return ImageIconMap[IconName];
+	}
+
+	ImFont* ResourceTool::GetFontIcon(FontIconType Type)
+	{
+		return FontIconMap[Type];
 	}
 }

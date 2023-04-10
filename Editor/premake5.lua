@@ -30,7 +30,8 @@ project "Editor"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.nfd}",
-		"%{IncludeDir.AudioToWav}"
+		"%{IncludeDir.AudioToWav}",
+		"%{IncludeDir.IconFontCppHeaders}"
 	}
 
 	postbuildcommands
