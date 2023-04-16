@@ -9,13 +9,13 @@
 
 namespace Engine
 {
-	class ScriptEngine
+	class ENGINE_API ScriptEngine
 	{
 	public:
 		static void Init();
 		static void Shutdown();
 
-		static void SetAssemblyPath(const CString& CoreAssemblyPath, const CString& AppAssemblyPath);
+		static void SetAssemblyPath(const WString& CoreAssemblyPath, const WString& AppAssemblyPath);
 
 		static void Run();
 		static void Stop();
@@ -27,12 +27,12 @@ namespace Engine
 
 		static void LoadAllScripts(bool Reload = false);
 
-		static ScriptInfo* GetScriptInfo(const std::string& ScriptNamespace, const std::string& ScriptName);
-		static Ref<Script> NewScript(const std::string& ScriptNamespace, const std::string& ScriptName);
+		static ScriptInfo* GetScriptInfo(const CString& ScriptNamespace, const CString& ScriptName);
+		static Ref<Script> NewScript(const CString& ScriptNamespace, const CString& ScriptName);
 
-		static bool ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName);
+		static bool ScriptExists(const CString& ScriptNamespace, const CString& ScriptName);
 
-		static void GetScriptDefaultFields(const std::string& ScriptNamespace, const std::string& ScriptName, MemoryMap& Result);
+		static void GetScriptDefaultFields(const CString& ScriptNamespace, const CString& ScriptName, MemoryMap& Result);
 
 		static const std::vector<ScriptInfo*>& GetScriptInfoList();
 

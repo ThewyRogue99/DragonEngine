@@ -22,7 +22,7 @@ namespace Engine
 		void SetSelectedEntity(Entity entity, bool SetData = true);
 
 	protected:
-		virtual void OnData(const CString& Name, void* Data, size_t size) override;
+		virtual void OnData(const WString& Name, void* Data, size_t size) override;
 
 	private:
 		void DrawEntityNode(Entity entity);

@@ -8,7 +8,7 @@
 
 namespace Engine
 {
-	class Renderer
+	class ENGINE_API Renderer
 	{
 	public:
 		static void Init();

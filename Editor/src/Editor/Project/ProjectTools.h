@@ -17,8 +17,8 @@ namespace Engine
 		void OpenScriptProject();
 
 		// ** For ProjectManager **
-		void SetProjectPath(const CString& NewPath);
+		void SetProjectPath(const WString& NewPath);
 
-		std::string GetScriptTemplateString(const std::string& ScriptName);
+		CString GetScriptTemplateString(const CString& ScriptName);
 	}
 }

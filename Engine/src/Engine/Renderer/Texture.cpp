@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "Texture.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Assert.h"
 #include "RendererAPI.h"
 
 #include "Platform/OpenGL/OpenGLTexture.h"

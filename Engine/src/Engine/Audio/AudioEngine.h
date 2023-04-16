@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Engine/Core/Core.h"
 #include "AudioDevice.h"
 #include "AudioSource.h"
 #include "AudioBuffer.h"
 
 #include <glm/glm.hpp>
 
+#include "Engine/Core/Core.h"
+
 namespace Engine
 {
-	class AudioEngine
+	class ENGINE_API AudioEngine
 	{
 	public:
 		static void Init();

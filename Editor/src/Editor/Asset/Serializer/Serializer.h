@@ -12,12 +12,12 @@ namespace Engine
 {
 	namespace Serializer
 	{
-		bool SerializeWithAssetType(const CString& FilePath, Ref<AssetMetadata> Metadata, AssetType type);
+		bool SerializeWithAssetType(const WString& FilePath, Ref<AssetMetadata> Metadata, AssetType type);
 
-		bool SerializeTexture(const CString& FilePath, Ref<AssetMetadata> Metadata);
+		bool SerializeTexture(const WString& FilePath, Ref<AssetMetadata> Metadata);
 
-		bool SerializeAudio(const CString& FilePath, Ref<AssetMetadata> Metadata);
+		bool SerializeAudio(const WString& FilePath, Ref<AssetMetadata> Metadata);
 
-		bool CreateAssetFromFile(const CString& TargetPath, const CString& DestinationPath);
+		bool CreateAssetFromFile(const WString& TargetPath, const WString& DestinationPath);
 	}
 }

@@ -5,7 +5,7 @@ namespace Engine
 {
     Instrumentor::Instrumentor() : m_CurrentSession(nullptr), m_ProfileCount(0) { }
 
-    void Instrumentor::BeginSession(const std::string& name, const std::string& filepath)
+    void Instrumentor::BeginSession(const CString& name, const CString& filepath)
     {
         m_OutputStream.open(filepath);
         WriteHeader();
@@ -26,7 +26,7 @@ namespace Engine
         if (m_ProfileCount++ > 0)
             m_OutputStream << ",";
 
-        std::string name = result.Name;
+        CString name = result.Name;
         std::replace(name.begin(), name.end(), '"', '\'');
 
         m_OutputStream << "{";

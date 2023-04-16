@@ -62,6 +62,6 @@ namespace Engine
 
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 
-		static Ref<Framebuffer> Create(const FramebufferSpecification& props);
+		ENGINE_API static Ref<Framebuffer> Create(const FramebufferSpecification& props);
 	};
 }

@@ -9,12 +9,12 @@ namespace Engine
 	namespace TypeUtils
 	{
 #pragma warning(push, 0)
-		CString FromUTF8(const std::string& str)
+		WString FromUTF8(const CString& str)
 		{
 			return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(str);
 		}
 
-		std::string FromUTF16(const CString& str)
+		CString FromUTF16(const WString& str)
 		{
 			return std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(str);
 		}
@@ -26,7 +26,7 @@ namespace Engine
 		Clear();
 	}
 
-	void MemoryMap::SetField(const std::string& field, void* buff, size_t buffsize)
+	void MemoryMap::SetField(const CString& field, void* buff, size_t buffsize)
 	{
 		uint8_t* databuff = new uint8_t[buffsize];
 
@@ -54,7 +54,7 @@ namespace Engine
 		}
 	}
 
-	void MemoryMap::SetMapField(const std::string& field, MemoryMap& data)
+	void MemoryMap::SetMapField(const CString& field, MemoryMap& data)
 	{
 		MemoryMap* copyData = new MemoryMap();
 		data.Copy(*copyData);
@@ -81,12 +81,12 @@ namespace Engine
 		}
 	}
 
-	MemoryMap::FieldData& MemoryMap::GetFieldData(const std::string& field)
+	MemoryMap::FieldData& MemoryMap::GetFieldData(const CString& field)
 	{
 		return FieldTable[field];
 	}
 
-	const MemoryMap::FieldData& MemoryMap::GetFieldData(const std::string& field) const
+	const MemoryMap::FieldData& MemoryMap::GetFieldData(const CString& field) const
 	{
 		return FieldTable.at(field);
 	}
@@ -204,7 +204,7 @@ namespace Engine
 			// Set Field Table
 			for (uint32_t i = 0; i < size; i++)
 			{
-				std::string FieldName = TableHeaderList[i].fieldName;
+				CString FieldName = TableHeaderList[i].fieldName;
 
 				MemoryMap::FieldData& data = FieldTable[FieldName];
 

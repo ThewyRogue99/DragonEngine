@@ -6,7 +6,7 @@
 
 namespace Engine
 {
-	class ENGINE_API MouseMovedEvent : public Event
+	class MouseMovedEvent : public Event
 	{
 	public:
 		MouseMovedEvent(float x, float y)
@@ -15,7 +15,7 @@ namespace Engine
 		inline float GetX() const { return MouseX; }
 		inline float GetY() const { return MouseY; }
 
-		virtual CString ToString() const override
+		virtual WString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("MouseMovedEvent: [ X: ")
@@ -31,7 +31,7 @@ namespace Engine
 		float MouseX, MouseY;
 	};
 
-	class ENGINE_API MouseScrolledEvent : public Event
+	class MouseScrolledEvent : public Event
 	{
 	public:
 		MouseScrolledEvent(float xOffset, float yOffset)
@@ -40,7 +40,7 @@ namespace Engine
 		inline float GetXOffset() const { return xOffset; }
 		inline float GetYOffset() const { return yOffset; }
 
-		virtual CString ToString() const override
+		virtual WString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("MouseScrolledEvent: [ X Offset: ")
@@ -56,7 +56,7 @@ namespace Engine
 		float xOffset, yOffset;
 	};
 
-	class ENGINE_API MouseButtonEvent : public Event
+	class MouseButtonEvent : public Event
 	{
 	public:
 		inline MouseButtonInput GetMouseButton() const { return Button; }
@@ -69,13 +69,12 @@ namespace Engine
 		MouseButtonInput Button;
 	};
 
-	class ENGINE_API MouseButtonPressedEvent : public MouseButtonEvent
+	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
 		MouseButtonPressedEvent(MouseButtonInput Button) : MouseButtonEvent(Button) { }
 
-
-		virtual CString ToString() const override
+		virtual WString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("MouseButtonPressedEvent: [ Button: ") << (int)Button << TEXT(" ]");
@@ -86,13 +85,12 @@ namespace Engine
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
-	class ENGINE_API MouseButtonReleasedEvent : public MouseButtonEvent
+	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
 		MouseButtonReleasedEvent(MouseButtonInput Button) : MouseButtonEvent(Button) { }
 
-
-		virtual CString ToString() const override
+		virtual WString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("MouseButtonReleasedEvent: [ Button: ") << (int)Button << TEXT(" ]");

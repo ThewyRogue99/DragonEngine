@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "Shader.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Assert.h"
 
 #include "RendererAPI.h"
 
@@ -11,7 +11,7 @@
 
 namespace Engine
 {
-	Ref<Shader> Shader::Create(const CString& ShaderName, const std::string& VertexSource, const std::string& FragmentSource, bool isFilePath)
+	Ref<Shader> Shader::Create(const WString& ShaderName, const CString& VertexSource, const CString& FragmentSource, bool isFilePath)
 	{
 		switch (RendererAPI::GetAPI())
 		{
@@ -37,21 +37,21 @@ namespace Engine
 		}
 	}
 
-	std::string Shader::LoadFromFile(std::string& FilePath)
+	CString Shader::LoadFromFile(CString& FilePath)
 	{
 		std::ifstream input_file(FilePath);
 		if (!input_file.is_open()) {
-			return std::string();
+			return CString();
 		}
 
-		return std::string(std::istreambuf_iterator<char>(input_file), std::istreambuf_iterator<char>());
+		return CString(std::istreambuf_iterator<char>(input_file), std::istreambuf_iterator<char>());
 	}
 
 	bool Shader::LoadSource()
 	{
 		if (isFilePath)
 		{
-			std::string vString = LoadFromFile(VertexSource);
+			CString vString = LoadFromFile(VertexSource);
 			if (vString.empty())
 			{
 				DE_ASSERT(false, "Failed to load vertex shader file from path: {0}", VertexSource.c_str());
@@ -61,7 +61,7 @@ namespace Engine
 			VertexSource = vString;
 			vString.clear();
 
-			std::string fString = LoadFromFile(FragmentSource);
+			CString fString = LoadFromFile(FragmentSource);
 			if (fString.empty())
 			{
 				DE_ASSERT(false, "Failed to load fragment shader file from path: {0}", FragmentSource.c_str());

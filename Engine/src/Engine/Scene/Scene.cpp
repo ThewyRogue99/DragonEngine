@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Scene.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 #include "Components.h"
 
 #include "Engine/Renderer/Renderer2D.h"
@@ -11,17 +13,17 @@
 
 namespace Engine
 {
-	Scene::Scene(const CString& Name) : SceneName(Name)
+	Scene::Scene(const WString& Name) : SceneName(Name)
 	{
 		SceneRegistry.on_construct<CameraComponent>().connect<&Scene::OnCameraComponentAdded>(this);
 	}
 
-	Entity Scene::CreateEntity(const CString& name)
+	Entity Scene::CreateEntity(const WString& name)
 	{
 		return CreateEntityWithUUID(UUID(), name);
 	}
 
-	Entity Scene::CreateEntityWithUUID(UUID uuid, const CString& name)
+	Entity Scene::CreateEntityWithUUID(UUID uuid, const WString& name)
 	{
 		Entity entity = Entity(SceneRegistry.create(), this);
 		entity.AddComponent<IDComponent>(uuid);
@@ -206,7 +208,7 @@ namespace Engine
 	void Scene::CopyEntity(Scene* TargetScene, Entity entity)
 	{
 		UUID id = entity.GetComponent<IDComponent>().ID;
-		CString& tag = entity.GetComponent<TagComponent>().Tag;
+		WString& tag = entity.GetComponent<TagComponent>().Tag;
 
 		Entity targetEntity = TargetScene->GetEntityWithUUID(id);
 

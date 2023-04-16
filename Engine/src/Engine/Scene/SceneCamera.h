@@ -13,19 +13,19 @@ namespace Engine
 
 	public:
 		SceneCamera(Entity entity) : AttachedEntity(entity) { }
-		virtual ~SceneCamera();
+		ENGINE_API virtual ~SceneCamera();
 
-		virtual void Update(float DeltaTime) override;
+		ENGINE_API virtual void Update(float DeltaTime) override;
 
 		virtual const glm::mat4 GetTransform() override { return CameraTransform; }
 
 		virtual const glm::mat4& GetViewMatrix() override { return CameraViewMatrix; }
 
-		void SetViewportSize(uint32_t width, uint32_t height);
+		ENGINE_API void SetViewportSize(uint32_t width, uint32_t height);
 
 		// --------------------- Perspective Functions ------------------------
 
-		void SetPerspective(float VerticalFOV, float nearClip, float farClip);
+		ENGINE_API void SetPerspective(float VerticalFOV, float nearClip, float farClip);
 
 		inline float GetPerspectiveVerticalFOV() const { return glm::degrees(PerspectiveFOV); }
 		inline float GetPerspectiveNearClip() const { return PerspectiveNear; }
@@ -48,7 +48,7 @@ namespace Engine
 
 		// --------------------- Orthographic Functions ------------------------
 
-		void SetOrthographic(float size, float nearClip, float farClip);
+		ENGINE_API void SetOrthographic(float size, float nearClip, float farClip);
 
 		inline float GetOrthographicSize() const { return OrthographicSize; }
 		inline float GetOrthographicNearClip() const { return OrthographicNear; }
@@ -77,7 +77,7 @@ namespace Engine
 		friend class Scene;
 
 	private:
-		void RecalculateProjection();
+		ENGINE_API void RecalculateProjection();
 
 	private:
 		ProjectionType projectionType = ProjectionType::Orthographic;

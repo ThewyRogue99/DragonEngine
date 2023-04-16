@@ -6,20 +6,20 @@
 
 namespace Engine
 {
-	class ENGINE_API Layer
+	class Layer
 	{
 	public:
-		Layer(const CString& Name = TEXT("Layer"));
-		virtual ~Layer();
-
-		virtual void OnAttach();
-		virtual void OnDetach();
-		virtual void OnUpdate(float DeltaTime);
-		virtual void OnEvent(Event& event);
-
-		inline const CString& GetName() const { return DebugName; }
+		ENGINE_API Layer(const WString& Name = TEXT("Layer"));
+		ENGINE_API virtual ~Layer();
+		
+		ENGINE_API virtual void OnAttach();
+		ENGINE_API virtual void OnDetach();
+		ENGINE_API virtual void OnUpdate(float DeltaTime);
+		ENGINE_API virtual void OnEvent(Event& event);
+		
+		ENGINE_API const WString& GetName() const;
 
 	protected:
-		CString DebugName;
+		WString DebugName;
 	};
 }

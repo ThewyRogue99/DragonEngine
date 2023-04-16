@@ -14,7 +14,7 @@ namespace Engine
 	class EditorPanel
 	{
 	public:
-		EditorPanel(const std::string& Title = "Panel", uint32_t Width = 1280, uint32_t Height = 720);
+		EditorPanel(const CString& Title = "Panel", uint32_t Width = 1280, uint32_t Height = 720);
 		~EditorPanel();
 
 		virtual void OnCreate();
@@ -42,14 +42,14 @@ namespace Engine
 
 		ImVec2 GetPanelRelativeMousePos();
 
-		const std::string& GetTitle() const { return PanelTitle; }
+		const CString& GetTitle() const { return PanelTitle; }
 
 		friend class PanelManager;
 
 	protected:
-		void AddData(const CString& name, void* Data, size_t size);
+		void AddData(const WString& name, void* Data, size_t size);
 
-		virtual void OnData(const CString& Name, void* Data, size_t size);
+		virtual void OnData(const WString& Name, void* Data, size_t size);
 
 		virtual void OnResize(uint32_t width, uint32_t height);
 
@@ -78,7 +78,7 @@ namespace Engine
 		};
 
 	protected:
-		std::string PanelTitle;
+		CString PanelTitle;
 
 		bool IsDisabled = false;
 		bool bIsOpen = true;

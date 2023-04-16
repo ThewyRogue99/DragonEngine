@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
+
 #include <string>
 #include <chrono>
 #include <algorithm>
@@ -11,14 +13,14 @@ namespace Engine
 {
     struct ProfileResult
     {
-        std::string Name;
+        CString Name;
         long long Start, End;
         uint32_t ThreadID;
     };
 
     struct InstrumentationSession
     {
-        std::string Name;
+        CString Name;
     };
 
     class Instrumentor
@@ -29,29 +31,29 @@ namespace Engine
         int m_ProfileCount;
 
     public:
-        Instrumentor();
+        ENGINE_API Instrumentor();
 
-        void BeginSession(const std::string& name, const std::string& filepath = "results.json");
+        ENGINE_API void BeginSession(const CString& name, const CString& filepath = "results.json");
 
-        void EndSession();
+        ENGINE_API void EndSession();
 
-        void WriteProfile(const ProfileResult& result);
+        ENGINE_API void WriteProfile(const ProfileResult& result);
 
-        void WriteHeader();
+        ENGINE_API void WriteHeader();
 
-        void WriteFooter();
+        ENGINE_API void WriteFooter();
 
-        static Instrumentor& Get();
+        ENGINE_API static Instrumentor& Get();
     };
 
     class InstrumentationTimer
     {
     public:
-        InstrumentationTimer(const char* name);
+        ENGINE_API InstrumentationTimer(const char* name);
 
-        ~InstrumentationTimer();
+        ENGINE_API ~InstrumentationTimer();
 
-        void Stop();
+        ENGINE_API void Stop();
 
     private:
         const char* m_Name;

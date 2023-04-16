@@ -20,32 +20,32 @@ namespace Engine
 	class Scene
 	{
 	public:
-		Entity CreateEntity(const CString& name = CString());
-		Entity CreateEntityWithUUID(UUID uuid, const CString& name = CString());
-		Entity CopyEntity(Entity entity);
+		ENGINE_API Entity CreateEntity(const WString& name = WString());
+		ENGINE_API Entity CreateEntityWithUUID(UUID uuid, const WString& name = WString());
+		ENGINE_API Entity CopyEntity(Entity entity);
 
-		Entity GetEntityWithUUID(UUID uuid);
+		ENGINE_API Entity GetEntityWithUUID(UUID uuid);
 
-		void DestroyEntity(Entity entity);
+		ENGINE_API void DestroyEntity(Entity entity);
 
-		virtual void OnUpdate(float DeltaTime);
+		ENGINE_API virtual void OnUpdate(float DeltaTime);
 
-		virtual void OnViewportResize(uint32_t width, uint32_t height);
+		ENGINE_API virtual void OnViewportResize(uint32_t width, uint32_t height);
 
-		virtual void OnEvent(Event& event);
+		ENGINE_API virtual void OnEvent(Event& event);
 
 		size_t GetEntityCount() const { return SceneRegistry.size(); }
-		std::vector<Entity> GetEntities();
+		ENGINE_API std::vector<Entity> GetEntities();
 
-		inline const CString& GetName() const { return SceneName; }
-		inline void SetName(const CString& Name) { SceneName = Name; }
+		inline const WString& GetName() const { return SceneName; }
+		inline void SetName(const WString& Name) { SceneName = Name; }
 
-		void Copy(Scene* SceneRef);
+		ENGINE_API void Copy(Scene* SceneRef);
 
 		inline virtual Camera* GetPrimaryCamera() { return PrimaryCamera; }
 
-		virtual void OnSceneBegin();
-		virtual void OnSceneEnd();
+		ENGINE_API virtual void OnSceneBegin();
+		ENGINE_API virtual void OnSceneEnd();
 
 		friend class Entity;
 		friend class SceneManager;
@@ -55,24 +55,24 @@ namespace Engine
 		friend class SceneRenderer;
 
 	protected:
-		Scene(const CString& Name = TEXT("Scene"));
+		ENGINE_API Scene(const WString& Name = TEXT("Scene"));
 		Scene(const Scene&) = default;
 
 		~Scene() = default;
 
 	private:
-		void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
+		ENGINE_API void OnCameraComponentAdded(entt::registry& registry, entt::entity entity);
 
-		void CopyEntity(Scene* TargetScene, Entity entity);
-
-		template<typename... Component>
-		void CopyComponent(Entity TargetEntity, Entity SourceEntity);
+		ENGINE_API void CopyEntity(Scene* TargetScene, Entity entity);
 
 		template<typename... Component>
-		void CopyComponent(ComponentGroup<Component...>, Entity TargetEntity, Entity SourceEntity);
+		ENGINE_API void CopyComponent(Entity TargetEntity, Entity SourceEntity);
+
+		template<typename... Component>
+		ENGINE_API void CopyComponent(ComponentGroup<Component...>, Entity TargetEntity, Entity SourceEntity);
 
 	protected:
-		CString SceneName;
+		WString SceneName;
 
 		entt::registry SceneRegistry;
 

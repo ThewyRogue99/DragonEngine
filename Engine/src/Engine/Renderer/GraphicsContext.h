@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class ENGINE_API GraphicsContext
+	class GraphicsContext
 	{
 	public:
 		virtual void Init() = 0;

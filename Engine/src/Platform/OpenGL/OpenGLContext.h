@@ -6,7 +6,7 @@ struct GLFWwindow;
 
 namespace Engine
 {
-	class OpenGLContext : public GraphicsContext
+	class ENGINE_API OpenGLContext : public GraphicsContext
 	{
 	public:
 		OpenGLContext(GLFWwindow* WindowHandle);

@@ -10,7 +10,7 @@ namespace Engine
 	class EditorSceneManager
 	{
 	public:
-		static EditorScene* CreateEditorScene(const CString& Tag, bool DestroyCurrent = true);
+		static EditorScene* CreateEditorScene(const WString& Tag, bool DestroyCurrent = true);
 
 		static void SetEditorScene(EditorScene* SceneRef, bool DestroyCurrent = true);
 

@@ -11,26 +11,25 @@ namespace Engine
 	class OpenGLWindow : public Window
 	{
 	public:
-		OpenGLWindow(const WindowProps& Props);
-		~OpenGLWindow();
+		ENGINE_API OpenGLWindow(const WindowProps& Props);
+		ENGINE_API ~OpenGLWindow();
 
-		void OnUpdate() override;
+		ENGINE_API void OnUpdate() override;
 
-		inline unsigned int GetWidth()
-			const override { return Data.Width; }
+		inline unsigned int GetWidth() const override { return Data.Width; }
 
-		inline unsigned int GetHeight()
-			const override { return Data.Height; }
+		inline unsigned int GetHeight() const override { return Data.Height; }
 
-		void SetVSync(bool Enabled) override;
+		ENGINE_API void SetVSync(bool Enabled) override;
 
 		inline bool IsVsync() const override { return Data.VSync; }
 
 		inline void* GetNativeWindow() const override { return NativeWindow; }
 
 	private:
-		virtual void Init(const WindowProps& Props);
+		ENGINE_API virtual void Init(const WindowProps& Props);
 
+	private:
 		GLFWwindow* NativeWindow;
 
 		GraphicsContext* Context;

@@ -7,14 +7,14 @@ namespace Engine
 	class OpenGLVertexArray : public VertexArray
 	{
 	public:
-		OpenGLVertexArray();
-		virtual ~OpenGLVertexArray();
+		ENGINE_API OpenGLVertexArray();
+		ENGINE_API virtual ~OpenGLVertexArray();
 
-		virtual void Bind() const;
-		virtual void Unbind() const;
+		ENGINE_API virtual void Bind() const;
+		ENGINE_API virtual void Unbind() const;
 
-		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
-		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
+		ENGINE_API virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
+		ENGINE_API virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
 
 		inline virtual std::vector<Ref<VertexBuffer>> GetVertexBuffers() const override { return VertexBuffers; }
 		inline virtual Ref<IndexBuffer> GetIndexBuffer() const override { return indexBuffer; }

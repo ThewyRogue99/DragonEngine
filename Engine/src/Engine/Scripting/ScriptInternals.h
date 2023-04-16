@@ -2,7 +2,7 @@
 
 namespace Engine
 {
-	class ScriptInternals
+	class ENGINE_API ScriptInternals
 	{
 	public:
 		static void RegisterFunctions();

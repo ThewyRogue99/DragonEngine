@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	Layer::Layer(const CString& Name) : DebugName(Name)
+	Layer::Layer(const WString& Name) : DebugName(Name)
 	{
 
 	}
@@ -32,5 +32,10 @@ namespace Engine
 	void Layer::OnEvent(Event& event)
 	{
 
+	}
+
+	const WString& Layer::GetName() const
+	{
+		return DebugName;
 	}
 }

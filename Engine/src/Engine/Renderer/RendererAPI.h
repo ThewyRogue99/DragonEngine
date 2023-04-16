@@ -57,9 +57,9 @@ namespace Engine
 
 		inline static API GetAPI() { return m_API; }
 
-		static RendererAPI* Create(API api);
+		ENGINE_API static RendererAPI* Create(API api);
 
 	private:
-		static API m_API;
+		ENGINE_API static API m_API;
 	};
 }

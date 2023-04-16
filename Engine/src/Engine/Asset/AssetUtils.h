@@ -16,6 +16,6 @@ namespace Engine
 
 	namespace AssetUtils
 	{
-		AssetType GetAssetTypeFromExtension(const CString& Extension);
+		ENGINE_API AssetType GetAssetTypeFromExtension(const WString& Extension);
 	}
 }

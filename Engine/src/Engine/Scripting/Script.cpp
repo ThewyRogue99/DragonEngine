@@ -79,9 +79,9 @@ namespace Engine
 		{
 			if (entity.HasComponent<IDComponent>())
 			{
-				std::string id = entity.GetUUID().GetString();
+				CString id = entity.GetUUID().GetString();
 
-				CString wID = TypeUtils::FromUTF8(id);
+				WString wID = TypeUtils::FromUTF8(id);
 
 				MonoString* str = mono_string_from_utf16((mono_unichar2*)wID.c_str());
 
@@ -90,7 +90,7 @@ namespace Engine
 		}
 	}
 
-	ScriptField Script::GetField(const std::string& FieldName) const
+	ScriptField Script::GetField(const CString& FieldName) const
 	{
 		auto it = std::find_if(Fields.begin(), Fields.end(), [FieldName](const ScriptField& field)
 		{

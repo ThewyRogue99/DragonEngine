@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Serializer.h"
 
+#include "Engine/Asset/AssetMetadata.h"
+
 namespace Engine
 {
 	namespace Serializer

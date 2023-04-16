@@ -28,7 +28,7 @@ namespace Engine
 		float Fade = 0.005f;
 	};
 
-	class Renderer2D
+	class ENGINE_API Renderer2D
 	{
 	public:
 		static void Init();

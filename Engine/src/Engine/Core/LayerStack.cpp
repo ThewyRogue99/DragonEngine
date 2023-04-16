@@ -5,7 +5,7 @@ namespace Engine
 {
 	LayerStack::LayerStack()
 	{
-
+		LayerInsertIndex = 0;
 	}
 
 	LayerStack::~LayerStack()
@@ -65,5 +65,15 @@ namespace Engine
 
 			Layers.clear();
 		}
+	}
+
+	std::vector<Layer*>::iterator LayerStack::begin()
+	{
+		return Layers.begin();
+	}
+
+	std::vector<Layer*>::iterator LayerStack::end()
+	{
+		return Layers.end();
 	}
 }

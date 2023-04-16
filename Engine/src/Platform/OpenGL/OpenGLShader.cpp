@@ -1,14 +1,14 @@
 #include "depch.h"
 #include "OpenGLShader.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Assert.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Engine
 {
-	OpenGLShader::OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource, bool isFilePath)
+	OpenGLShader::OpenGLShader(const CString& VertexSource, const CString& FragmentSource, bool isFilePath)
 	{
 		this->VertexSource = VertexSource;
 		this->FragmentSource = FragmentSource;

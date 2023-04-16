@@ -1,24 +1,23 @@
 #pragma once
+#include <unordered_map>
+#include <iostream>
 
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
-
-#include <unordered_map>
-#include <iostream>
 
 namespace Engine
 {
 	class AssetMetadata
 	{
 	public:
-		~AssetMetadata();
+		ENGINE_API ~AssetMetadata();
 
-		MemoryMap& GetFields() { return FieldTable; }
+		ENGINE_API MemoryMap& GetFields() { return FieldTable; }
 
-		void Write(std::ostream& ss);
-		void Read(std::istream& ss);
+		ENGINE_API void Write(std::ostream& ss);
+		ENGINE_API void Read(std::istream& ss);
 
-		static Ref<AssetMetadata> Create();
+		ENGINE_API static Ref<AssetMetadata> Create();
 
 		AssetMetadata& operator=(const AssetMetadata&) = delete;
 
@@ -34,6 +33,6 @@ namespace Engine
 		explicit AssetMetadata(const phold&) : AssetMetadata() { }
 
 	private:
-		MemoryMap FieldTable = { };
+		MemoryMap FieldTable;
 	};
 }

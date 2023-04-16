@@ -73,6 +73,6 @@ namespace Engine
 		}
 
 	private:
-		static std::unordered_map<std::type_index, void*> DispatcherMap;
+		ENGINE_API static std::unordered_map<std::type_index, void*> DispatcherMap;
 	};
 }

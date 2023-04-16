@@ -26,7 +26,7 @@ namespace Engine
 
 		inline bool IsRepeat() const { return bIsRepeat; }
 
-		virtual CString ToString() const override
+		virtual WString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("KeyPressedEvent: [ Key Code: ")
@@ -46,7 +46,7 @@ namespace Engine
 	public:
 		KeyReleasedEvent(KeyInput Key) : KeyEvent(Key) { }
 
-		virtual CString ToString() const override
+		virtual WString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("KeyReleasedEvent: [ Key Code: ") << (int)Key << TEXT(" ]");
@@ -64,7 +64,7 @@ namespace Engine
 
 		inline unsigned int GetCharacter() { return Character; }
 
-		virtual CString ToString() const override
+		virtual WString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("KeyTypedEvent: [ Character: ") << Character << TEXT(" ]");

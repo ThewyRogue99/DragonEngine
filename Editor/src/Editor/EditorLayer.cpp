@@ -9,6 +9,8 @@
 #include "Panels/SceneEditorPanel.h"
 #include "Panels/SettingsPanel.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 #include <imgui.h>
 #include <ImGuizmo.h>
 

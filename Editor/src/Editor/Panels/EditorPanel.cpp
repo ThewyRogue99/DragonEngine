@@ -7,7 +7,7 @@
 
 namespace Engine
 {
-	EditorPanel::EditorPanel(const std::string& Name, uint32_t Width, uint32_t Height)
+	EditorPanel::EditorPanel(const CString& Name, uint32_t Width, uint32_t Height)
 		: PanelTitle(Name), PanelSize(Width, Height)
 	{
 
@@ -88,7 +88,7 @@ namespace Engine
 		return ImVec2(-1.f, -1.f);
 	}
 
-	void EditorPanel::AddData(const CString& name, void* Data, size_t size)
+	void EditorPanel::AddData(const WString& name, void* Data, size_t size)
 	{
 		if (Manager)
 		{
@@ -96,7 +96,7 @@ namespace Engine
 		}
 	}
 
-	void EditorPanel::OnData(const CString& Name, void* Data, size_t size)
+	void EditorPanel::OnData(const WString& Name, void* Data, size_t size)
 	{
 
 	}

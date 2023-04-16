@@ -11,7 +11,7 @@ namespace Engine
         RemoveAllPanels();
     }
 
-    void PanelManager::AddPanel(const CString& PanelName, EditorPanel* Panel)
+    void PanelManager::AddPanel(const WString& PanelName, EditorPanel* Panel)
     {
         PanelMap[PanelName] = Panel;
         Panel->Manager = this;
@@ -19,13 +19,13 @@ namespace Engine
         Panel->OnCreate();
     }
 
-    void PanelManager::AddPanels(std::initializer_list<std::pair<CString, EditorPanel*>> Panels)
+    void PanelManager::AddPanels(std::initializer_list<std::pair<WString, EditorPanel*>> Panels)
     {
         for (auto& [PanelName, Panel] : Panels)
             AddPanel(PanelName, Panel);
     }
 
-    EditorPanel* PanelManager::GetPanel(const CString& PanelName)
+    EditorPanel* PanelManager::GetPanel(const WString& PanelName)
     {
         auto it = PanelMap.find(PanelName);
 
@@ -35,7 +35,7 @@ namespace Engine
         return nullptr;
     }
 
-    bool PanelManager::RemovePanel(const CString& PanelName)
+    bool PanelManager::RemovePanel(const WString& PanelName)
     {
         auto it = PanelMap.find(PanelName);
 
@@ -75,7 +75,7 @@ namespace Engine
             Panel->Render(DeltaTime);
     }
 
-    void PanelManager::AddData(const CString& Name, void* Data, size_t size)
+    void PanelManager::AddData(const WString& Name, void* Data, size_t size)
     {
         void* Buffer = new uint8_t[size];
 
@@ -95,7 +95,7 @@ namespace Engine
         }
     }
 
-    bool PanelManager::DisablePanel(const CString& PanelName)
+    bool PanelManager::DisablePanel(const WString& PanelName)
     {
         auto it = PanelMap.find(PanelName);
 
@@ -114,7 +114,7 @@ namespace Engine
             Panel->IsDisabled = true;
     }
 
-    bool PanelManager::ActivatePanel(const CString& PanelName)
+    bool PanelManager::ActivatePanel(const WString& PanelName)
     {
         auto it = PanelMap.find(PanelName);
 

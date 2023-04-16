@@ -1,6 +1,6 @@
 #include "depch.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Instrumentor.h"
 
 #include "ScriptEngine.h"
 #include "ScriptInternals.h"
@@ -28,7 +28,7 @@ namespace Engine
 
 	struct AssemblyInfo
 	{
-		CString Path = L"";
+		WString Path = L"";
 
 		MonoAssembly* Assembly = nullptr;
 		MonoImage* Image = nullptr;
@@ -48,7 +48,7 @@ namespace Engine
 			size_t size = 0;
 		};
 
-		FileData GetAssemblyFileBytes(const CString& AssemblyFilePath)
+		FileData GetAssemblyFileBytes(const WString& AssemblyFilePath)
 		{
 			std::ifstream stream(AssemblyFilePath, std::ios::binary | std::ios::ate);
 
@@ -71,14 +71,14 @@ namespace Engine
 			return FileData();
 		}
 
-		MonoAssembly* LoadAssembly(const CString& AssemblyFilePath)
+		MonoAssembly* LoadAssembly(const WString& AssemblyFilePath)
 		{
 			FileData data = GetAssemblyFileBytes(AssemblyFilePath);
 
 			MonoImageOpenStatus status;
 			MonoImage* image = mono_image_open_from_data_full((char*)data.Data, (uint32_t)data.size, true, &status, false);
 
-			std::string path_str = TypeUtils::FromUTF16(AssemblyFilePath);
+			CString path_str = TypeUtils::FromUTF16(AssemblyFilePath);
 
 			if (status != MONO_IMAGE_OK)
 			{
@@ -127,7 +127,7 @@ namespace Engine
 		DE_WARN(ScriptEngine, "Shutting down ScriptEngine");
 	}
 
-	void ScriptEngine::SetAssemblyPath(const CString& CoreAssemblyPath, const CString& AppAssemblyPath)
+	void ScriptEngine::SetAssemblyPath(const WString& CoreAssemblyPath, const WString& AppAssemblyPath)
 	{
 		CoreAssembly.Path = CoreAssemblyPath;
 		AppAssembly.Path = AppAssemblyPath;
@@ -329,7 +329,7 @@ namespace Engine
 		}
 	}
 
-	ScriptInfo* ScriptEngine::GetScriptInfo(const std::string& ScriptNamespace, const std::string& ScriptName)
+	ScriptInfo* ScriptEngine::GetScriptInfo(const CString& ScriptNamespace, const CString& ScriptName)
 	{
 		if (!ScriptName.empty())
 		{
@@ -347,7 +347,7 @@ namespace Engine
 		return nullptr;
 	}
 
-	Ref<Script> ScriptEngine::NewScript(const std::string& ScriptNamespace, const std::string& ScriptName)
+	Ref<Script> ScriptEngine::NewScript(const CString& ScriptNamespace, const CString& ScriptName)
 	{
 		ScriptInfo* info = GetScriptInfo(ScriptNamespace, ScriptName);
 
@@ -383,7 +383,7 @@ namespace Engine
 		return nullptr;
 	}
 
-	bool ScriptEngine::ScriptExists(const std::string& ScriptNamespace, const std::string& ScriptName)
+	bool ScriptEngine::ScriptExists(const CString& ScriptNamespace, const CString& ScriptName)
 	{
 		return GetScriptInfo(ScriptNamespace, ScriptName) != nullptr;
 	}
@@ -410,7 +410,7 @@ namespace Engine
 		delete[] buff;
 	}
 
-	void ScriptEngine::GetScriptDefaultFields(const std::string& ScriptNamespace, const std::string& ScriptName, MemoryMap& Result)
+	void ScriptEngine::GetScriptDefaultFields(const CString& ScriptNamespace, const CString& ScriptName, MemoryMap& Result)
 	{
 		Ref<Script> defScript = NewScript(ScriptNamespace, ScriptName);
 		

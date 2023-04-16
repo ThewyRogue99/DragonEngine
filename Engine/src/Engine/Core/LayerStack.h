@@ -6,24 +6,24 @@
 
 namespace Engine
 {
-	class ENGINE_API LayerStack
+	class LayerStack
 	{
 	public:
-		LayerStack();
-		~LayerStack();
+		ENGINE_API LayerStack();
+		ENGINE_API ~LayerStack();
 
-		void PushLayer(Layer* layer);
-		void PushOverlay(Layer* overlay);
-		void PopLayer(Layer* layer);
-		void PopOverlay(Layer* overlay);
+		ENGINE_API void PushLayer(Layer* layer);
+		ENGINE_API void PushOverlay(Layer* overlay);
+		ENGINE_API void PopLayer(Layer* layer);
+		ENGINE_API void PopOverlay(Layer* overlay);
 
-		void Clear();
+		ENGINE_API void Clear();
 
-		inline std::vector<Layer*>::iterator begin() { return Layers.begin(); }
-		inline std::vector<Layer*>::iterator end() { return Layers.end(); }
+		ENGINE_API std::vector<Layer*>::iterator begin();
+		ENGINE_API std::vector<Layer*>::iterator end();
 
 	private:
 		std::vector<Layer*> Layers;
-		unsigned int LayerInsertIndex = 0;
+		unsigned int LayerInsertIndex;
 	};
 }

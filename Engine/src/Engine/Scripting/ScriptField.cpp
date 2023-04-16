@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "ScriptField.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Log.h"
 
 #include "Script.h"
 
@@ -11,7 +11,7 @@
 
 namespace Engine
 {
-	static std::unordered_map<std::string, ScriptFieldType> s_ScriptFieldTypeMap =
+	static std::unordered_map<CString, ScriptFieldType> s_ScriptFieldTypeMap =
 	{
 		{ "System.Single", ScriptFieldType::Float },
 		{ "System.Double", ScriptFieldType::Double },
@@ -34,7 +34,7 @@ namespace Engine
 
 	static ScriptFieldType MonoTypeToScriptFieldData(MonoType* monoType)
 	{
-		std::string typeName = mono_type_get_name(monoType);
+		CString typeName = mono_type_get_name(monoType);
 
 		auto it = s_ScriptFieldTypeMap.find(typeName);
 		if (it == s_ScriptFieldTypeMap.end())
@@ -112,44 +112,4 @@ namespace Engine
 	{
 		mono_field_get_value(ScriptObject, Info->ClassField, (void*)value);
 	}
-
-#define FIELD_TYPE_FUNCTIONS_DEFINITION(Type, ScriptFieldType) \
-template<> \
-void ScriptField::Set(Type* value) const \
-{ \
-	if (value) \
-	{ \
-		DE_ASSERT(Info->FieldType == ScriptFieldType, "Cannot set a ScriptField of another type"); \
-\
-		SetValue((void*)value); \
-	} \
-} \
-\
-template<> \
-void ScriptField::Get(Type* value) const \
-{ \
-	if (value) \
-	{ \
-		DE_ASSERT(Info->FieldType == ScriptFieldType, "Cannot get a ScriptField of another type"); \
-\
-		GetValue((void*)value); \
-	} \
-\
-}
-
-	FIELD_TYPE_FUNCTIONS_DEFINITION(float, ScriptFieldType::Float);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(double, ScriptFieldType::Double);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(bool, ScriptFieldType::Bool);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(char, ScriptFieldType::Char);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(short, ScriptFieldType::Short);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(int, ScriptFieldType::Int);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(long, ScriptFieldType::Long);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(unsigned char, ScriptFieldType::Byte);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(unsigned short, ScriptFieldType::UShort);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(unsigned int, ScriptFieldType::UInt);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(unsigned long, ScriptFieldType::ULong);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(glm::vec2, ScriptFieldType::Vector2);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(glm::vec3, ScriptFieldType::Vector3);
-	FIELD_TYPE_FUNCTIONS_DEFINITION(glm::vec4, ScriptFieldType::Vector4);
-	// TODO: Implement Entity field set/get
 }

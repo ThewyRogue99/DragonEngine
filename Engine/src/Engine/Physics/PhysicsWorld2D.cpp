@@ -1,8 +1,6 @@
 #include "depch.h"
 #include "PhysicsWorld2D.h"
 
-#include "Engine/Debug/Debug.h"
-
 #include "Engine/Core/TaskQueue.h"
 #include "Engine/Scene/Scene.h"
 

@@ -1,13 +1,14 @@
 #include "depch.h"
-#include "TextureManager.h"
 
 #include "Engine/Asset/AssetManager.h"
 
 #include <unordered_map>
 
+#include "TextureManager.h"
+
 namespace Engine
 {
-	static std::unordered_map<std::string, WeakRef<Texture2D>> LoadedTextureMap = { };
+	static std::unordered_map<CString, WeakRef<Texture2D>> LoadedTextureMap = { };
 
 	Ref<Texture2D> DeserializeTexture(Ref<AssetMetadata> Metadata)
 	{
@@ -31,12 +32,12 @@ namespace Engine
 		return nullptr;
 	}
 
-	Ref<Texture2D> TextureManager::LoadTexture(const CString& Path, const CString& Name)
+	Ref<Texture2D> TextureManager::LoadTexture(const WString& Path, const WString& Name)
 	{
 		return LoadTexture(AssetManager::GetAssetID(Path, Name));
 	}
 
-	Ref<Texture2D> TextureManager::LoadTexture(const std::string& TextureID)
+	Ref<Texture2D> TextureManager::LoadTexture(const CString& TextureID)
 	{
 		auto& it = LoadedTextureMap.find(TextureID);
 

@@ -26,24 +26,24 @@ namespace Engine
     class TaskQueue
     {
     public:
-        TaskQueue(int NumThreads);
-        ~TaskQueue();
+        ENGINE_API TaskQueue(int NumThreads);
+        ENGINE_API ~TaskQueue();
 
         // Add a task to the queue
-        void PushTask(std::function<void()> TaskFunction);
+        ENGINE_API void PushTask(std::function<void()> TaskFunction);
 
         // Wait for all tasks in the queue to complete
-        void WaitForCompletion();
+        ENGINE_API void WaitForCompletion();
 
         // Shut down the queue and wait for the worker threads to complete
-        void Shutdown();
+        ENGINE_API void Shutdown();
 
         // Wait for all worker threads to complete
-        void Join();
+        ENGINE_API void Join();
 
     private:
         // The function executed by each worker thread
-        void WorkerThread();
+        ENGINE_API void WorkerThread();
 
     private:
         std::queue<Task> Tasks = { };

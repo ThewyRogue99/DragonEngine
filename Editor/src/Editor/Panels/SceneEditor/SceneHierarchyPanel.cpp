@@ -74,7 +74,7 @@ namespace Engine
 
 				auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-				std::string tag_str = ICON_FA_CUBE;
+				CString tag_str = ICON_FA_CUBE;
 				tag_str += "  " + TypeUtils::FromUTF16(tag);
 
 				if (ImGui::Selectable(tag_str.c_str(), SelectedEntity == entity, ImGuiSelectableFlags_SpanAvailWidth))
@@ -125,7 +125,7 @@ namespace Engine
 			AddData(TEXT("SelectedEntity"), &entity, sizeof(entity));
 	}
 
-	void SceneHierarchyPanel::OnData(const CString& Name, void* Data, size_t size)
+	void SceneHierarchyPanel::OnData(const WString& Name, void* Data, size_t size)
 	{
 		if(Name == TEXT("SelectedEntity"))
 		{
@@ -142,7 +142,7 @@ namespace Engine
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-		std::string tag_str = TypeUtils::FromUTF16(tag);
+		CString tag_str = TypeUtils::FromUTF16(tag);
 
 		if(ImGui::Selectable(tag_str.c_str(), SelectedEntity == entity, ImGuiSelectableFlags_SpanAvailWidth))
 		{
@@ -304,7 +304,7 @@ namespace Engine
 				ImGui::BeginDisabled(true);
 
 				const ScriptFieldInfo* Info = field.GetInfo();
-				const std::string& FieldName = Info->GetName();
+				const CString& FieldName = Info->GetName();
 
 				switch (Info->GetFieldType())
 				{
@@ -387,7 +387,7 @@ namespace Engine
 
 				for (auto& Info : FieldInfos)
 				{
-					const std::string& FieldName = Info.GetName();
+					const CString& FieldName = Info.GetName();
 					MemoryMap::FieldData FData = Fields.GetField<MemoryMap>(FieldName).GetFieldData("Data");
 
 					switch (Info.GetFieldType())
@@ -460,7 +460,7 @@ namespace Engine
 		{
 			auto& component = entity.GetComponent<TagComponent>();
 
-			std::string tag_str = TypeUtils::FromUTF16(component.Tag);
+			CString tag_str = TypeUtils::FromUTF16(component.Tag);
 
 			char buffer[64];
 			memset(buffer, 0, sizeof(buffer));
@@ -729,7 +729,7 @@ namespace Engine
 			auto& ScriptInfoList = ScriptEngine::GetScriptInfoList();
 
 			size_t size = ScriptInfoList.size();
-			std::vector<std::string> FullScriptNameList(size);
+			std::vector<CString> FullScriptNameList(size);
 
 			for (size_t i = 0; i < size; i++)
 			{
@@ -741,7 +741,7 @@ namespace Engine
 				FullScriptNameList[i] = (Namespace.empty() ? "" : Namespace + ".") + Name;
 			}
 
-			std::string componentScriptFullName = (component.Namespace.empty() ? "" : component.Namespace + ".") + component.Name;
+			CString componentScriptFullName = (component.Namespace.empty() ? "" : component.Namespace + ".") + component.Name;
 			const char* preview = component.Name.empty() ? "Select Script..." : componentScriptFullName.c_str();
 
 			if (ImGui::BeginCombo("Scripts", preview))

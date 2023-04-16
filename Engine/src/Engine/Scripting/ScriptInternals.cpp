@@ -28,10 +28,10 @@ namespace Engine
 	{
 		([]()
 		{
-			std::string typeName = typeid(Component).name();
+			CString typeName = typeid(Component).name();
 			size_t pos = typeName.find_last_of(':');
-			std::string structName = typeName.substr(pos + 1);
-			std::string managedTypename = "DragonEngine." + structName;
+			CString structName = typeName.substr(pos + 1);
+			CString managedTypename = "DragonEngine." + structName;
 			char* cstr = (char*)managedTypename.c_str();
 
 			MonoType* managedType = mono_reflection_type_from_name(cstr, (MonoImage*)ScriptEngine::GetCoreAssemblyImage());
@@ -157,7 +157,7 @@ namespace Engine
 			Entity entity = SceneRef->CreateEntity(tagstr);
 			if (entity.IsValid())
 			{
-				CString WID = TypeUtils::FromUTF8(entity.GetUUID().GetString());
+				WString WID = TypeUtils::FromUTF8(entity.GetUUID().GetString());
 				result = mono_string_from_utf16((mono_unichar2*)WID.c_str());
 			}
 		}
@@ -224,8 +224,8 @@ namespace Engine
 				for (uintptr_t i = 0; i < len; i++)
 				{
 					Entity entity = EntityList[i];
-					std::string entityID = entity.GetUUID().GetString();
-					CString WID = TypeUtils::FromUTF8(entityID);
+					CString entityID = entity.GetUUID().GetString();
+					WString WID = TypeUtils::FromUTF8(entityID);
 
 					mono_array_set(
 						*IDArray,

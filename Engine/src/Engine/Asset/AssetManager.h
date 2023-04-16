@@ -15,69 +15,69 @@ namespace Engine
     class AssetManager
     {
     public:
-        static void Init(const CString& Path);
+        ENGINE_API static void Init(const WString& Path);
 
-	    static void SetContentPath(const CString& Path);
-	    static CString GetContentPath();
+        ENGINE_API static void SetContentPath(const WString& Path);
+        ENGINE_API static WString GetContentPath();
 
-	    static bool Load();
-	    static bool Save();
+        ENGINE_API static bool Load();
+        ENGINE_API static bool Save();
 
-        static Ref<Asset> CreateAsset(
-            const CString& Path,
-            const CString& Name,
+        ENGINE_API static Ref<Asset> CreateAsset(
+            const WString& Path,
+            const WString& Name,
             AssetType Type,
             Ref<AssetMetadata> Metadata = nullptr
         );
 
-        static bool RenameAsset(Ref<Asset> AssetRef, const CString& NewName);
+        ENGINE_API static bool RenameAsset(Ref<Asset> AssetRef, const WString& NewName);
 
-        static bool RemoveAsset(Ref<Asset> AssetRef);
+        ENGINE_API static bool RemoveAsset(Ref<Asset> AssetRef);
 
-        static bool MoveAsset(Ref<Asset> AssetRef, const CString& NewPath);
+        ENGINE_API static bool MoveAsset(Ref<Asset> AssetRef, const WString& NewPath);
 
-        static Ref<Asset> GetAsset(const std::string& AssetID);
-        static Ref<Asset> GetAsset(const CString& Path, const CString& Name);
+        ENGINE_API static Ref<Asset> GetAsset(const CString& AssetID);
+        ENGINE_API static Ref<Asset> GetAsset(const WString& Path, const WString& Name);
 
-        static Ref<Asset> LoadAsset(const std::string& AssetID);
-        static Ref<Asset> LoadAsset(const CString& Path, const CString& Name);
+        ENGINE_API static Ref<Asset> LoadAsset(const CString& AssetID);
+        ENGINE_API static Ref<Asset> LoadAsset(const WString& Path, const WString& Name);
 
-        static bool SaveAsset(Ref<Asset> AssetRef);
+        ENGINE_API static bool SaveAsset(Ref<Asset> AssetRef);
 
-        static bool AssetExists(const CString& Path, const CString& Name);
-        static bool AssetExists(const std::string& ID);
+        ENGINE_API static bool AssetExists(const WString& Path, const WString& Name);
+        ENGINE_API static bool AssetExists(const CString& ID);
 
-	    static CString GetFullPath(const CString& Path);
-        static CString GetFullPath(const CString& Path, const CString& Name);
+        ENGINE_API static WString GetFullPath(const WString& Path);
+        ENGINE_API static WString GetFullPath(const WString& Path, const WString& Name);
 
-        static std::string GetAssetID(const CString& Path, const CString& Name);
+        ENGINE_API static CString GetAssetID(const WString& Path, const WString& Name);
 
-	    static bool CreateFolder(const CString& Path, const CString& Name);
-	    static bool RemoveFolder(const CString& Path, const CString& Name);
-        static bool RenameFolder(const CString& Path, const CString& Name, const CString& NewName);
+        ENGINE_API static bool CreateFolder(const WString& Path, const WString& Name);
+        ENGINE_API static bool RemoveFolder(const WString& Path, const WString& Name);
+        ENGINE_API static bool RenameFolder(const WString& Path, const WString& Name, const WString& NewName);
 
-        static CString GetAvailableName(const CString& Path, const CString& Name);
+        ENGINE_API static WString GetAvailableName(const WString& Path, const WString& Name);
 
-        static AssetIterator GetIterator();
+        ENGINE_API static AssetIterator GetIterator();
 
         friend class DirectoryEntry;
         friend class AssetIterator;
 
     private:
-	    static bool LoadMetadata();
-	    static bool SaveMetadata();
+        ENGINE_API static bool LoadMetadata();
+        ENGINE_API static bool SaveMetadata();
 
-	    static bool AddAsset(const std::string& ID, AssetInfo* Info);
+        ENGINE_API static bool AddAsset(const CString& ID, AssetInfo* Info);
 
         using AssetMap = std::unordered_map<
-            std::string,
+            CString,
             std::pair<
-                AssetInfo*,
-                WeakRef<Asset>
+            AssetInfo*,
+            WeakRef<Asset>
             >
         >;
 
-        static AssetMap AssetList;
+        ENGINE_API static AssetMap AssetList;
     };
 
     class DirectoryEntry
@@ -90,21 +90,21 @@ namespace Engine
         friend class AssetIterator;
 
     public:
-        const CString& GetPath() const;
-        const CString& GetName() const;
-        const CString& GetPathName() const;
+        ENGINE_API const WString& GetPath() const;
+        ENGINE_API const WString& GetName() const;
+        ENGINE_API const WString& GetPathName() const;
 
-        const std::string& GetID() const;
+        ENGINE_API const CString& GetID() const;
 
-        const AssetType GetType() const;
+        ENGINE_API const AssetType GetType() const;
 
     private:
         struct FolderData
         {
-            CString Path;
-            CString Name;
+            WString Path;
+            WString Name;
 
-            CString PathName;
+            WString PathName;
         };
         Ref<FolderData> dFolder = nullptr;
 
@@ -116,14 +116,14 @@ namespace Engine
     public:
         AssetIterator() = default;
         AssetIterator(const AssetIterator&) = default;
-        AssetIterator(const CString& Path, bool IsFullPath = false);
+        ENGINE_API AssetIterator(const WString& Path, bool IsFullPath = false);
 
-        const DirectoryEntry& operator*() const;
+        ENGINE_API const DirectoryEntry& operator*() const;
 
-        const DirectoryEntry* operator->() const;
+        ENGINE_API const DirectoryEntry* operator->() const;
 
-        AssetIterator& operator++();
-        AssetIterator operator++(int);
+        ENGINE_API AssetIterator& operator++();
+        ENGINE_API AssetIterator operator++(int);
 
         bool operator==(const AssetIterator& _Rhs) const
         {
@@ -137,23 +137,9 @@ namespace Engine
         }
     #endif // !_HAS_CXX20
 
-        AssetIterator begin()
-        {
-            AssetIterator it;
-            it.EntryList = EntryList;
-            it._it = EntryList->begin();
+        ENGINE_API AssetIterator begin();
 
-            return it;
-        }
-
-        AssetIterator end()
-        {
-            AssetIterator it;
-            it.EntryList = EntryList;
-            it._it = EntryList->end();
-
-            return it;
-        }
+        ENGINE_API AssetIterator end();
 
     private:
         using EntryVector = std::vector<DirectoryEntry>;

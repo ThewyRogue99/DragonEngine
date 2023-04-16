@@ -5,9 +5,9 @@
 
 namespace Engine
 {
-	class CommandSystem
+	class ENGINE_API CommandSystem
 	{
 	public:
-		static void RunCommand(const std::string& Command);
+		static void RunCommand(const CString& Command);
 	};
 }

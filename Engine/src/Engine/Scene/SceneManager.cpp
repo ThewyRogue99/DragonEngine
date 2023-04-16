@@ -13,7 +13,7 @@ namespace Engine
 	static std::vector<Scene*> SceneList = { };
 	static Scene* ActiveScene = nullptr;
 
-	Scene* SceneManager::CreateScene(const CString& Tag)
+	Scene* SceneManager::CreateScene(const WString& Tag)
 	{
 		Scene* cpy = GetScene(Tag);
 
@@ -26,7 +26,7 @@ namespace Engine
 			return NewScene;
 		}
 
-		std::string DebugName = TypeUtils::FromUTF16(cpy->GetName());
+		CString DebugName = TypeUtils::FromUTF16(cpy->GetName());
 		DE_ERROR(SceneManager, "Cannot create scene '{0}'.(A scene with same tag already exists)", DebugName.c_str());
 		return nullptr;
 	}
@@ -41,7 +41,7 @@ namespace Engine
 		}
 		else
 		{
-			std::string DebugName = TypeUtils::FromUTF16(cpy->GetName());
+			CString DebugName = TypeUtils::FromUTF16(cpy->GetName());
 			DE_ERROR(SceneManager, "Cannot add scene '{0}'.(A scene with same tag already exists)", DebugName.c_str());
 		}
 	}
@@ -51,7 +51,7 @@ namespace Engine
 		OnSetActiveSceneDispatch.Run(SceneRef);
 	}
 
-	Scene* SceneManager::LoadScene(const std::string& SceneAssetID)
+	Scene* SceneManager::LoadScene(const CString& SceneAssetID)
 	{
 		Ref<Asset> SceneAsset = AssetManager::LoadAsset(SceneAssetID);
 
@@ -68,7 +68,7 @@ namespace Engine
 				return NewScene;
 			}
 
-			std::string DebugName = TypeUtils::FromUTF16(NewScene->GetName());
+			CString DebugName = TypeUtils::FromUTF16(NewScene->GetName());
 			DE_ERROR(SceneManager, "Cannot load scene '{0}'.(A scene with same tag already exists)", DebugName.c_str());
 
 			delete NewScene;
@@ -79,7 +79,7 @@ namespace Engine
 		return nullptr;
 	}
 
-	Scene* SceneManager::LoadScene(const CString& Path, const CString& Name)
+	Scene* SceneManager::LoadScene(const WString& Path, const WString& Name)
 	{
 		Ref<Asset> SceneAsset = AssetManager::LoadAsset(Path, Name);
 
@@ -96,7 +96,7 @@ namespace Engine
 				return NewScene;
 			}
 
-			std::string DebugName = TypeUtils::FromUTF16(NewScene->GetName());
+			CString DebugName = TypeUtils::FromUTF16(NewScene->GetName());
 			DE_ERROR(SceneManager, "Cannot load scene '{0}'.(A scene with same tag already exists)", DebugName.c_str());
 
 			delete NewScene;
@@ -112,7 +112,7 @@ namespace Engine
 		return ActiveScene;
 	}
 
-	Scene* SceneManager::GetScene(const CString& Tag)
+	Scene* SceneManager::GetScene(const WString& Tag)
 	{
 		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](Scene* Data)
 		{
@@ -125,7 +125,7 @@ namespace Engine
 		return nullptr;
 	}
 
-	bool SceneManager::ReplaceScene(const CString& Tag, Scene* SceneRef)
+	bool SceneManager::ReplaceScene(const WString& Tag, Scene* SceneRef)
 	{
 		auto it = std::find_if(SceneList.begin(), SceneList.end(), [Tag](Scene* Data)
 		{
@@ -134,7 +134,7 @@ namespace Engine
 
 		if (it != SceneList.end())
 		{
-			const CString& Tag = (*it)->GetName();
+			const WString& Tag = (*it)->GetName();
 
 			bool isActive = IsActiveScene(Tag);
 
@@ -154,7 +154,7 @@ namespace Engine
 		return false;
 	}
 
-	bool SceneManager::RemoveScene(const CString& Tag)
+	bool SceneManager::RemoveScene(const WString& Tag)
 	{
 		auto it = std::remove_if(SceneList.begin(), SceneList.end(), [Tag](Scene* Data)
 		{
@@ -197,7 +197,7 @@ namespace Engine
 		return false;
 	}
 
-	bool SceneManager::SetActiveScene(const CString& Tag)
+	bool SceneManager::SetActiveScene(const WString& Tag)
 	{
 		Scene* NewActiveScene = GetScene(Tag);
 
@@ -213,7 +213,7 @@ namespace Engine
 		return ActiveScene == SceneRef;
 	}
 
-	bool SceneManager::IsActiveScene(const CString& Tag)
+	bool SceneManager::IsActiveScene(const WString& Tag)
 	{
 		Scene* ref = GetScene(Tag);
 

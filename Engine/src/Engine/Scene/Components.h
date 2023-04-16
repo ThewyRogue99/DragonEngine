@@ -23,9 +23,9 @@ public: \
 	friend class SceneSerializer; \
 \
 protected: \
-	virtual void OnSerialize(MemoryMap& DataMap) override; \
+	ENGINE_API virtual void OnSerialize(MemoryMap& DataMap) override; \
 \
-	virtual void OnDeserialize(const MemoryMap& DataMap) override;
+	ENGINE_API virtual void OnDeserialize(const MemoryMap& DataMap) override;
 
 #define COMPONENT_CLASS(T, ...) class T : public Component \
 { \
@@ -59,12 +59,12 @@ namespace Engine
 
 	COMPONENT_CLASS(TagComponent,
 	public:
-		CString Tag;
+		WString Tag;
 		
 		TagComponent() = default;
 		TagComponent(const TagComponent&) = default;
 
-		TagComponent(const CString& tag)
+		TagComponent(const WString& tag)
 			: Tag(tag) { }
 
 		COMPONENT_CLASS_BODY()
@@ -103,7 +103,7 @@ namespace Engine
 	public:
 		glm::vec4 Color = glm::vec4(1.f);
 
-		std::string TextureID;
+		CString TextureID;
 		Ref<Texture2D> Texture = nullptr;
 
 		float TilingFactor = 1.f;
@@ -143,7 +143,7 @@ namespace Engine
 	public:
 		glm::vec3 Offset = glm::vec3(0.f);
 
-		std::string AudioID;
+		CString AudioID;
 		Ref<AudioSource> Source = nullptr;
 
 		AudioComponent() = default;
@@ -156,8 +156,8 @@ namespace Engine
 	public:
 		Ref<Script> ScriptObject = nullptr;
 
-		std::string Name = "";
-		std::string Namespace = "";
+		CString Name = "";
+		CString Namespace = "";
 
 		MemoryMap Fields;
 

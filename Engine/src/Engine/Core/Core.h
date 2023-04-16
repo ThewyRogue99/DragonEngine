@@ -32,12 +32,10 @@
 	#error Unknown platform!
 #endif
 
-#ifdef ENGINE_DYNAMIC_LINK
-	#ifdef __ENGINE__
-		#define ENGINE_API __declspec(dllexport)
-	#else
-		#define ENGINE_API __declspec(dllimport)
-	#endif
+#ifdef ENGINE_BUILD_DLL
+	#define ENGINE_API __declspec(dllexport)
+#elif ENGINE_LINK_DLL
+	#define ENGINE_API __declspec(dllimport)
 #else
 	#define ENGINE_API
 #endif

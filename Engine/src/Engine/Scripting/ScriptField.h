@@ -8,6 +8,10 @@ extern "C" {
 	typedef struct _MonoObject MonoObject;
 }
 
+#define DECLARE_SCRIPT_FIELD_TYPE(Type) \
+template<> \
+void ScriptField::Set<Type>(Type* value) const;
+
 namespace Engine
 {
 	class Script;
@@ -31,24 +35,24 @@ namespace Engine
 	class ScriptFieldInfo
 	{
 	public:
-		const std::string& GetName() const { return Name; }
+		const CString& GetName() const { return Name; }
 		const ScriptFieldType GetFieldType() const { return FieldType; }
 		const ScriptFieldVisibility GetFieldVisibility() const { return FieldVisibility; }
 
-		size_t GetFieldSize() const;
+		ENGINE_API size_t GetFieldSize() const;
 
-		bool IsSameField(const ScriptFieldInfo& field);
+		ENGINE_API bool IsSameField(const ScriptFieldInfo& field);
 
 		friend class ScriptField;
 		friend class ScriptEngine;
 
 	private:
-		ScriptFieldInfo(MonoClassField* Field);
+		ENGINE_API ScriptFieldInfo(MonoClassField* Field);
 
 	private:
 		MonoClassField* ClassField = nullptr;
 
-		std::string Name;
+		CString Name;
 
 		ScriptFieldType FieldType = ScriptFieldType::None;
 		ScriptFieldVisibility FieldVisibility = ScriptFieldVisibility::Hidden;
@@ -61,15 +65,29 @@ namespace Engine
 
 		const ScriptFieldInfo* GetInfo() const { return Info; }
 
-		void SetValue(void* value) const;
+		ENGINE_API void SetValue(void* value) const;
 
-		void GetValue(void* value) const;
+		ENGINE_API void GetValue(void* value) const;
+
+		// TODO: Implement Entity type field set/get
 
 		template<typename T>
-		void Set(T* value) const;
+		void Set(T* value) const
+		{
+			if (value)
+			{
+				SetValue((void*)value);
+			}
+		}
 
 		template<typename T>
-		void Get(T* value) const;
+		void Get(T* value) const
+		{
+			if (value)
+			{
+				GetValue((void*)value);
+			}
+		}
 
 		friend class Script;
 
@@ -82,6 +100,6 @@ namespace Engine
 	private:
 		MonoObject* ScriptObject;
 
-		const ScriptFieldInfo* Info ;
+		const ScriptFieldInfo* Info;
 	};
 }

@@ -25,7 +25,7 @@ namespace Engine
 	private:
 		void RenderSettings();
 
-		const std::string GetCategoryString(SettingsCategory Category);
+		const CString GetCategoryString(SettingsCategory Category);
 
 	private:
 		SettingsCategory SelectedCategory = SettingsCategory::Editor;

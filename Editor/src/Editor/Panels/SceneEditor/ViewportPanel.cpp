@@ -21,7 +21,6 @@
 
 #include "Editor/Scene/EditorSceneManager.h"
 
-#include "IconsFontAwesome5.h"
 #include "IconsFontAwesome6.h"
 
 #include <imgui_internal.h>
@@ -382,7 +381,7 @@ namespace Engine
 
 			bool selected3 = (GizmoType == ImGuizmo::OPERATION::SCALE);
 			if (RoundedButton(
-				ICON_FA_EXPAND_ALT,
+				ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER,
 				buttonSize,
 				5.f,
 				selected3,
@@ -460,7 +459,7 @@ namespace Engine
 			// Rotate Grid
 			{
 				if (RoundedButton(
-					ICON_FA_DRAFTING_COMPASS,
+					ICON_FA_COMPASS_DRAFTING,
 					buttonSize,
 					5.f,
 					RotationSnap.Enabled,
@@ -620,7 +619,7 @@ namespace Engine
 		}
 	}
 
-	void ViewportPanel::OnData(const CString& Name, void* Data, size_t size)
+	void ViewportPanel::OnData(const WString& Name, void* Data, size_t size)
 	{
 		if (Name == L"SelectedEntity")
 		{

@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class ENGINE_API Texture
+	class Texture
 	{
 	public:
 		virtual ~Texture() = default;
@@ -22,7 +22,7 @@ namespace Engine
 	class Texture2D : public Texture
 	{
 	public:
-		static Ref<Texture2D> Create(uint32_t width, uint32_t height, uint32_t channels = 4);
+		ENGINE_API static Ref<Texture2D> Create(uint32_t width, uint32_t height, uint32_t channels = 4);
 
 		virtual bool operator ==(Texture2D& texture) = 0;
 	};

@@ -7,6 +7,6 @@ namespace Engine
 {
 	namespace Platform
 	{
-		float GetTime();
+		ENGINE_API float GetTime();
 	}
 }

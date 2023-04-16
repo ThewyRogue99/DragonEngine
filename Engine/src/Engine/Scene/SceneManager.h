@@ -6,32 +6,32 @@
 
 namespace Engine
 {
-	class SceneManager
+	class ENGINE_API SceneManager
 	{
 	public:
-		static Scene* CreateScene(const CString& Tag);
+		static Scene* CreateScene(const WString& Tag);
 
 		static void AddScene(Scene* SceneRef);
 
 		// Load a scene asset with its ID
-		static Scene* LoadScene(const std::string& SceneAssetID);
+		static Scene* LoadScene(const CString& SceneAssetID);
 
 		// Load a scene asset with its Path and Name
-		static Scene* LoadScene(const CString& Path, const CString& Name);
+		static Scene* LoadScene(const WString& Path, const WString& Name);
 
 		static Scene* GetActiveScene();
 
-		static Scene* GetScene(const CString& Tag);
+		static Scene* GetScene(const WString& Tag);
 
-		static bool ReplaceScene(const CString& Tag, Scene* SceneRef);
+		static bool ReplaceScene(const WString& Tag, Scene* SceneRef);
 
-		static bool RemoveScene(const CString& Tag);
+		static bool RemoveScene(const WString& Tag);
 
 		static bool SetActiveScene(Scene* SceneRef);
-		static bool SetActiveScene(const CString& Tag);
+		static bool SetActiveScene(const WString& Tag);
 
 		static bool IsActiveScene(Scene* SceneRef);
-		static bool IsActiveScene(const CString& Tag);
+		static bool IsActiveScene(const WString& Tag);
 
 		static void Clear();
 

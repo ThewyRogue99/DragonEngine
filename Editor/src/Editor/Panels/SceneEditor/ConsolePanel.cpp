@@ -13,7 +13,7 @@ namespace ImGui
 {
     static int InputTextCallback(ImGuiInputTextCallbackData* data)
     {
-        std::string* str = (std::string*)data->UserData;
+        Engine::CString* str = (Engine::CString*)data->UserData;
         if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
         {
             // Resize string callback
@@ -25,7 +25,7 @@ namespace ImGui
         return 0;
     }
 
-    bool InputText(const char* label, std::string* str, ImGuiInputTextFlags flags)
+    bool InputText(const char* label, Engine::CString* str, ImGuiInputTextFlags flags)
     {
         IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
         flags |= ImGuiInputTextFlags_CallbackResize;

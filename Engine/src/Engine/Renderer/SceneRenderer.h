@@ -7,7 +7,7 @@ namespace Engine
 {
 	class Framebuffer;
 
-	class SceneRenderer
+	class ENGINE_API SceneRenderer
 	{
 	public:
 		static void BeginScene(Scene* SceneRef, Ref<Framebuffer> FramebufferRef);

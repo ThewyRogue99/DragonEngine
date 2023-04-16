@@ -40,7 +40,7 @@ namespace Engine
 		virtual EventType GetEventType() const = 0;
 		virtual const wchar_t* GetName() const = 0;
 		virtual int GetCategoryFlags() const = 0;
-		virtual CString ToString() const { return GetName(); }
+		virtual WString ToString() const { return GetName(); }
 
 		inline bool IsInCategory(EventCategory Category)
 		{

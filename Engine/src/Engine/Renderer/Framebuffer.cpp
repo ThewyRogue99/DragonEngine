@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "Framebuffer.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Assert.h"
 
 #include "RendererAPI.h"
 

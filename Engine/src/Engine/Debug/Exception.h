@@ -9,7 +9,7 @@ namespace Engine
 	class Name : public Exception \
 	{ \
 	public: \
-		Name(const std::string& msg) \
+		Name(const CString& msg) \
 			: Exception(msg) { } \
 	};
 
@@ -17,15 +17,15 @@ namespace Engine
 	{
 	protected:
 		Exception() = default;
-		Exception(const std::string& msg)
+		Exception(const CString& msg)
 			: Message(msg) { }
 
-		const std::string& ExcMessage() const { return Message; }
+		const CString& ExcMessage() const { return Message; }
 
 		friend class ExceptionHandler;
 
 	protected:
-		std::string Message;
+		CString Message;
 	};
 
 	EXCEPTION_DEF(AssertException)

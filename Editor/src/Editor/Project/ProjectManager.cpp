@@ -33,7 +33,7 @@ namespace Engine
 		AssetManager::Init(ProjectPath / TEXT("Assets"));
 	}
 
-	bool ProjectManager::CreateProject(const CString& ProjectPath, const std::string& ProjectName)
+	bool ProjectManager::CreateProject(const WString& ProjectPath, const CString& ProjectName)
 	{
 		DE_LOG(
 			ProjectManager, "Creating project '{0}' in '{1}' path",
@@ -59,7 +59,7 @@ namespace Engine
 			SetAssetManager(Path);
 
 			// Create Project File
-			CString ProjectPath = Path / (ProjectName + ".deproject");
+			WString ProjectPath = Path / (ProjectName + ".deproject");
 
 			std::ofstream pf(ProjectPath, std::ios::out | std::ios::binary);
 			if (pf.is_open())
@@ -98,7 +98,7 @@ namespace Engine
 		return false;
 	}
 
-	bool ProjectManager::LoadProject(const CString& ProjectPath)
+	bool ProjectManager::LoadProject(const WString& ProjectPath)
 	{
 		DE_LOG(
 			ProjectManager, "Loading project in '{0}' path",
@@ -162,11 +162,11 @@ namespace Engine
 		return false;
 	}
 
-	bool ProjectManager::CreateScript(const std::string& Name)
+	bool ProjectManager::CreateScript(const CString& Name)
 	{
 		DE_LOG(ProjectManager, "Creating Script '{0}'", Name.c_str());
 
-		bool IncludesSpace = Name.find_first_of(' ') != std::string::npos;
+		bool IncludesSpace = Name.find_first_of(' ') != CString::npos;
 		if (Name != "Script" && !IncludesSpace)
 		{
 			std::filesystem::path SourcePath = ProjectData.Path;

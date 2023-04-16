@@ -1,7 +1,7 @@
 #include "SceneEditorPanel.h"
 
 #include "SceneEditor/Panels.h"
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Log.h"
 
 #include "Editor/Project/ProjectManager.h"
 #include "Editor/Tools/EditorTool.h"
@@ -92,7 +92,7 @@ namespace Engine
 						std::filesystem::path FullPath = outPath;
 						free(outPath);
 
-						std::string ProjectName = TypeUtils::FromUTF16(FullPath.filename());
+						CString ProjectName = TypeUtils::FromUTF16(FullPath.filename());
 
 						ProjectManager::CreateProject(FullPath, ProjectName);
 					}

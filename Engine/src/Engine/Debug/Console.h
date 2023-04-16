@@ -26,7 +26,7 @@ namespace Engine
 	{
 	public:
 		Console() = default;
-		Console(const CString& AppName)
+		Console(const WString& AppName)
 			: AppName(AppName) { }
 
 		virtual void OnAttach() = 0;
@@ -34,7 +34,7 @@ namespace Engine
 		virtual void OnDetach() = 0;
 
 		template<typename... Args>
-		void Log(const std::string& LoggerName, LogLevel Level, const char* fmt, Args&&... args)
+		void Log(const CString& LoggerName, LogLevel Level, const char* fmt, Args&&... args)
 		{
 			if (ConsoleLogger)
 			{
@@ -43,7 +43,7 @@ namespace Engine
 		}
 
 	protected:
-		CString AppName;
+		WString AppName;
 
 		Ref<Logger> ConsoleLogger = nullptr;
 	};
@@ -51,17 +51,17 @@ namespace Engine
 	class Logger
 	{
 	public:
-		Logger(std::string Name)
+		Logger(CString Name)
 			: Name(Name) { }
 
 		struct LogData
 		{
 			LogLevel Level;
 
-			std::string Timestamp;
-			std::string LoggerName;
+			CString Timestamp;
+			CString LoggerName;
 
-			std::string LogString;
+			CString LogString;
 		};
 
 		CallbackDispatcher<void, LogData>::CallbackHandle OnLog()
@@ -70,22 +70,22 @@ namespace Engine
 		}
 
 		template<typename... Args>
-		void Log(const std::string& LoggerName, LogLevel level, std::string_view fmt, Args&&... args)
+		void Log(const CString& LoggerName, LogLevel level, std::string_view fmt, Args&&... args)
 		{
 			std::time_t result = std::time(nullptr);
 
 			char tbuff[128];
 			std::strftime(tbuff, 128, "[%T]", std::localtime(&result));
 
-			std::string Timestamp = tbuff;
+			CString Timestamp = tbuff;
 
-			std::string LogString = TypeUtils::FormatUTF8(fmt.data(), std::forward<Args>(args)...);
+			CString LogString = TypeUtils::FormatUTF8(fmt.data(), std::forward<Args>(args)...);
 
 			OnLogDispatch.Run({ level, Timestamp, LoggerName, LogString });
 		}
 
 	protected:
-		std::string Name;
+		CString Name;
 
 		CallbackDispatcher<void, LogData> OnLogDispatch;
 	};

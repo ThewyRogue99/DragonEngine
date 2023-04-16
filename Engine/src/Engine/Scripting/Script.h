@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
 #include "Engine/Scene/Entity.h"
 #include "ScriptField.h"
 
@@ -18,11 +19,11 @@ namespace Engine
 	class Script
 	{
 	public:
-		~Script();
+		ENGINE_API ~Script();
 
-		void AttachToEntity(Entity entity);
+		ENGINE_API void AttachToEntity(Entity entity);
 
-		ScriptField GetField(const std::string& FieldName) const;
+		ENGINE_API ScriptField GetField(const CString& FieldName) const;
 		const std::vector<ScriptField>& GetFields() const { return Fields; }
 
 		MonoObject* GetScriptObject() const { return ScriptObject; }
@@ -45,13 +46,13 @@ namespace Engine
 		Script(MonoObject* ScriptObject, uint32_t GCHandle, ScriptInfo* Info)
 			: ScriptObject(ScriptObject), GCHandle(GCHandle), Info(Info) { GenerateFields(); }
 
-		void GenerateFields();
+		ENGINE_API void GenerateFields();
 
-		bool BeginPlay();
+		ENGINE_API bool BeginPlay();
 
-		bool Update(float DeltaTime);
+		ENGINE_API bool Update(float DeltaTime);
 
-		void Clear();
+		ENGINE_API void Clear();
 
 	private:
 		Entity AttachedEntity = { };
@@ -71,8 +72,8 @@ namespace Engine
 	class ScriptInfo
 	{
 	public:
-		const std::string& GetName() const { return Name; }
-		const std::string& GetNameSpace() const { return NameSpace; }
+		const CString& GetName() const { return Name; }
+		const CString& GetNameSpace() const { return NameSpace; }
 		const MonoClass* GetClass() const { return Class; }
 
 		const std::vector<ScriptFieldInfo>& GetScriptFieldInfos() const
@@ -86,12 +87,12 @@ namespace Engine
 		friend class ScriptEngine;
 
 	private:
-		ScriptInfo(const std::string& NameSpace,const std::string& Name, MonoClass* Class)
+		ScriptInfo(const CString& NameSpace,const CString& Name, MonoClass* Class)
 			: NameSpace(NameSpace), Name(Name), Class(Class) { }
 
 	private:
-		std::string Name;
-		std::string NameSpace;
+		CString Name;
+		CString NameSpace;
 
 		MonoClass* Class = nullptr;
 

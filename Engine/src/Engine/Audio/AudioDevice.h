@@ -18,13 +18,13 @@ namespace Engine
 
 		~AudioDevice() { CloseDevice(); };
 
-		static Ref<AudioDevice> OpenDevice(const char* DeviceName = nullptr);
+		ENGINE_API static Ref<AudioDevice> OpenDevice(const char* DeviceName = nullptr);
 
-		bool SetCurrentContext();
+		ENGINE_API bool SetCurrentContext();
 
-		bool CloseDevice();
+		ENGINE_API bool CloseDevice();
 
-		const std::string& GetName() const { return DeviceName; }
+		const CString& GetName() const { return DeviceName; }
 
 		AudioDevice(const AudioDevice&) = delete;
 		const AudioDevice& operator =(const AudioDevice&) = delete;
@@ -40,6 +40,6 @@ namespace Engine
 		ALCdevice* Device = nullptr;
 		ALCcontext* Context = nullptr;
 
-		std::string DeviceName;
+		CString DeviceName;
 	};
 }

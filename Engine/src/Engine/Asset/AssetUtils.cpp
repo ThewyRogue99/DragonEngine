@@ -5,7 +5,7 @@ namespace Engine
 {
 	namespace AssetUtils
 	{
-		AssetType GetAssetTypeFromExtension(const CString& Extension)
+		AssetType GetAssetTypeFromExtension(const WString& Extension)
 		{
 			// ---------- Texture ----------
 			if (

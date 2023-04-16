@@ -4,6 +4,8 @@
 #include "Engine/Asset/AssetManager.h"
 #include "Utils.h"
 
+#include "Engine/Core/UUID.h"
+
 #include <stb_image.h>
 #include <filesystem>
 
@@ -11,7 +13,7 @@ namespace Engine
 {
 	namespace Serializer
 	{
-		bool SerializeWithAssetType(const CString& FilePath, Ref<AssetMetadata> Metadata, AssetType type)
+		bool SerializeWithAssetType(const WString& FilePath, Ref<AssetMetadata> Metadata, AssetType type)
 		{
 			switch (type)
 			{
@@ -24,7 +26,7 @@ namespace Engine
 			}
 		}
 
-		bool SerializeTexture(const CString& FilePath, Ref<AssetMetadata> Metadata)
+		bool SerializeTexture(const WString& FilePath, Ref<AssetMetadata> Metadata)
 		{
 			MemoryMap& MetadataMap = Metadata->GetFields();
 
@@ -55,7 +57,7 @@ namespace Engine
 			return false;
 		}
 
-		bool SerializeAudio(const CString& FilePath, Ref<AssetMetadata> Metadata)
+		bool SerializeAudio(const WString& FilePath, Ref<AssetMetadata> Metadata)
 		{
 			MemoryMap& MetadataMap = Metadata->GetFields();
 
@@ -85,16 +87,16 @@ namespace Engine
 			return false;
 		}
 
-		bool CreateAssetFromFile(const CString& TargetPath, const CString& DestinationPath)
+		bool CreateAssetFromFile(const WString& TargetPath, const WString& DestinationPath)
 		{
 			std::filesystem::path FPath = TargetPath;
 
-			CString ext = FPath.extension();
+			WString ext = FPath.extension();
 
-			CString fname = FPath.filename();
+			WString fname = FPath.filename();
 			size_t idx = fname.find_last_of(L'.');
 
-			CString name = fname.substr(0, idx);
+			WString name = fname.substr(0, idx);
 
 			AssetType type = AssetUtils::GetAssetTypeFromExtension(ext);
 
@@ -102,11 +104,11 @@ namespace Engine
 
 			if (Serializer::SerializeWithAssetType(FPath, data, type))
 			{
-				std::string id = UUID().GetString();
-				CString w_id = TypeUtils::FromUTF8(id);
+				CString id = UUID().GetString();
+				WString w_id = TypeUtils::FromUTF8(id);
 
 				std::filesystem::path ContentPath = AssetManager::GetContentPath();
-				CString FullPath = (ContentPath / DestinationPath) / (w_id + L".deasset");
+				WString FullPath = (ContentPath / DestinationPath) / (w_id + L".deasset");
 
 				return AssetManager::CreateAsset(
 					DestinationPath,

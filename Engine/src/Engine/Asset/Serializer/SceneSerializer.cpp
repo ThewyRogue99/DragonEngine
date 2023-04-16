@@ -1,12 +1,15 @@
 #include "depch.h"
-#include "SceneSerializer.h"
 
+#include "Engine/Asset/AssetMetadata.h"
+#include "Engine/Scene/Scene.h"
 #include "Engine/Scene/Entity.h"
 #include "Engine/Scene/Components.h"
 
 #include "Engine/Scripting/ScriptEngine.h"
 
 #include <glm/glm.hpp>
+
+#include "SceneSerializer.h"
 
 namespace Engine
 {
@@ -43,7 +46,7 @@ namespace Engine
 			{
 				if (key == "SceneName")
 				{
-					CString sceneName = (const wchar_t*)value.DataPtr;
+					WString sceneName = (const wchar_t*)value.DataPtr;
 					scene->SetName(sceneName);
 
 					DE_LOG(SceneSerializer, "Deserializing Scene: {0}", TypeUtils::FromUTF16(sceneName).c_str());
@@ -54,8 +57,8 @@ namespace Engine
 					{
 						size_t pos = key.find_first_of(':');
 
-						std::string type = key.substr(0, (size_t)pos);
-						std::string id = key.substr(pos + 1);
+						CString type = key.substr(0, (size_t)pos);
+						CString id = key.substr(pos + 1);
 
 						if (type == "Entity")
 						{

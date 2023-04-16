@@ -1,11 +1,13 @@
 #include "depch.h"
 #include "EditorScene.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 #include "Engine/Renderer/Renderer2D.h"
 
 namespace Engine
 {
-	EditorScene::EditorScene(const CString& Name) : Scene(Name)
+	EditorScene::EditorScene(const WString& Name) : Scene(Name)
 	{
 		PrimaryCamera = new EditorCamera(60.f, 16 / 9, 0.1f, 1000.f);
 	}

@@ -15,27 +15,27 @@ namespace Engine
 	public:
 		explicit AudioSource(const phold& hold) : AudioSource() { }
 
-		~AudioSource();
+		ENGINE_API ~AudioSource();
 
 		unsigned int GetSourceID() const { return Source; }
 
-		void SetBuffer(Ref<AudioBuffer> Buff);
+		ENGINE_API void SetBuffer(Ref<AudioBuffer> Buff);
 		Ref<AudioBuffer> GetBuffer() const { return Buffer; }
 
 		float GetPitch() const { return Pitch; }
-		void SetPitch(float pitch);
+		ENGINE_API void SetPitch(float pitch);
 
 		float GetGain() const { return Gain; }
-		void SetGain(float gain);
+		ENGINE_API void SetGain(float gain);
 
-		glm::vec3 GetPosition() const { return Position; }
-		void SetPosition(glm::vec3 position);
+		const glm::vec3& GetPosition() const { return Position; }
+		ENGINE_API void SetPosition(const glm::vec3& position);
 
-		glm::vec3 GetVelocity() const { return Velocity; }
-		void SetVelocity(glm::vec3 velocity);
+		const glm::vec3& GetVelocity() const { return Velocity; }
+		ENGINE_API void SetVelocity(const glm::vec3& velocity);
 
 		float GetLoopSound() const { return LoopSound; }
-		void SetLoopSound(bool loop);
+		ENGINE_API void SetLoopSound(bool loop);
 
 		friend class AudioEngine;
 
@@ -43,9 +43,9 @@ namespace Engine
 		const AudioSource& operator =(const AudioSource&) = delete;
 
 	private:
-		AudioSource();
+		ENGINE_API AudioSource();
 
-		void Destroy();
+		ENGINE_API void Destroy();
 
 		struct phold {
 			explicit phold(int) {}

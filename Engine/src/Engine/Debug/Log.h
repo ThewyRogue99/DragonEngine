@@ -5,15 +5,15 @@
 
 namespace Engine
 {
-	class ENGINE_API Log
+	class Log
 	{
 	public:
-		static void SetConsole(Ref<Console> NewConsole);
+		ENGINE_API static void SetConsole(Ref<Console> NewConsole);
 
 		inline static Ref<Console> GetConsole() { return DebugConsole; }
 
 		template<typename... Args>
-		static void ConsoleLog(const std::string& LoggerName, LogLevel Level, const char* fmt, Args&&... args)
+		static void ConsoleLog(const CString& LoggerName, LogLevel Level, const char* fmt, Args&&... args)
 		{
 			if (DebugConsole)
 			{
@@ -22,7 +22,7 @@ namespace Engine
 		}
 
 	private:
-		static Ref<Console> DebugConsole;
+		ENGINE_API static Ref<Console> DebugConsole;
 	};
 }
 

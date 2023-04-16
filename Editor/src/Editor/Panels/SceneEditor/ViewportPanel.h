@@ -33,7 +33,7 @@ namespace Engine
 		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& event);
 		bool OnKeyPressedEvent(KeyPressedEvent& event);
 
-		virtual void OnData(const CString& Name, void* Data, size_t size) override;
+		virtual void OnData(const WString& Name, void* Data, size_t size) override;
 
 		void OnSetActiveScene(Scene* NewScene);
 

@@ -4,12 +4,13 @@
 #include "Engine/Types/Types.h"
 
 #include "Engine/Scene/Entity.h"
-#include "Engine/Scene/Scene.h"
-#include "Engine/Asset/AssetMetadata.h"
 
 namespace Engine
 {
-	class SceneSerializer
+	class AssetMetadata;
+	class Scene;
+
+	class ENGINE_API SceneSerializer
 	{
 	public:
 		static void Serialize(Scene* scene, Ref<AssetMetadata> Metadata);

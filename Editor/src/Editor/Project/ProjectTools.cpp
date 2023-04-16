@@ -3,7 +3,7 @@
 #include "Editor/Scene/EditorSceneManager.h"
 #include "Engine/Scripting/ScriptEngine.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Log.h"
 
 #include <sstream>
 #include <cstdlib>
@@ -60,7 +60,7 @@ namespace Engine
 
 			std::filesystem::copy_file(TEXT("Resource\\Scripts\\ProjGen.lua"), LuaPath);
 
-			std::string premakeFilePath = TypeUtils::FromUTF16(LuaPath);
+			CString premakeFilePath = TypeUtils::FromUTF16(LuaPath);
 			std::stringstream ss;
 			ss << "Resource\\Scripts\\Win-SolutionGen.bat " << PREMAKE_PATH << ' ' << premakeFilePath;
 
@@ -156,7 +156,7 @@ namespace Engine
 				std::filesystem::exists(AppAssemblyPath);
 		}
 
-		void SetProjectPath(const CString& NewPath)
+		void SetProjectPath(const WString& NewPath)
 		{
 			ProjectPath = NewPath;
 
@@ -166,7 +166,7 @@ namespace Engine
 			bShouldReload = false;
 		}
 
-		std::string GetScriptTemplateString(const std::string& ScriptName)
+		CString GetScriptTemplateString(const CString& ScriptName)
 		{
 			std::stringstream ss;
 

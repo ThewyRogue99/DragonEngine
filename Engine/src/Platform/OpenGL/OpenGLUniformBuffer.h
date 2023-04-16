@@ -7,10 +7,10 @@ namespace Engine
 	class OpenGLUniformBuffer : public UniformBuffer
 	{
 	public:
-		OpenGLUniformBuffer(uint32_t size, uint32_t binding);
-		virtual ~OpenGLUniformBuffer();
+		ENGINE_API OpenGLUniformBuffer(uint32_t size, uint32_t binding);
+		ENGINE_API virtual ~OpenGLUniformBuffer();
 
-		virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) override;
+		ENGINE_API virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) override;
 
 	private:
 		uint32_t BufferID = 0;

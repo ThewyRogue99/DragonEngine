@@ -6,13 +6,13 @@
 
 namespace Engine
 {
-	class AudioBufferData
+	class ENGINE_API AudioBufferData
 	{
 	private:
 		struct phold;
 
 	public:
-		explicit AudioBufferData(const phold&) : AudioBufferData() { }
+		explicit AudioBufferData(const phold&);
 
 		~AudioBufferData();
 
@@ -30,15 +30,15 @@ namespace Engine
 		};
 
 	private:
-		int Channels = 0;
-		int SampleSize = 0;
-		uint32_t SampleRate = 0;
+		int Channels;
+		int SampleSize;
+		uint32_t SampleRate;
 
-		void* Data = nullptr;
-		size_t DataSize = 0;
+		void* Data;
+		size_t DataSize;
 	};
 
-	class AudioBuffer
+	class ENGINE_API AudioBuffer
 	{
 	private:
 		struct phold;
@@ -51,9 +51,9 @@ namespace Engine
 		bool SetAudioEffect(Ref<AudioBufferData> BuffData);
 		bool RemoveAudioEffect();
 
-		unsigned int GetBufferID() const { return AudioEffectBuffer; }
+		unsigned int GetBufferID() const;
 
-		explicit AudioBuffer(const phold&) : AudioBuffer() { }
+		explicit AudioBuffer(const phold&);
 
 	private:
 		AudioBuffer() = default;
@@ -64,6 +64,6 @@ namespace Engine
 		};
 
 	private:
-		unsigned int AudioEffectBuffer = 0;
+		unsigned int AudioEffectBuffer;
 	};
 }

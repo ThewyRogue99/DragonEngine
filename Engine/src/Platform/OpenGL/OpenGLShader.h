@@ -4,27 +4,27 @@
 
 namespace Engine
 {
-	class ENGINE_API OpenGLShader : public Shader
+	class OpenGLShader : public Shader
 	{
 	public:
-		OpenGLShader(const std::string& VertexSource, const std::string& FragmentSource, bool isFilePath = false);
-		~OpenGLShader();
+		ENGINE_API OpenGLShader(const CString& VertexSource, const CString& FragmentSource, bool isFilePath = false);
+		ENGINE_API ~OpenGLShader();
 
-		bool Load();
+		ENGINE_API bool Load();
 
-		virtual void Bind() const;
-		virtual void Unbind() const;
+		ENGINE_API virtual void Bind() const;
+		ENGINE_API virtual void Unbind() const;
 
-		virtual void SetInt(const char* name, int value) override;
-		virtual void SetIntArray(const char* name, int* values, size_t count) override;
+		ENGINE_API virtual void SetInt(const char* name, int value) override;
+		ENGINE_API virtual void SetIntArray(const char* name, int* values, size_t count) override;
 
-		virtual void SetFloat3(const char* name, const glm::vec3& value) override;
-		virtual void SetFloat3(const char* name, float v1, float v2, float v3) override;
+		ENGINE_API virtual void SetFloat3(const char* name, const glm::vec3& value) override;
+		ENGINE_API virtual void SetFloat3(const char* name, float v1, float v2, float v3) override;
 
-		virtual void SetFloat4(const char* name, const glm::vec4& value) override;
-		virtual void SetFloat4(const char* name, float v1, float v2, float v3, float v4) override;
+		ENGINE_API virtual void SetFloat4(const char* name, const glm::vec4& value) override;
+		ENGINE_API virtual void SetFloat4(const char* name, float v1, float v2, float v3, float v4) override;
 
-		virtual void SetMat4(const char* name, const glm::mat4& value) override;
+		ENGINE_API virtual void SetMat4(const char* name, const glm::mat4& value) override;
 
 	private:
 		uint32_t ShaderID = 0;

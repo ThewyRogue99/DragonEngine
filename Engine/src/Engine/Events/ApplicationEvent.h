@@ -13,7 +13,7 @@ namespace Engine
 		inline unsigned int GetWidth() const { return Width; }
 		inline unsigned int GetHeight() const { return Height; }
 
-		CString ToString() const override
+		WString ToString() const override
 		{
 			std::wstringstream ss;
 			ss << TEXT("WindowResizeEvent: [ Width: ") << Width << TEXT(", Height: ") << Height << TEXT(" ]");

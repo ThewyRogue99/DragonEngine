@@ -44,12 +44,16 @@ project "Editor"
 		"ImGui",
 		"nfd",
 		"AudioToWav",
+		"GLFW",
 		"Engine"
 	}
 
 	defines
 	{
-		"__EDITOR__"
+		"__EDITOR__",
+		"ENGINE_LINK_DLL",
+		"ENGINE_DYNAMIC_LINK",
+		"GLFW_DLL"
 	}
 
 	filter "files:vendor/ImGuizmo/**.cpp"

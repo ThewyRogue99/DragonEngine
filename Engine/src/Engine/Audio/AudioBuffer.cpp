@@ -7,6 +7,11 @@
 
 namespace Engine
 {
+	AudioBuffer::AudioBuffer(const phold&) : AudioBuffer()
+	{
+
+	}
+
 	AudioBuffer::~AudioBuffer()
 	{
 		RemoveAudioEffect();
@@ -81,6 +86,16 @@ namespace Engine
 		}
 
 		return false;
+	}
+
+	unsigned int AudioBuffer::GetBufferID() const
+	{
+		return AudioEffectBuffer;
+	}
+
+	AudioBufferData::AudioBufferData(const phold&) : AudioBufferData()
+	{
+
 	}
 
 	AudioBufferData::~AudioBufferData()

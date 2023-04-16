@@ -7,19 +7,19 @@ namespace Engine
 	class OpenGLFramebuffer : public Framebuffer
 	{
 	public:
-		OpenGLFramebuffer(const FramebufferSpecification& Specification);
-		virtual ~OpenGLFramebuffer();
+		ENGINE_API OpenGLFramebuffer(const FramebufferSpecification& Specification);
+		ENGINE_API virtual ~OpenGLFramebuffer();
 
-		void Invalidate();
+		ENGINE_API void Invalidate();
 
-		virtual void Bind() const;
-		virtual void Unbind() const;
+		ENGINE_API virtual void Bind() const;
+		ENGINE_API virtual void Unbind() const;
 
-		virtual void Resize(uint32_t Width, uint32_t Height) override;
+		ENGINE_API virtual void Resize(uint32_t Width, uint32_t Height) override;
 
-		virtual int ReadPixel(uint32_t AttachmentIndex, int x, int y) override;
+		ENGINE_API virtual int ReadPixel(uint32_t AttachmentIndex, int x, int y) override;
 
-		virtual void ClearAttachment(uint32_t AttachmentIndex, int value) override;
+		ENGINE_API virtual void ClearAttachment(uint32_t AttachmentIndex, int value) override;
 
 		inline virtual const FramebufferSpecification& GetSpecification() const override { return BufferSpecification; }
 

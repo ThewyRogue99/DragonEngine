@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "Renderer2D.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Instrumentor.h"
 
 #include "Framebuffer.h"
 #include "Texture.h"

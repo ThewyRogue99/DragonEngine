@@ -5,7 +5,7 @@ namespace Engine
 	static CallbackDispatcher<void, EditorScene*> OnEditorSceneChangeDispatch;
 	static EditorScene* CurrentEditorScene = nullptr;
 
-    EditorScene* EditorSceneManager::CreateEditorScene(const CString& Tag, bool DestroyCurrent)
+    EditorScene* EditorSceneManager::CreateEditorScene(const WString& Tag, bool DestroyCurrent)
     {
 		EditorScene* NewScene = new EditorScene(Tag);
 
@@ -20,7 +20,7 @@ namespace Engine
 
 		if (CurrentEditorScene)
 		{
-			std::string DebugName = TypeUtils::FromUTF16(CurrentEditorScene->GetName());
+			CString DebugName = TypeUtils::FromUTF16(CurrentEditorScene->GetName());
 			DE_WARN(EditorSceneManager, "Removing current Editor Scene: {0}", DebugName.c_str());
 
 			if (DestroyCurrent)

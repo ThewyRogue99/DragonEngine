@@ -48,13 +48,13 @@ namespace Engine
 		alSourcef(Source, AL_GAIN, Gain);
 	}
 
-	void AudioSource::SetPosition(glm::vec3 position)
+	void AudioSource::SetPosition(const glm::vec3& position)
 	{
 		Position = position;
 		alSource3f(Source, AL_POSITION, Position.x, Position.y, Position.z);
 	}
 
-	void AudioSource::SetVelocity(glm::vec3 velocity)
+	void AudioSource::SetVelocity(const glm::vec3& velocity)
 	{
 		Velocity = velocity;
 		alSource3f(Source, AL_VELOCITY, Velocity.x, Velocity.y, Velocity.z);

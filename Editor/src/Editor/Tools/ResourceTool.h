@@ -21,7 +21,7 @@ namespace Engine
 		static void LoadFontIcons();
 		static void LoadImageIcons();
 
-		static Ref<Texture2D> GetImageIcon(const CString& IconName);
+		static Ref<Texture2D> GetImageIcon(const WString& IconName);
 		static ImFont* GetFontIcon(FontIconType Type);
 	};
 }

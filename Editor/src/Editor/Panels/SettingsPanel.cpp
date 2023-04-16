@@ -57,7 +57,7 @@ namespace Engine
         }
     }
 
-    const std::string SettingsPanel::GetCategoryString(SettingsCategory Category)
+    const CString SettingsPanel::GetCategoryString(SettingsCategory Category)
     {
         switch (Category)
         {

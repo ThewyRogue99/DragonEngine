@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
-
-#include "Engine/Debug/Debug.h"
-
 #include "Engine/Core/UUID.h"
 
-#include "entt.hpp"
+#include "Engine/Debug/Assert.h"
+
+#include <entt.hpp>
 
 namespace Engine
 {
@@ -16,7 +15,7 @@ namespace Engine
 	{
 	public:
 		Entity() = default;
-		Entity(entt::entity handle, Scene* scene);
+		ENGINE_API Entity(entt::entity handle, Scene* scene);
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
@@ -58,7 +57,7 @@ namespace Engine
 			GetSceneRegistry().remove<T>(EntityHandle);
 		}
 
-		bool IsValid();
+		ENGINE_API bool IsValid();
 
 		operator uint32_t() const { return (uint32_t)EntityHandle; }
 
@@ -72,12 +71,12 @@ namespace Engine
 			return !(*this == other);
 		}
 
-		UUID& GetUUID();
+		ENGINE_API UUID& GetUUID();
 
 		friend class Scene;
 
 	private:
-		entt::registry& GetSceneRegistry();
+		ENGINE_API entt::registry& GetSceneRegistry();
 
 	private:
 		entt::entity EntityHandle = entt::null;

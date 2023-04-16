@@ -1,11 +1,12 @@
-#include <Engine/Core/Application.h>
-#include <Engine/Core/EntryPoint.h>
+#include <Engine/Core/ApplicationCore.h>
 
 #include "Debug/EditorConsole.h"
 
 #include "Editor/Tools/EditorTool.h"
 #include "EditorLayer.h"
 #include "ImGui/ImGuiLayer.h"
+
+#include "Engine/Debug/Instrumentor.h"
 
 namespace Engine
 {

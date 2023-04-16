@@ -1,7 +1,7 @@
 #include "depch.h"
 #include "Application.h"
 
-#include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Instrumentor.h"
 
 #include "Engine/Renderer/Renderer2D.h"
 #include "Platform/Platform.h"
@@ -24,7 +24,7 @@ namespace Engine
 
 		bIsRunning = true;
 
-		std::string NameUTF8 = TypeUtils::FromUTF16(AppSpecification.Name.c_str());
+		CString NameUTF8 = TypeUtils::FromUTF16(AppSpecification.Name.c_str());
 
 		if (!AppSpecification.WorkingDirectory.empty())
 			std::filesystem::current_path(AppSpecification.WorkingDirectory);

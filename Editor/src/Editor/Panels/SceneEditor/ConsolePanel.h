@@ -26,7 +26,7 @@ namespace Engine
         void ScrollToBottom() { bShouldScroll = true; }
 
     private:
-        std::string Buffer;
+        CString Buffer;
 
         bool bShouldScroll = true;
 

@@ -29,7 +29,7 @@ namespace Engine
 		friend class ContentBrowserPanel;
 
 	private:
-		EditorScene(const CString& Name = TEXT("Editor Scene"));
+		EditorScene(const WString& Name = TEXT("Editor Scene"));
 		EditorScene(const EditorScene&) = default;
 
 		~EditorScene() = default;

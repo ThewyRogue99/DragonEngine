@@ -10,12 +10,12 @@
 #define ON_COMMAND_DEF CommandMapType CommandMap =
 
 #define ON_COMMAND(COMMAND, ArgListName, ...) \
-{ COMMAND, [](std::vector<std::string> ArgListName) __VA_ARGS__ }
+{ COMMAND, [](std::vector<CString> ArgListName) __VA_ARGS__ }
 
 namespace Engine
 {
 	using CommandMapType =
-		std::unordered_map<std::string, std::function<void(std::vector<std::string>)>>;
+		std::unordered_map<CString, std::function<void(std::vector<CString>)>>;
 
 	ON_COMMAND_DEF
 	{
@@ -29,16 +29,16 @@ namespace Engine
 		})
 	};
 
-	void CommandSystem::RunCommand(const std::string& Command)
+	void CommandSystem::RunCommand(const CString& Command)
 	{
 		std::istringstream ss(Command);
 
-		std::vector<std::string> Tokens = std::vector<std::string>(
-			std::istream_iterator<std::string>(ss),
-			std::istream_iterator<std::string>()
+		std::vector<CString> Tokens = std::vector<CString>(
+			std::istream_iterator<CString>(ss),
+			std::istream_iterator<CString>()
 		);
 
-		std::string CommandStr = Tokens[0];
+		CString CommandStr = Tokens[0];
 
 		auto it = CommandMap.find(CommandStr);
 		if (it != CommandMap.end())

@@ -6,7 +6,7 @@ namespace Engine
 {
 	namespace Math
 	{
-		bool DecomposeTransform(
+		ENGINE_API bool DecomposeTransform(
 			const glm::mat4& transform,
 			glm::vec3& OutPosition,
 			glm::vec3& OutRotation,

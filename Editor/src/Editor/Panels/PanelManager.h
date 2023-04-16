@@ -15,28 +15,28 @@ namespace Engine
 
 		~PanelManager();
 
-		void AddPanel(const CString& PanelName, EditorPanel* Panel);
-		void AddPanels(std::initializer_list<std::pair<CString, EditorPanel*>> Panels);
+		void AddPanel(const WString& PanelName, EditorPanel* Panel);
+		void AddPanels(std::initializer_list<std::pair<WString, EditorPanel*>> Panels);
 
-		EditorPanel* GetPanel(const CString& PanelName);
+		EditorPanel* GetPanel(const WString& PanelName);
 
-		bool RemovePanel(const CString& PanelName);
+		bool RemovePanel(const WString& PanelName);
 		void RemoveAllPanels();
 
-		bool DisablePanel(const CString& PanelName);
+		bool DisablePanel(const WString& PanelName);
 		void DisableAllPanels();
 
-		bool ActivatePanel(const CString& PanelName);
+		bool ActivatePanel(const WString& PanelName);
 		void ActivateAllPanels();
 
 		void Update(float DeltaTime);
 		void Render(float DeltaTime);
 
-		void AddData(const CString& Name, void* Data, size_t size);
+		void AddData(const WString& Name, void* Data, size_t size);
 
 		void OnEvent(Event& event);
 
 	private:
-		std::unordered_map<CString, EditorPanel*> PanelMap;
+		std::unordered_map<WString, EditorPanel*> PanelMap;
 	};
 }

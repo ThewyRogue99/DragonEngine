@@ -91,14 +91,14 @@ namespace Engine
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow;
 
-				const CString& PathName = it.GetPathName();
+				const WString& PathName = it.GetPathName();
 
 				if (PathName == CurrentDirectory)
 					flags |= ImGuiTreeNodeFlags_Selected;
 
 				ImGui::PushID(idx++);
 
-				std::string name = ICON_FA_FOLDER "  ";
+				CString name = ICON_FA_FOLDER "  ";
 				name += TypeUtils::FromUTF16(it.GetName());
 
 				bool isOpen = ImGui::TreeNodeEx(&idx, flags, name.c_str());
@@ -147,8 +147,8 @@ namespace Engine
 			if (CurrentDirectory.empty())
 				flags |= ImGuiTreeNodeFlags_Selected;
 
-			std::string ProjectName = LoadedProject ? LoadedProject->Name : "Project";
-			std::string NodeName = ICON_FA_FOLDER_PLUS "  ";
+			CString ProjectName = LoadedProject ? LoadedProject->Name : "Project";
+			CString NodeName = ICON_FA_FOLDER_PLUS "  ";
 			NodeName += ProjectName;
 
 			bool isOpen = ImGui::TreeNodeEx(NodeName.c_str(), flags);
@@ -239,7 +239,7 @@ namespace Engine
 			{
 				BrowserContent& content = (*DefaultContentList)[idx];
 
-				std::string cName = TypeUtils::FromUTF16(content.Entry.GetName());
+				CString cName = TypeUtils::FromUTF16(content.Entry.GetName());
 
 				if (m_TextFilter.PassFilter(cName.c_str()))
 				{
@@ -564,7 +564,7 @@ namespace Engine
 
 						ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", data, size);
 
-						std::string cName = TypeUtils::FromUTF16(Entry.GetName());
+						CString cName = TypeUtils::FromUTF16(Entry.GetName());
 						ContentDrag(cName.c_str(), (ImTextureID)ContentIcon->GetRendererID(), Size);
 
 						delete[] data;
@@ -626,7 +626,7 @@ namespace Engine
 
 	void ContentBrowserPanel::BrowserContent::DrawCreatedContent()
 	{
-		std::string cName = TypeUtils::FromUTF16(Entry.GetName());
+		CString cName = TypeUtils::FromUTF16(Entry.GetName());
 		bool lastRenameState = bShouldRename;
 
 		if (bShouldRename)
@@ -678,7 +678,7 @@ namespace Engine
 
 			memset(RenameBuffer, 0, BufferSize);
 
-			std::string str = TypeUtils::FromUTF16(Entry.GetName());
+			CString str = TypeUtils::FromUTF16(Entry.GetName());
 
 			strcpy(RenameBuffer, str.c_str());
 		}
@@ -790,7 +790,7 @@ namespace Engine
 	bool ContentBrowserPanel::OnRenameContent(BrowserContent* Content)
 	{
 		DirectoryEntry& Entry = Content->Entry;
-		CString NewName = TypeUtils::FromUTF8(Content->RenameBuffer);
+		WString NewName = TypeUtils::FromUTF8(Content->RenameBuffer);
 
 		switch (Content->Type)
 		{
@@ -833,12 +833,12 @@ namespace Engine
 		{
 		case AssetType::Folder:
 		{
-			CString FolderName = TypeUtils::FromUTF8(Content->RenameBuffer);
+			WString FolderName = TypeUtils::FromUTF8(Content->RenameBuffer);
 			return AssetManager::CreateFolder(CurrentDirectory, FolderName);
 		}
 		case AssetType::Script:
 		{
-			std::string ScriptName = Content->RenameBuffer;
+			CString ScriptName = Content->RenameBuffer;
 			if (ProjectManager::CreateScript(ScriptName))
 			{
 				Ref<AssetMetadata> data = AssetMetadata::Create();
@@ -856,7 +856,7 @@ namespace Engine
 		}
 		case AssetType::Scene:
 		{
-			CString SceneName = TypeUtils::FromUTF8(Content->RenameBuffer);
+			WString SceneName = TypeUtils::FromUTF8(Content->RenameBuffer);
 			EditorScene* NewScene = new EditorScene(SceneName);
 
 			Ref<AssetMetadata> data = AssetMetadata::Create();

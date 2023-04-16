@@ -12,10 +12,10 @@ namespace Engine
 	class Project
 	{
 	public:
-		std::string Name;
-		CString Path;
+		CString Name;
+		WString Path;
 
-		std::string StartSceneID;
+		CString StartSceneID;
 
 		friend class ProjectManager;
 
@@ -27,11 +27,11 @@ namespace Engine
 	class ProjectManager
 	{
 	public:
-		static bool CreateProject(const CString& ProjectPath, const std::string& ProjectName);
+		static bool CreateProject(const WString& ProjectPath, const CString& ProjectName);
 
-		static bool LoadProject(const CString& ProjectPath);
+		static bool LoadProject(const WString& ProjectPath);
 
-		static bool CreateScript(const std::string& Name);
+		static bool CreateScript(const CString& Name);
 
 		static bool IsProjectLoaded();
 

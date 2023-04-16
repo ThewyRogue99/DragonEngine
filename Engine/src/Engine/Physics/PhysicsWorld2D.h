@@ -19,16 +19,16 @@ namespace Engine
 	{
 	public:
 		PhysicsWorld2D() = default;
-		~PhysicsWorld2D();
+		ENGINE_API ~PhysicsWorld2D();
 
-		void Begin(Scene* SceneRef, const glm::vec2& Gravity = glm::vec2(0.0f, -9.8f));
+		ENGINE_API void Begin(Scene* SceneRef, const glm::vec2& Gravity = glm::vec2(0.0f, -9.8f));
 
-		void Update(float DeltaTime);
+		ENGINE_API void Update(float DeltaTime);
 
-		void End();
+		ENGINE_API void End();
 
 	private:
-		void UpdateTask();
+		ENGINE_API void UpdateTask();
 
 	private:
 		Scene* CurrentScene = nullptr;
@@ -40,7 +40,7 @@ namespace Engine
 
 		bool bShouldRun = false;
 
-		std::thread* UpdateThread;
+		std::thread* UpdateThread = nullptr;
 
 		std::mutex UpdateMutex;
 		std::condition_variable UpdateCondition;

@@ -20,7 +20,7 @@ namespace Engine
 		) : Title(Title), Width(Width), Height(Height) { }
 	};
 
-	class ENGINE_API Window
+	class Window
 	{
 	public:
 		virtual ~Window() { }
@@ -38,7 +38,7 @@ namespace Engine
 
 		virtual void* GetNativeWindow() const = 0;
 
-		static Ref<Window> Create(const WindowProps& props = WindowProps());
+		ENGINE_API static Ref<Window> Create(const WindowProps& props = WindowProps());
 
 	protected:
 		CallbackDispatcher<void, Event&> OnEventDispatch;

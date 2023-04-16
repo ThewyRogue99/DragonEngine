@@ -17,21 +17,22 @@ namespace Engine
 
 	uint32_t ShaderDataTypeSize(ShaderDataType type);
 
-	struct ENGINE_API BufferElement
+	class BufferElement
 	{
-		CString Name;
+	public:
+		BufferElement(ShaderDataType type, const WString& name, bool normalized = false)
+			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) { }
+
+		WString Name;
 		ShaderDataType Type;
 		uint32_t Size;
 		uint32_t Offset;
 		bool Normalized;
 
-		BufferElement(ShaderDataType type, const CString& name, bool normalized = false)
-			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) { }
-
-		uint32_t GetComponentCount() const;
+		ENGINE_API uint32_t GetComponentCount() const;
 	};
 
-	class ENGINE_API BufferLayout
+	class BufferLayout
 	{
 	public:
 		BufferLayout() { }
@@ -51,13 +52,13 @@ namespace Engine
 		inline std::vector<BufferElement>::const_iterator end() const { return Elements.end(); }
 
 	private:
-		void CalculateOffsetsAndStride();
+		ENGINE_API void CalculateOffsetsAndStride();
 
-		std::vector<BufferElement> Elements;
+		std::vector<BufferElement> Elements = { };
 		uint32_t Stride = 0;
 	};
 
-	class ENGINE_API VertexBuffer
+	class VertexBuffer
 	{
 	public:
 		virtual ~VertexBuffer() { }
@@ -67,17 +68,17 @@ namespace Engine
 
 		virtual void SetData(const void* data, uint32_t size) = 0;
 
-		static Ref<VertexBuffer> Create(uint32_t size);
-		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+		ENGINE_API static Ref<VertexBuffer> Create(uint32_t size);
+		ENGINE_API static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
 	};
 
-	class ENGINE_API IndexBuffer
+	class IndexBuffer
 	{
 	public:
 		virtual ~IndexBuffer() { }
 
 		virtual uint32_t GetCount() const = 0;
 
-		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+		ENGINE_API static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
 	};
 }

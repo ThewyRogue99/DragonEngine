@@ -4,21 +4,21 @@
 
 namespace Engine
 {
-	class ENGINE_API OpenGLVertexBuffer : public VertexBuffer
+	class OpenGLVertexBuffer : public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(uint32_t size);
-		OpenGLVertexBuffer(float* vertices, uint32_t size);
+		ENGINE_API OpenGLVertexBuffer(uint32_t size);
+		ENGINE_API OpenGLVertexBuffer(float* vertices, uint32_t size);
 
-		virtual ~OpenGLVertexBuffer();
+		ENGINE_API virtual ~OpenGLVertexBuffer();
 
-		virtual void Bind() const;
-		virtual void Unbind() const;
+		ENGINE_API virtual void Bind() const;
+		ENGINE_API virtual void Unbind() const;
 
 		virtual const BufferLayout& GetLayout() const override { return Layout; }
 		virtual void SetLayout(const BufferLayout& layout) override { Layout = layout; }
 
-		virtual void SetData(const void* data, uint32_t size) override;
+		ENGINE_API virtual void SetData(const void* data, uint32_t size) override;
 
 	private:
 		uint32_t BufferID;
@@ -26,17 +26,17 @@ namespace Engine
 		BufferLayout Layout;
 	};
 
-	class ENGINE_API OpenGLIndexBuffer : public IndexBuffer
+	class OpenGLIndexBuffer : public IndexBuffer
 	{
 	public:
-		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
+		ENGINE_API OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
 
-		virtual ~OpenGLIndexBuffer();
+		ENGINE_API virtual ~OpenGLIndexBuffer();
 
 		virtual uint32_t GetCount() const override { return Count; }
 
-		virtual void Bind() const;
-		virtual void Unbind() const;
+		ENGINE_API virtual void Bind() const;
+		ENGINE_API virtual void Unbind() const;
 
 	private:
 		uint32_t BufferID;

@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "SceneRenderer.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 #include "Framebuffer.h"
 #include "UniformBuffer.h"
 #include "Renderer2D.h"

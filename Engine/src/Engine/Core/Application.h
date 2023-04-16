@@ -1,9 +1,8 @@
 #pragma once
 
-#include <string>
 #include "Engine/Core/Core.h"
-#include "Engine/Events/Event.h"
-#include "Engine/Core/Layer.h"
+#include "Engine/Types/Types.h"
+
 #include "Window.h"
 #include "Engine/Events/ApplicationEvent.h"
 #include "Engine/Core/LayerStack.h"
@@ -23,26 +22,26 @@ namespace Engine
 
 	struct ApplicationSpecification
 	{
-		CString Name = TEXT("Dragon Engine App");
-		CString WorkingDirectory = CString();
+		WString Name = TEXT("Dragon Engine App");
+		WString WorkingDirectory = WString();
 		ApplicationCommandLineArgs CommandLineArgs = ApplicationCommandLineArgs();
 	};
 
 	class Application
 	{
 	public:
-		Application(const ApplicationSpecification& Specs);
+		ENGINE_API Application(const ApplicationSpecification& Specs);
 
-		virtual ~Application();
+		ENGINE_API virtual ~Application();
 
-		void Run();
+		ENGINE_API void Run();
 
-		void OnEvent(Event& event);
+		ENGINE_API void OnEvent(Event& event);
 
-		void Close();
+		ENGINE_API void Close();
 
-		void PushLayer(Layer* layer);
-		void PushOverlay(Layer* layer);
+		ENGINE_API void PushLayer(Layer* layer);
+		ENGINE_API void PushOverlay(Layer* layer);
 
 		float GetDeltaTime() const { return DeltaTime; }
 
@@ -52,11 +51,11 @@ namespace Engine
 		const ApplicationSpecification& GetSpecification() const { return AppSpecification; }
 
 	protected:
-		virtual void OnUpdate(float DeltaTime);
+		ENGINE_API virtual void OnUpdate(float DeltaTime);
 
 	private:
-		bool OnWindowClose(WindowCloseEvent& event);
-		bool OnWindowResize(WindowResizeEvent& event);
+		ENGINE_API bool OnWindowClose(WindowCloseEvent& event);
+		ENGINE_API bool OnWindowResize(WindowResizeEvent& event);
 
 	protected:
 		Ref<Window> AppWindow;
@@ -72,7 +71,7 @@ namespace Engine
 
 		ApplicationSpecification AppSpecification;
 
-		static Application* Instance;
+		ENGINE_API static Application* Instance;
 	};
 
 	Application* CreateApplication(ApplicationCommandLineArgs args);

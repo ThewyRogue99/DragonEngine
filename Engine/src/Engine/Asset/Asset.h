@@ -1,15 +1,12 @@
 #pragma once
+#include <iostream>
+#include <functional>
 
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 
 #include "AssetMetadata.h"
 #include "AssetUtils.h"
-
-#include "Engine/Core/UUID.h"
-
-#include <iostream>
-#include <functional>
 
 namespace Engine
 {
@@ -20,15 +17,15 @@ namespace Engine
 		AssetInfo(const AssetInfo&) = default;
 
 		AssetInfo(
-			CString Name,
-			CString Path,
-			std::string ID,
+			WString Name,
+			WString Path,
+			CString ID,
 			AssetType Type = AssetType::Undefined
 		) : Name(Name), Path(Path), ID(ID), Type(Type) { }
 
-		CString Name;
-		CString Path;
-		std::string ID;
+		WString Name;
+		WString Path;
+		CString ID;
 
 		AssetType Type = AssetType::Undefined;
 	};
@@ -55,8 +52,8 @@ namespace Engine
 		Asset() = default;
 		Asset(const Asset&) = default;
 
-		void Write(std::ostream& ss);
-		void Read(std::istream& ss);
+		ENGINE_API void Write(std::ostream& ss);
+		ENGINE_API void Read(std::istream& ss);
 
 	public:
 		explicit Asset(const phold&) : Asset() { }

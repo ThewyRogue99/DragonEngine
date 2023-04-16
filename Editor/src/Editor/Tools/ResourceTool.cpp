@@ -15,7 +15,7 @@
 
 namespace Engine
 {
-	std::unordered_map<CString, Ref<Texture2D>> ImageIconMap = { };
+	std::unordered_map<WString, Ref<Texture2D>> ImageIconMap = { };
 
 	std::unordered_map<FontIconType, ImFont*> FontIconMap = { };
 
@@ -40,7 +40,7 @@ namespace Engine
 			{
 				stbi_set_flip_vertically_on_load(true);
 
-				std::string path_str = TypeUtils::FromUTF16(entryPath);
+				CString path_str = TypeUtils::FromUTF16(entryPath);
 
 				int width, height, channels;
 				unsigned char* data = stbi_load(path_str.c_str(), &width, &height, &channels, 0);
@@ -85,7 +85,7 @@ namespace Engine
 		LoadDirImageIcons(ICON_PATH);
 	}
 
-	Ref<Texture2D> ResourceTool::GetImageIcon(const CString& IconName)
+	Ref<Texture2D> ResourceTool::GetImageIcon(const WString& IconName)
 	{
 		return ImageIconMap[IconName];
 	}

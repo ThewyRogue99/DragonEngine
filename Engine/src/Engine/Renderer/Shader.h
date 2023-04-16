@@ -7,19 +7,19 @@
 
 namespace Engine
 {
-	class ENGINE_API Shader
+	class Shader
 	{
 	public:
 		virtual ~Shader() = default;
 
-		static Ref<Shader> Create(
-			const CString& ShaderName,
-			const std::string& VertexSource,
-			const std::string& FragmentSource,
+		ENGINE_API static Ref<Shader> Create(
+			const WString& ShaderName,
+			const CString& VertexSource,
+			const CString& FragmentSource,
 			bool isFilePath = false
 		);
 
-		inline const CString& GetName() const { return ShaderName; }
+		inline const WString& GetName() const { return ShaderName; }
 
 		virtual void SetInt(const char* name, int value) = 0;
 		virtual void SetIntArray(const char* name, int* values, size_t count) = 0;
@@ -33,16 +33,16 @@ namespace Engine
 		virtual void SetMat4(const char* name, const glm::mat4& value) = 0;
 
 	protected:
-		std::string LoadFromFile(std::string& FilePath);
+		ENGINE_API CString LoadFromFile(CString& FilePath);
 
-		bool LoadSource();
+		ENGINE_API bool LoadSource();
 
-		std::string VertexSource;
-		std::string FragmentSource;
+		CString VertexSource;
+		CString FragmentSource;
 
 		bool isFilePath = false;
 
 	private:
-		CString ShaderName;
+		WString ShaderName;
 	};
 }
