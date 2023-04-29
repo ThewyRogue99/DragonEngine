@@ -4,9 +4,11 @@
     {
         private Entity entity;
 
-        protected void AttachToEntity(string EntityID)
+        protected void AttachToEntity(uint EntityHandle, string SceneName)
         {
-            entity = new Entity(EntityID);
+            Scene EntityScene = SceneManager.GetScene(SceneName);
+
+            entity = new Entity(EntityHandle, EntityScene);
         }
 
         public Entity AttachedEntity

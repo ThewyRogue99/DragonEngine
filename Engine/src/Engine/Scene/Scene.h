@@ -34,8 +34,10 @@ namespace Engine
 
 		ENGINE_API virtual void OnEvent(Event& event);
 
+		const entt::registry& GetRegistry() { return SceneRegistry; }
+		ENGINE_API std::vector<unsigned int> GetRegistryVector();
+
 		size_t GetEntityCount() const { return SceneRegistry.size(); }
-		ENGINE_API std::vector<Entity> GetEntities();
 
 		inline const WString& GetName() const { return SceneName; }
 		inline void SetName(const WString& Name) { SceneName = Name; }
@@ -50,8 +52,6 @@ namespace Engine
 		friend class Entity;
 		friend class SceneManager;
 		friend class SceneSerializer;
-		friend class PhysicsWorld2D;
-		friend class SceneHierarchyPanel;
 		friend class SceneRenderer;
 
 	protected:

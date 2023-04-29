@@ -107,16 +107,16 @@ namespace Engine
 
 	}
 
-	std::vector<Entity> Scene::GetEntities()
+	std::vector<unsigned int> Scene::GetRegistryVector()
 	{
-		std::vector<Entity> EntityList;
+		std::vector<unsigned int> RegistryVector;
 
-		SceneRegistry.each([&, &List = EntityList](entt::entity ent)
+		SceneRegistry.each([&, &List = RegistryVector](entt::entity ent)
 		{
-			List.push_back({ ent, this });
+			List.push_back((unsigned int)ent);
 		});
 
-		return EntityList;
+		return RegistryVector;
 	}
 
 	void Scene::Copy(Scene* SceneRef)

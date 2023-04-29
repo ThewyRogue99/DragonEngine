@@ -86,6 +86,8 @@ namespace Engine
 
 		SceneRenderer::Render();
 
+		SceneRenderer::EndScene();
+
 		float CursorPosY = ImGui::GetCursorPosY();
 
 		uint32_t BufferID = m_FrameBuffer->GetColorAttachmentRendererID();
@@ -169,23 +171,23 @@ namespace Engine
 					GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
 				ImGuizmo::MODE mode = ImGuizmo::LOCAL;
-				float snap = 0.f;
+				glm::vec3 snap = glm::vec3(0.f);
 				switch (GizmoType)
 				{
 				case ImGuizmo::OPERATION::TRANSLATE:
 				{
 					if (PositionSnap.Enabled)
-						snap = PositionSnap.Value;
+						snap = glm::vec3(PositionSnap.Value);
 				} break;
 				case ImGuizmo::OPERATION::ROTATE:
 				{
 					if (RotationSnap.Enabled)
-						snap = RotationSnap.Value;
+						snap = glm::vec3(RotationSnap.Value);
 				} break;
 				case ImGuizmo::OPERATION::SCALE:
 				{
 					if (ScaleSnap.Enabled)
-						snap = ScaleSnap.Value;
+						snap = glm::vec3(ScaleSnap.Value);
 
 					mode = ImGuizmo::WORLD;
 				} break;
@@ -200,7 +202,7 @@ namespace Engine
 					mode,
 					glm::value_ptr(transform),
 					nullptr,
-					&snap
+					glm::value_ptr(snap)
 				);
 
 				if (ImGuizmo::IsUsing())
@@ -257,8 +259,6 @@ namespace Engine
 			if (!EditorTool::IsPlaying())
 				((EditorScene*)ActiveScene)->SetShouldBlockEvents(true);
 		}
-
-		SceneRenderer::EndScene();
 
 		RenderToolbar(CursorPosY);
 	}
@@ -579,11 +579,9 @@ namespace Engine
 		{
 			case MouseButtonInput::MouseButton_Left:
 			{
-				if (bIsViewportHovered && !ImGuizmo::IsUsing() && HoveredEntity != SelectedEntity && !Input::IsKeyPressed(KeyInput::Key_LeftAlt))
+				if (bIsViewportHovered && !(ImGuizmo::IsOver() && HoveredEntity != SelectedEntity) && !Input::IsKeyPressed(KeyInput::Key_LeftAlt))
 					AddData(TEXT("SelectedEntity"), &HoveredEntity, sizeof(HoveredEntity));
-
-				return true;
-			}
+			} return true;
 			default:
 				return false;
 		}
@@ -595,21 +593,21 @@ namespace Engine
 		{
 			case KeyInput::Key_Q:
 			{
-				if(bIsViewportFocused)
+				if(bIsViewportHovered)
 					GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
 				return true;
 			}
 			case KeyInput::Key_W:
 			{
-				if (bIsViewportFocused)
+				if (bIsViewportHovered)
 					GizmoType = ImGuizmo::OPERATION::ROTATE;
 
 				return true;
 			}
 			case KeyInput::Key_E:
 			{
-				if (bIsViewportFocused)
+				if (bIsViewportHovered)
 					GizmoType = ImGuizmo::OPERATION::SCALE;
 
 				return true;

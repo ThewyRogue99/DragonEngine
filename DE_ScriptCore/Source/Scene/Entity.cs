@@ -6,31 +6,40 @@ namespace DragonEngine
     {
         protected Entity() { }
 
-        internal Entity(string id)
+        internal Entity(uint Handle, Scene EScene)
         {
-            ID = id;
+            EntityHandle = Handle;
+            EntityScene = EScene;
         }
 
-        public readonly string ID;
+        private readonly uint EntityHandle;
+        private readonly Scene EntityScene;
+
         public string Tag => GetComponent<TagComponent>().Tag;
+        public string ID => GetComponent<IDComponent>().ID;
+
+        internal InternalCalls.EntityInfo GetEntityInfo()
+        {
+            return new InternalCalls.EntityInfo(EntityHandle, EntityScene.Name);
+        }
 
         public Transform Transform
         {
             get
             {
-                InternalCalls.TransformComponent_GetTransform(ID, out Transform result);
+                InternalCalls.TransformComponent_GetTransform(GetEntityInfo(), out Transform result);
                 return result;
             }
             set
             {
-                InternalCalls.TransformComponent_SetTransform(ID, ref value);
+                InternalCalls.TransformComponent_SetTransform(GetEntityInfo(), ref value);
             }
         }
 
         public bool HasComponent<T>() where T : Component, new()
         {
             Type componentType = typeof(T);
-            return InternalCalls.Entity_HasComponent(ID, componentType);
+            return InternalCalls.Entity_HasComponent(GetEntityInfo(), componentType);
         }
 
         public T GetComponent<T>() where T : Component, new()
@@ -48,7 +57,7 @@ namespace DragonEngine
                 return null;
 
             Type componentType = typeof(T);
-            if (InternalCalls.Entity_AddComponent(ID, componentType))
+            if (InternalCalls.Entity_AddComponent(GetEntityInfo(), componentType))
             {
                 T component = new T() { Entity = this };
                 return component;
@@ -63,7 +72,8 @@ namespace DragonEngine
             {
                 if(obj is Entity)
                 {
-                    return ID == (obj as Entity).ID;
+                    Entity EntityObject = obj as Entity;
+                    return EntityHandle == EntityObject.EntityHandle && EntityScene == EntityObject.EntityScene;
                 }
             }
 

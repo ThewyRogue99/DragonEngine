@@ -232,7 +232,7 @@ namespace Engine
 	};
 
 	using AllComponents =
-		ComponentGroup<TagComponent, TransformComponent, SpriteRendererComponent,
+		ComponentGroup<TagComponent, IDComponent, TransformComponent, SpriteRendererComponent,
 			CircleRendererComponent, CameraComponent, ScriptComponent,
 			Rigidbody2DComponent, BoxCollider2DComponent, CircleCollider2DComponent,
 			AudioComponent>;

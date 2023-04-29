@@ -73,19 +73,28 @@ namespace Engine
 
 	void Script::AttachToEntity(Entity entity)
 	{
-		AttachedEntity = entity;
-
-		if (ScriptObject && AttachToEntityMethod)
+		if (entity.IsValid())
 		{
-			if (entity.HasComponent<IDComponent>())
+			AttachedEntity = entity;
+
+			if (ScriptObject && AttachToEntityMethod)
 			{
-				CString id = entity.GetUUID().GetString();
+				uint32_t EntityHandle = (uint32_t)entity;
+				const WString& SceneName = entity.GetScene()->GetName();
 
-				WString wID = TypeUtils::FromUTF8(id);
+				MonoString* str = mono_string_from_utf16((mono_unichar2*)SceneName.c_str());
 
-				MonoString* str = mono_string_from_utf16((mono_unichar2*)wID.c_str());
+				void* params[2] = { &EntityHandle, str };
 
-				mono_runtime_invoke(AttachToEntityMethod, ScriptObject, (void**)&str, nullptr);
+				MonoObject* exc = nullptr;
+				mono_runtime_invoke(AttachToEntityMethod, ScriptObject, params, &exc);
+
+				if (exc)
+				{
+					char* msg = mono_string_to_utf8(mono_object_to_string(exc, NULL));
+					DE_ERROR(ScriptException, "Unhandled Exception: {0}", msg);
+					mono_free(msg);
+				}
 			}
 		}
 	}

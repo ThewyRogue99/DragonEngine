@@ -45,7 +45,7 @@ namespace Engine
 
 		b2PhysicsWorld = new b2World({ WorldGravity.x, WorldGravity.y });
 
-		auto view = CurrentScene->SceneRegistry.view<Rigidbody2DComponent>();
+		auto view = CurrentScene->GetRegistry().view<Rigidbody2DComponent>();
 		for (auto e : view)
 		{
 			Entity entity = Entity(e, CurrentScene);
@@ -133,7 +133,7 @@ namespace Engine
 			b2PhysicsWorld->Step(deltaTime ? deltaTime : (1.f / 60.f), velocityIterations, positionIterations);
 
 			// Retrieve transform from Box2D
-			auto view = CurrentScene->SceneRegistry.view<Rigidbody2DComponent>();
+			auto view = CurrentScene->GetRegistry().view<Rigidbody2DComponent>();
 			for (auto e : view)
 			{
 				Entity entity = Entity(e, CurrentScene);

@@ -15,10 +15,17 @@
 #include <mono/metadata/object.h>
 #include <mono/metadata/reflection.h>
 #include <mono/metadata/exception.h>
+#include <mono/metadata/appdomain.h>
 
 namespace Engine
 {
 #define DE_ADD_INTERNAL_CALL(Name) mono_add_internal_call("DragonEngine.InternalCalls::" #Name, Name)
+
+	struct EntityInfo
+	{
+		unsigned int EntityHandle;
+		MonoString* SceneName;
+	};
 
 	static std::unordered_map<MonoType*, std::function<bool(Entity)>> EntityHasComponentFunctions = { };
 	static std::unordered_map<MonoType*, std::function<bool(Entity)>> EntityAddComponentFunctions = { };
@@ -57,12 +64,18 @@ namespace Engine
 		RegisterComponent(AllComponents{});
 	}
 
-	static Entity GetEntity(UUID id)
+	static Entity GetEntity(const EntityInfo& Info)
 	{
-		Scene* scene = SceneManager::GetActiveScene();
-		
-		if (scene)
-			return scene->GetEntityWithUUID(id);
+		const wchar_t* namestr = mono_string_to_utf16(Info.SceneName);
+
+		Scene* SceneRef = SceneManager::GetScene(namestr);
+
+		mono_free((void*)namestr);
+
+		if (SceneRef)
+		{
+			return Entity((entt::entity)Info.EntityHandle, SceneRef);
+		}
 
 		return Entity();
 	}
@@ -140,6 +153,28 @@ namespace Engine
 		return result;
 	}
 
+	static MonoArray* SceneManager_GetLoadedSceneNameArray()
+	{
+		const std::vector<Scene*>& SceneList = SceneManager::GetScenes();
+
+		MonoArray* stringArray = mono_array_new(mono_domain_get(), mono_get_string_class(), SceneList.size());
+
+		for (size_t i = 0; i < SceneList.size(); i++)
+		{
+			Scene* SceneRef = SceneList[i];
+			const WString& SceneName = SceneRef->GetName();
+
+			mono_array_set(
+				stringArray,
+				MonoString*,
+				i,
+				mono_string_from_utf16((mono_unichar2*)SceneName.c_str())
+			);
+		}
+
+		return stringArray;
+	}
+
 #pragma endregion
 
 #pragma region Scene
@@ -168,28 +203,25 @@ namespace Engine
 		return result;
 	}
 
-	static bool Scene_DestroyEntity(MonoString* SceneName, MonoString* EntityID)
+	static bool Scene_DestroyEntity(EntityInfo Info)
 	{
-		const wchar_t* namestr = mono_string_to_utf16(SceneName);
-		const char* idstr = mono_string_to_utf8(EntityID);
-
-		bool result = false;
+		const wchar_t* namestr = mono_string_to_utf16(Info.SceneName);
 
 		Scene* SceneRef = SceneManager::GetScene(namestr);
+
+		mono_free((void*)namestr);
+
 		if (SceneRef)
 		{
-			Entity entity = SceneRef->GetEntityWithUUID(idstr);
+			Entity entity((entt::entity)Info.EntityHandle, SceneRef);
 			if (entity.IsValid())
 			{
 				SceneRef->DestroyEntity(entity);
-				result = true;
+				return true;
 			}
 		}
 
-		mono_free((void*)namestr);
-		mono_free((void*)idstr);
-
-		return result;
+		return false;
 	}
 
 	static int Scene_GetEntityCount(MonoString* SceneName)
@@ -198,55 +230,55 @@ namespace Engine
 
 		Scene* SceneRef = SceneManager::GetScene(namestr);
 
-		int result = 0;
-
-		if (SceneRef)
-			result = (int)SceneRef->GetEntityCount();
-
 		mono_free((void*)namestr);
 
-		return result;
+		if (SceneRef)
+			return (int)SceneRef->GetEntityCount();
+
+		return 0;
 	}
 
-	static void Scene_GetEntityIDList(MonoString* SceneName, MonoArray** IDArray)
+	static MonoArray* Scene_GetEntityHandleArray(MonoString* SceneName)
 	{
 		const wchar_t* namestr = mono_string_to_utf16(SceneName);
 
 		Scene* SceneRef = SceneManager::GetScene(namestr);
 
+		mono_free((void*)namestr);
+
 		if (SceneRef)
 		{
-			std::vector<Entity> EntityList = SceneRef->GetEntities();
-			uintptr_t len = mono_array_length(*IDArray);
+			std::vector<unsigned int> RegistryVector = SceneRef->GetRegistryVector();
 
-			if (len == EntityList.size())
+			size_t len = RegistryVector.size();
+			if (len > 0)
 			{
-				for (uintptr_t i = 0; i < len; i++)
-				{
-					Entity entity = EntityList[i];
-					CString entityID = entity.GetUUID().GetString();
-					WString WID = TypeUtils::FromUTF8(entityID);
+				MonoArray* IDArray = mono_array_new(mono_domain_get(), mono_get_uint32_class(), len);
 
+				for (size_t i = 0; i < len; i++)
+				{
 					mono_array_set(
-						*IDArray,
-						MonoString*,
+						IDArray,
+						unsigned int,
 						i,
-						mono_string_from_utf16((mono_unichar2*)WID.c_str())
+						RegistryVector[i]
 					);
 				}
+
+				return IDArray;
 			}
 		}
 
-		mono_free((void*)namestr);
+		return nullptr;
 	}
 
 #pragma endregion
 
 #pragma region Entity
 
-	static bool Entity_HasComponent(MonoString* EntityID, MonoReflectionType* ComponentType)
+	static bool Entity_HasComponent(EntityInfo Info, MonoReflectionType* ComponentType)
 	{
-		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
 
 		if (entity.IsValid())
 		{
@@ -261,9 +293,9 @@ namespace Engine
 		return false;
 	}
 
-	static bool Entity_AddComponent(MonoString* EntityID, MonoReflectionType* ComponentType)
+	static bool Entity_AddComponent(EntityInfo Info, MonoReflectionType* ComponentType)
 	{
-		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
 
 		if (entity.IsValid())
 		{
@@ -280,35 +312,48 @@ namespace Engine
 
 #pragma endregion
 
-#pragma region TagComponent
+#pragma region IDComponent
 
-	static MonoString* TagComponent_GetTag(MonoString* EntityID)
+	static MonoString* IDComponent_GetID(EntityInfo Info)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
-			if (entity.HasComponent<TagComponent>())
-			{
-				const auto& tagComponent = entity.GetComponent<TagComponent>();
+			const CString& ID = entity.GetUUID().GetString();
+			const WString WID = TypeUtils::FromUTF8(ID);
 
-				return mono_string_from_utf16((mono_unichar2*)tagComponent.Tag.c_str());
-			}
-
-			MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-			mono_raise_exception(ex);
-
-			return nullptr;
+			return mono_string_from_utf16((mono_unichar2*)WID.c_str());
 		}
-
-		MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-		mono_raise_exception(ex);
 
 		return nullptr;
 	}
 
-	static void TagComponent_SetTag(MonoString* EntityID, MonoString* value)
+#pragma endregion
+
+#pragma region TagComponent
+
+	static MonoString* TagComponent_GetTag(EntityInfo Info)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
+		if (entity.IsValid())
+		{
+			if (entity.HasComponent<TagComponent>())
+			{
+				const auto& Tag = entity.GetComponent<TagComponent>().Tag;
+
+				return mono_string_from_utf16((mono_unichar2*)Tag.c_str());
+			}
+		}
+
+		return nullptr;
+	}
+
+	static void TagComponent_SetTag(EntityInfo Info, MonoString* value)
+	{
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TagComponent>())
@@ -318,242 +363,143 @@ namespace Engine
 				const wchar_t* str = mono_string_to_utf16(value);
 
 				tagComponent.Tag = str;
-			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TagComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
-		}
 
+				mono_free((void*)str);
+			}
+		}
 	}
 
 #pragma endregion
 
 #pragma region TransformComponent
 
-	static void TransformComponent_GetTransform(MonoString* EntityID, TransformComponent* result)
+	static void TransformComponent_GetTransform(EntityInfo Info, TransformComponent* result)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				*result = entity.GetComponent<TransformComponent>();
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_GetPosition(MonoString* EntityID, glm::vec3* result)
+	static void TransformComponent_GetPosition(EntityInfo Info, glm::vec3* result)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				*result = entity.GetComponent<TransformComponent>().Position;
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_GetRotation(MonoString* EntityID, glm::vec3* result)
+	static void TransformComponent_GetRotation(EntityInfo Info, glm::vec3* result)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				*result = entity.GetComponent<TransformComponent>().Rotation;
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_GetScale(MonoString* EntityID, glm::vec3* result)
+	static void TransformComponent_GetScale(EntityInfo Info, glm::vec3* result)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				*result = entity.GetComponent<TransformComponent>().Scale;
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_GetTransformMatrix(MonoString* EntityID, glm::mat4* result)
+	static void TransformComponent_GetTransformMatrix(EntityInfo Info, glm::mat4* result)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				*result = entity.GetComponent<TransformComponent>().GetTransformMat4();
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_SetTransform(MonoString* EntityID, TransformComponent* value)
+	static void TransformComponent_SetTransform(EntityInfo Info, TransformComponent* value)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				entity.GetComponent<TransformComponent>() = *value;
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_SetPosition(MonoString* EntityID, glm::vec3* value)
+	static void TransformComponent_SetPosition(EntityInfo Info, glm::vec3* value)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				entity.GetComponent<TransformComponent>().Position = *value;
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_SetRotation(MonoString* EntityID, glm::vec3* value)
+	static void TransformComponent_SetRotation(EntityInfo Info, glm::vec3* value)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				entity.GetComponent<TransformComponent>().Rotation = *value;
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_SetScale(MonoString* EntityID, glm::vec3* value)
+	static void TransformComponent_SetScale(EntityInfo Info, glm::vec3* value)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				entity.GetComponent<TransformComponent>().Scale = *value;
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
-	static void TransformComponent_SetTransformMatrix(MonoString* EntityID, glm::mat4* value)
+	static void TransformComponent_SetTransformMatrix(EntityInfo Info, glm::mat4* value)
 	{
-		auto entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
+
 		if (entity.IsValid())
 		{
 			if (entity.HasComponent<TransformComponent>())
 			{
 				entity.GetComponent<TransformComponent>() = TransformComponent(*value);
 			}
-			else
-			{
-				MonoException* ex = mono_get_exception_io("Entity doesn't have TransformComponent attached.");
-				mono_raise_exception(ex);
-			}
-		}
-		else
-		{
-			MonoException* ex = mono_get_exception_io("Failed to find entity in active scene.");
-			mono_raise_exception(ex);
 		}
 	}
 
@@ -561,9 +507,9 @@ namespace Engine
 
 #pragma region Rigidbody2DComponent
 
-	static void Rigidbody2DComponent_ApplyLinearImpulse(MonoString* EntityID, glm::vec2* Impulse, glm::vec2* Point, bool Wake)
+	static void Rigidbody2DComponent_ApplyLinearImpulse(EntityInfo Info, glm::vec2* Impulse, glm::vec2* Point, bool Wake)
 	{
-		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
 
 		if (entity.IsValid())
 		{
@@ -587,9 +533,9 @@ namespace Engine
 		}
 	}
 
-	static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(MonoString* EntityID, glm::vec2* Impulse, bool Wake)
+	static void Rigidbody2DComponent_ApplyLinearImpulseToCenter(EntityInfo Info, glm::vec2* Impulse, bool Wake)
 	{
-		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
 
 		if (entity.IsValid())
 		{
@@ -617,9 +563,9 @@ namespace Engine
 
 #pragma region AudioComponent
 
-	static bool AudioComponent_PlayAudio(MonoString* EntityID)
+	static bool AudioComponent_PlayAudio(EntityInfo Info)
 	{
-		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
 
 		if (entity.HasComponent<AudioComponent>())
 		{
@@ -632,9 +578,9 @@ namespace Engine
 		return false;
 	}
 
-	static bool AudioComponent_StopAudio(MonoString* EntityID)
+	static bool AudioComponent_StopAudio(EntityInfo Info)
 	{
-		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
 
 		if (entity.HasComponent<AudioComponent>())
 		{
@@ -647,9 +593,9 @@ namespace Engine
 		return false;
 	}
 
-	static bool AudioComponent_IsPlaying(MonoString* EntityID)
+	static bool AudioComponent_IsPlaying(EntityInfo Info)
 	{
-		Entity entity = GetEntity(mono_string_to_utf8(EntityID));
+		Entity entity = GetEntity(Info);
 
 		if (entity.HasComponent<AudioComponent>())
 		{
@@ -675,16 +621,20 @@ namespace Engine
 		DE_ADD_INTERNAL_CALL(SceneManager_LoadScene);
 		DE_ADD_INTERNAL_CALL(SceneManager_GetActiveSceneName);
 		DE_ADD_INTERNAL_CALL(SceneManager_SetActiveScene);
+		DE_ADD_INTERNAL_CALL(SceneManager_GetLoadedSceneNameArray);
 
 		// Scene
 		DE_ADD_INTERNAL_CALL(Scene_CreateEntity);
 		DE_ADD_INTERNAL_CALL(Scene_DestroyEntity);
 		DE_ADD_INTERNAL_CALL(Scene_GetEntityCount);
-		DE_ADD_INTERNAL_CALL(Scene_GetEntityIDList);
+		DE_ADD_INTERNAL_CALL(Scene_GetEntityHandleArray);
 
 		// Entity
 		DE_ADD_INTERNAL_CALL(Entity_HasComponent);
 		DE_ADD_INTERNAL_CALL(Entity_AddComponent);
+
+		// IDComponent
+		DE_ADD_INTERNAL_CALL(IDComponent_GetID);
 
 		// TagComponent
 		DE_ADD_INTERNAL_CALL(TagComponent_GetTag);

@@ -57,6 +57,8 @@ namespace Engine
 			GetSceneRegistry().remove<T>(EntityHandle);
 		}
 
+		Scene* GetScene() const { return CurrentScene; }
+
 		ENGINE_API bool IsValid();
 
 		operator uint32_t() const { return (uint32_t)EntityHandle; }

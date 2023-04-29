@@ -19,9 +19,12 @@ namespace Engine
 		// Load a scene asset with its Path and Name
 		static Scene* LoadScene(const WString& Path, const WString& Name);
 
+		static unsigned int GetSceneCount();
+
 		static Scene* GetActiveScene();
 
 		static Scene* GetScene(const WString& Tag);
+		static const std::vector<Scene*>& GetScenes();
 
 		static bool ReplaceScene(const WString& Tag, Scene* SceneRef);
 

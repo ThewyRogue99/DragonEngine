@@ -119,16 +119,16 @@ namespace Engine
 			Scene* ActiveScene = EditorSceneManager::GetEditorScene();
 
 			// Update fields
-			for (auto& ent : ActiveScene->GetEntities())
+			auto view = ActiveScene->GetRegistry().view<ScriptComponent>();
+			for (auto ent : view)
 			{
-				if (ent.HasComponent<ScriptComponent>())
-				{
-					auto& sc = ent.GetComponent<ScriptComponent>();
+				Entity entity(ent, ActiveScene);
 
-					if (sc.HasScript())
-					{
-						ScriptEngine::GetScriptDefaultFields(sc.Namespace, sc.Name, sc.Fields);
-					}
+				auto& sc = entity.GetComponent<ScriptComponent>();
+
+				if (sc.HasScript())
+				{
+					ScriptEngine::GetScriptDefaultFields(sc.Namespace, sc.Name, sc.Fields);
 				}
 			}
 

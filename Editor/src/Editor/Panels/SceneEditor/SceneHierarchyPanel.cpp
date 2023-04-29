@@ -58,7 +58,7 @@ namespace Engine
 			ImGui::EndPopup();
 		}
 
-		auto& view = ActiveScene->SceneRegistry.view<TagComponent>();
+		auto& view = ActiveScene->GetRegistry().view<TagComponent>();
 
 		ImGuiListClipper clipper;
 		clipper.Begin((int)view.size());

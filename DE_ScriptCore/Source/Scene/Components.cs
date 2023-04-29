@@ -5,12 +5,20 @@
 		public Entity Entity { get; internal set; }
 	}
 
-	public class TagComponent : Component
+    public class IDComponent : Component
+    {
+        public string ID
+        {
+            get => InternalCalls.IDComponent_GetID(Entity.GetEntityInfo());
+        }
+    }
+
+    public class TagComponent : Component
 	{
 		public string Tag
 		{
-			get => InternalCalls.TagComponent_GetTag(Entity.ID);
-			set => InternalCalls.TagComponent_SetTag(Entity.ID, ref value);
+			get => InternalCalls.TagComponent_GetTag(Entity.GetEntityInfo());
+			set => InternalCalls.TagComponent_SetTag(Entity.GetEntityInfo(), ref value);
 		}
 	}
 
@@ -20,55 +28,55 @@
 		{
 			get
 			{
-				InternalCalls.TransformComponent_GetTransform(Entity.ID, out Transform result);
+				InternalCalls.TransformComponent_GetTransform(Entity.GetEntityInfo(), out Transform result);
 				return result;
 			}
 
-			set => InternalCalls.TransformComponent_SetTransform(Entity.ID, ref value);
+			set => InternalCalls.TransformComponent_SetTransform(Entity.GetEntityInfo(), ref value);
 		}
 
 		public Vector3 Position
 		{
 			get
 			{
-				InternalCalls.TransformComponent_GetPosition(Entity.ID, out Vector3 result);
+				InternalCalls.TransformComponent_GetPosition(Entity.GetEntityInfo(), out Vector3 result);
 				return result;
 			}
 
-			set => InternalCalls.TransformComponent_SetPosition(Entity.ID, ref value);
+			set => InternalCalls.TransformComponent_SetPosition(Entity.GetEntityInfo(), ref value);
 		}
 
 		public Vector3 Rotation
 		{
 			get
 			{
-				InternalCalls.TransformComponent_GetRotation(Entity.ID, out Vector3 result);
+				InternalCalls.TransformComponent_GetRotation(Entity.GetEntityInfo(), out Vector3 result);
 				return result;
 			}
 
-			set => InternalCalls.TransformComponent_SetRotation(Entity.ID, ref value);
+			set => InternalCalls.TransformComponent_SetRotation(Entity.GetEntityInfo(), ref value);
 		}
 
 		public Vector3 Scale
 		{
 			get
 			{
-				InternalCalls.TransformComponent_GetScale(Entity.ID, out Vector3 result);
+				InternalCalls.TransformComponent_GetScale(Entity.GetEntityInfo(), out Vector3 result);
 				return result;
 			}
 
-			set => InternalCalls.TransformComponent_SetScale(Entity.ID, ref value);
+			set => InternalCalls.TransformComponent_SetScale(Entity.GetEntityInfo(), ref value);
 		}
 
 		public Matrix4 TransformMatrix
 		{
 			get
 			{
-				InternalCalls.TransformComponent_GetTransformMatrix(Entity.ID, out Matrix4 result);
+				InternalCalls.TransformComponent_GetTransformMatrix(Entity.GetEntityInfo(), out Matrix4 result);
 				return result;
 			}
 
-			set => InternalCalls.TransformComponent_SetTransformMatrix(Entity.ID, ref value);
+			set => InternalCalls.TransformComponent_SetTransformMatrix(Entity.GetEntityInfo(), ref value);
 		}
 	}
 
@@ -81,12 +89,12 @@
 	{
 		public void ApplyLinearImpulse(Vector2 impulse, Vector2 worldPosition, bool wake)
 		{
-			InternalCalls.Rigidbody2DComponent_ApplyLinearImpulse(Entity.ID, ref impulse, ref worldPosition, wake);
+			InternalCalls.Rigidbody2DComponent_ApplyLinearImpulse(Entity.GetEntityInfo(), ref impulse, ref worldPosition, wake);
 		}
 
 		public void ApplyLinearImpulse(Vector2 impulse, bool wake)
 		{
-			InternalCalls.Rigidbody2DComponent_ApplyLinearImpulseToCenter(Entity.ID, ref impulse, wake);
+			InternalCalls.Rigidbody2DComponent_ApplyLinearImpulseToCenter(Entity.GetEntityInfo(), ref impulse, wake);
 		}
 	}
 
@@ -96,18 +104,18 @@
 		{
 			get
 			{
-				return InternalCalls.AudioComponent_IsPlaying(Entity.ID);
+				return InternalCalls.AudioComponent_IsPlaying(Entity.GetEntityInfo());
 			}
 		}
 
         public void PlayAudio()
 		{
-			InternalCalls.AudioComponent_PlayAudio(Entity.ID);
+			InternalCalls.AudioComponent_PlayAudio(Entity.GetEntityInfo());
 		}
 
 		public void StopAudio()
 		{
-			InternalCalls.AudioComponent_StopAudio(Entity.ID);
+			InternalCalls.AudioComponent_StopAudio(Entity.GetEntityInfo());
 		}
     }
 }

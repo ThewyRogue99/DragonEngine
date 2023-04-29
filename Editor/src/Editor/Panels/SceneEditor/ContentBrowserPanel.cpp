@@ -239,9 +239,19 @@ namespace Engine
 			{
 				BrowserContent& content = (*DefaultContentList)[idx];
 
-				CString cName = TypeUtils::FromUTF16(content.Entry.GetName());
+				if (!content.bShouldRename && content.bIsCreated)
+				{
+					CString cName = TypeUtils::FromUTF16(content.Entry.GetName());
 
-				if (m_TextFilter.PassFilter(cName.c_str()))
+					if (m_TextFilter.PassFilter(cName.c_str()))
+					{
+						content.Draw(idx);
+						ImGui::ItemSize(ImVec2(0.f, 20.f));
+
+						ImGui::NextColumn();
+					}
+				}
+				else
 				{
 					content.Draw(idx);
 					ImGui::ItemSize(ImVec2(0.f, 20.f));

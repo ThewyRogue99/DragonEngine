@@ -1,34 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace DragonEngine
 {
     public class Scene
     {
+        protected Scene() { }
+
         internal Scene(string SceneName)
         {
             Name = SceneName;
         }
 
         public readonly string Name;
-        public List<Entity> Entities
+        public List<Entity> EntityList
         {
-            get { return EntityList; }
+            get
+            {
+                Load();
+
+                return _EntityList;
+            }
         }
 
-        private List<Entity> EntityList = new List<Entity>();
+        private List<Entity> _EntityList = null;
 
-        public Entity CreateEntity(string tag = "Empty Entity") => new Entity(InternalCalls.Scene_CreateEntity(Name, tag));
+        public Entity CreateEntity(string tag = "Empty Entity") => new Entity(InternalCalls.Scene_CreateEntity(Name, tag), this);
+
+        private void Load()
+        {
+            if(_EntityList == null)
+            {
+                uint[] HandleArray = InternalCalls.Scene_GetEntityHandleArray(Name);
+
+                _EntityList = new List<Entity>();
+
+                foreach (uint Handle in HandleArray)
+                {
+                    _EntityList.Add(new Entity(Handle, this));
+                }
+            }
+        }
 
         public bool DestroyEntity(Entity entity)
         {
-            if (entity == null)
-                return false;
+            if (EntityList.Contains(entity) && entity != null)
+            {
+                return InternalCalls.Scene_DestroyEntity(entity.GetEntityInfo());
+            }
 
-            return InternalCalls.Scene_DestroyEntity(Name, entity.ID);
+            return false;
         }
 
         public Entity FindEntityByTag(string Tag)
@@ -38,11 +58,7 @@ namespace DragonEngine
 
         public Entity FindEntityByID(string EntityID)
         {
-            Entity result = new Entity(EntityID);
-            if (!IsEntityValid(result))
-                return null;
-
-            return result;
+            return EntityList.Find(e => e.ID == EntityID);
         }
 
         public bool IsEntityValid(Entity entity)
@@ -50,18 +66,23 @@ namespace DragonEngine
             return EntityList.Contains(entity);
         }
 
-        internal void SetEntityList()
+        public override bool Equals(object obj)
         {
-            int ArrayLength = InternalCalls.Scene_GetEntityCount(Name);
-            if(ArrayLength > 0)
+            if (obj != null)
             {
-                string[] IDArray = new string[ArrayLength];
-
-                InternalCalls.Scene_GetEntityIDList(Name, ref IDArray);
-
-                foreach (string id in IDArray)
-                    EntityList.Add(new Entity(id));
+                if (obj is Scene)
+                {
+                    Scene SceneObject = (obj as Scene);
+                    return Name == SceneObject.Name;
+                }
             }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

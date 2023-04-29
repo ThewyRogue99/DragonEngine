@@ -365,7 +365,7 @@ namespace Engine
 
 				MonoClass* scriptBaseClass = mono_class_from_name(CoreAssembly.Image, "DragonEngine", "Script");
 
-				MonoMethod* vMethod = mono_class_get_method_from_name(scriptBaseClass, "AttachToEntity", 1);
+				MonoMethod* vMethod = mono_class_get_method_from_name(scriptBaseClass, "AttachToEntity", 2);
 				newScript->AttachToEntityMethod = mono_object_get_virtual_method(ScriptObject, vMethod);
 
 				newScript->BeginPlayMethod = mono_class_get_method_from_name(info->Class, "BeginPlay", 0);

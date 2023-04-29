@@ -107,6 +107,11 @@ namespace Engine
 		return nullptr;
 	}
 
+	unsigned int SceneManager::GetSceneCount()
+	{
+		return (unsigned int)SceneList.size();
+	}
+
 	Scene* SceneManager::GetActiveScene()
 	{
 		return ActiveScene;
@@ -123,6 +128,11 @@ namespace Engine
 			return *it;
 
 		return nullptr;
+	}
+
+	const std::vector<Scene*>& SceneManager::GetScenes()
+	{
+		return SceneList;
 	}
 
 	bool SceneManager::ReplaceScene(const WString& Tag, Scene* SceneRef)
