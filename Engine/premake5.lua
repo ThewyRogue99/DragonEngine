@@ -52,17 +52,16 @@ project "Engine"
 	{
 		"__ENGINE__",
 		"ENGINE_BUILD_DLL",
-		"GLFW_DLL",
 		"GLFW_INCLUDE_NONE",
 		"YAML_CPP_STATIC_DEFINE",
 		"AL_LIBTYPE_STATIC"
 	}
-
+	
 	postbuildcommands
 	{
-		("{COPY} %{wks.location}/Engine/vendor/GLFW/bin/%{outputdir}/GLFW/GLFW.dll ../bin/%{outputdir}")
+		("{COPY} %{wks.location}/vendor/lib/mono/mono-2.0-sgen.dll ../bin/%{outputdir}")
 	}
-
+	
 	filter "system:windows"
 		systemversion "latest"
 

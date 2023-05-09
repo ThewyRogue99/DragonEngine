@@ -7,24 +7,24 @@
 [submodule "Editor/vendor/ImGuizmo"]
 	path = Editor/vendor/ImGuizmo
 	url = https://github.com/ThewyRogue99/ImGuizmo
-[submodule "Engine/vendor/Box2D"]
-	path = Engine/vendor/Box2D
-	url = https://github.com/ThewyRogue99/box2d
-[submodule "Engine/vendor/GLFW"]
-	path = Engine/vendor/GLFW
-	url = https://github.com/ThewyRogue99/glfw
-[submodule "Engine/vendor/yaml-cpp"]
-	path = Engine/vendor/yaml-cpp
-	url = https://github.com/ThewyRogue99/yaml-cpp
-[submodule "Editor/vendor/imgui"]
-	path = Editor/vendor/imgui
-	url = https://github.com/ThewyRogue99/imgui
-[submodule "Editor/vendor/nfd"]
-	path = Editor/vendor/nfd
-	url = https://github.com/ThewyRogue99/nativefiledialog
-[submodule "Engine/vendor/OpenAl-Soft"]
-	path = Engine/vendor/OpenAl-Soft
-	url = https://github.com/ThewyRogue99/openal-soft
 [submodule "Editor/vendor/AudioToWav"]
 	path = Editor/vendor/AudioToWav
 	url = https://github.com/ThewyRogue99/AudioToWav
+[submodule "Editor/vendor/ImGui"]
+	path = Editor/vendor/ImGui
+	url = https://github.com/ocornut/imgui
+[submodule "Engine/vendor/Box2D"]
+	path = Engine/vendor/Box2D
+	url = https://github.com/erincatto/box2d
+[submodule "Engine/vendor/glfw"]
+	path = Engine/vendor/glfw
+	url = https://github.com/glfw/glfw
+[submodule "Engine/vendor/OpenAL-Soft"]
+	path = Engine/vendor/OpenAL-Soft
+	url = https://github.com/kcat/openal-soft
+[submodule "Engine/vendor/yaml-cpp"]
+	path = Engine/vendor/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
+[submodule "Editor/vendor/nfd"]
+	path = Editor/vendor/nfd
+	url = https://github.com/mlabbe/nativefiledialog

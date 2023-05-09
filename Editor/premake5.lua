@@ -34,11 +34,6 @@ project "Editor"
 		"%{IncludeDir.IconFontCppHeaders}"
 	}
 
-	postbuildcommands
-	{
-		("{COPY} %{wks.location}/vendor/lib/mono/mono-2.0-sgen.dll ../bin/%{outputdir}")
-	}
-
 	links
 	{
 		"ImGui",
@@ -51,9 +46,7 @@ project "Editor"
 	defines
 	{
 		"__EDITOR__",
-		"ENGINE_LINK_DLL",
-		"ENGINE_DYNAMIC_LINK",
-		"GLFW_DLL"
+		"ENGINE_LINK_DLL"
 	}
 
 	filter "files:vendor/ImGuizmo/**.cpp"

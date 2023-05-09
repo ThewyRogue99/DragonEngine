@@ -10,8 +10,8 @@ class PremakeSetup:
         p = platform.system()
         if(p == "Windows"):
             return "windows"
-        #elif(p == "Darwin"):
-            #return "macosx"
+        elif(p == "Darwin"):
+            return "macosx"
         else:
             raise Exception("Undefined OS detected!")
 

@@ -23,7 +23,6 @@ namespace Engine
 		{
 			DE_PROFILE_SCOPE("GLFW Init");
 
-			// TODO: glfwTerminate on system shutdown
 			int success = glfwInit();
 			DE_ASSERT(success, "Could not initialize GLFW!");
 			if (!success) return;

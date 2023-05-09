@@ -116,6 +116,8 @@ namespace Engine
 				KeyPressedEvent e(static_cast<KeyInput>(key), true);
 				wnd->OnEventDispatch.Run(e);
 			} break;
+			default:
+				break;
 			}
 		});
 
