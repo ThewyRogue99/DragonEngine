@@ -10,21 +10,3 @@
 [submodule "Editor/vendor/AudioToWav"]
 	path = Editor/vendor/AudioToWav
 	url = https://github.com/ThewyRogue99/AudioToWav
-[submodule "Editor/vendor/ImGui"]
-	path = Editor/vendor/ImGui
-	url = https://github.com/ocornut/imgui
-[submodule "Engine/vendor/Box2D"]
-	path = Engine/vendor/Box2D
-	url = https://github.com/erincatto/box2d
-[submodule "Engine/vendor/glfw"]
-	path = Engine/vendor/glfw
-	url = https://github.com/glfw/glfw
-[submodule "Engine/vendor/OpenAL-Soft"]
-	path = Engine/vendor/OpenAL-Soft
-	url = https://github.com/kcat/openal-soft
-[submodule "Engine/vendor/yaml-cpp"]
-	path = Engine/vendor/yaml-cpp
-	url = https://github.com/jbeder/yaml-cpp
-[submodule "Editor/vendor/nfd"]
-	path = Editor/vendor/nfd
-	url = https://github.com/mlabbe/nativefiledialog
