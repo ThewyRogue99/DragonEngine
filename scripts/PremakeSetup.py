@@ -5,59 +5,65 @@ from pathlib import Path
 
 import InstallerUtils
 
-class PremakeSetup:
-    def _GetPremakePlatformName(self):
-        p = platform.system()
-        if(p == "Windows"):
-            return "windows"
-        elif(p == "Darwin"):
-            return "macosx"
-        else:
-            raise Exception("Undefined OS detected!")
+_premakeLicenseUrl = "https://raw.githubusercontent.com/premake/premake-core/master/LICENSE.txt"
+_premakeDirectory = "vendor/premake/bin"
 
-    def _GetPremakeAsset(self):
-        assets = self.latestRelease["assets"]
-        pname = self._GetPremakePlatformName()
-        for asset in assets:
-            zipUrl = asset["browser_download_url"]
-            if(pname in zipUrl):
-                return asset
+def _GetPremakePlatformName():
+    p = platform.system()
 
-    def __init__(self):
-        self.latestRelease = InstallerUtils.GetLatestGitHubRelease("premake", "premake-core")
-        self.premakeAsset = self._GetPremakeAsset()
+    if(p == "Windows"):
+        return "windows"
+    elif(p == "Darwin"):
+        return "macosx"
+    else:
+        raise Exception("Undefined OS detected!")
 
-    premakeLicenseUrl = "https://raw.githubusercontent.com/premake/premake-core/master/LICENSE.txt"
-    premakeDirectory = "../vendor/premake/bin"
+def _GetPremakeAsset():
+    latestRelease = InstallerUtils.GetLatestGitHubRelease("premake", "premake-core")
+    assets = latestRelease["assets"]
+    pname = _GetPremakePlatformName()
 
-    def Validate(self):
-        if (not self.CheckIfPremakeInstalled()):
-            print("Premake is not installed.")
-            return False
+    for asset in assets:
+        zipUrl = asset["browser_download_url"]
+        if(pname in zipUrl):
+            return asset
 
-        print(f"Correct Premake located at {os.path.abspath(self.premakeDirectory)}")
-        return True
+def _CheckIfPremakeInstalled():
+    p = platform.system()
 
-    def CheckIfPremakeInstalled(self):
-        premakeExe = Path(f"{self.premakeDirectory}/premake5.exe");
-        if (not premakeExe.exists()):
-            return self.InstallPremake()
+    premakePath = Path("")
 
-        return True
+    if(p == "Windows"):
+        premakePath = Path(f"{_premakeDirectory}/premake5.exe")
+    elif(p == "Darwin"):
+        premakePath = Path(f"{_premakeDirectory}/premake5")
+    else:
+        raise Exception("Undefined OS detected!")
+    
+    return premakePath.exists()
 
-    def InstallPremake(self):
-        fName = self.premakeAsset["name"]
-        premakeUrl = self.premakeAsset["browser_download_url"]
-        premakePath = f"{self.premakeDirectory}/{fName}"
-        print("Downloading {0:s} to {1:s}".format(premakeUrl, premakePath))
-        InstallerUtils.DownloadFile(premakeUrl, premakePath)
-        print("Extracting", premakePath)
-        InstallerUtils.UnzipFile(premakePath, deleteZipFile=True)
-        print(f"{fName} has been downloaded to '{self.premakeDirectory}'")
+def InstallPremake(stdscr):
+    if not _CheckIfPremakeInstalled():
+        stdscr.addstr("Installing premake...\n")
+        stdscr.refresh()
 
-        premakeLicensePath = f"{self.premakeDirectory}/LICENSE.txt"
-        print("Downloading {0:s} to {1:s}".format(self.premakeLicenseUrl, premakeLicensePath))
-        InstallerUtils.DownloadFile(self.premakeLicenseUrl, premakeLicensePath)
-        print(f"Premake License file has been downloaded to '{self.premakeDirectory}'")
+        premakeAsset = _GetPremakeAsset()
+        fName = premakeAsset["name"]
+        premakeUrl = premakeAsset["browser_download_url"]
+        premakePath = f"{_premakeDirectory}/{fName}"
 
-        return True
+        stdscr.addstr("Downloading {0:s} to {1:s}\n".format(premakeUrl, premakePath))
+        InstallerUtils.DownloadFile(stdscr, premakeUrl, premakePath)
+        
+        stdscr.addstr("Extracting premake...\n")
+        InstallerUtils.UnzipFile(stdscr, premakePath, deleteZipFile=True)
+        stdscr.addstr(f"{fName} has been downloaded to '{_premakeDirectory}'\n")
+
+        premakeLicensePath = f"{_premakeDirectory}/LICENSE.txt"
+        stdscr.addstr("Downloading {0:s} to {1:s}\n".format(_premakeLicenseUrl, premakeLicensePath))
+        InstallerUtils.DownloadFile(stdscr, _premakeLicenseUrl, premakeLicensePath)
+        stdscr.addstr(f"Premake License file has been downloaded to '{_premakeDirectory}'\n\n")
+
+        stdscr.refresh()
+
+    return True

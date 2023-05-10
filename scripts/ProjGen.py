@@ -2,6 +2,9 @@ import curses
 import platform
 import subprocess
 
+from LibSetup import InstallLibraries
+from PremakeSetup import InstallPremake
+
 import os
 
 __vs_versions = [
@@ -13,6 +16,13 @@ __vs_versions = [
 def GenerateProjects(stdscr):
     stdscr.clear()
 
+    cwd = os.getcwd()
+    os.chdir("..")
+
+    stdscr.refresh()
+
+    InstallPremake(stdscr)
+
     p = platform.system()
 
     selected_index = 2
@@ -20,8 +30,6 @@ def GenerateProjects(stdscr):
 
     while not should_exit:
         if(p == "Windows"):
-            stdscr.clear()
-
             stdscr.addstr("Please select a Visual Studio version:\n\n")
 
             for idx, version in enumerate(__vs_versions):
@@ -58,12 +66,7 @@ def GenerateProjects(stdscr):
     else:
         command = ["vendor/premake/bin/premake5", "xcode4"]
 
-    cwd = os.getcwd()
-    os.chdir("..")
-
     process = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    os.chdir(cwd)
 
     result_str = process.stderr.decode('utf-8') + '\n'
     result_str += process.stdout.decode('utf-8')
@@ -78,9 +81,15 @@ def GenerateProjects(stdscr):
 
     for i in range(0, len(parsed_out_str_list)):
         stdscr.addstr(i, 0, parsed_out_str_list[i])
+    
+    stdscr.addstr("\n\n")
+    
+    InstallLibraries(stdscr)
 
-    stdscr.addstr("\n\nPress any key to continue...")
+    stdscr.addstr("Press any key to continue...")
 
     stdscr.refresh()
 
     stdscr.getch()
+
+    os.chdir(cwd)

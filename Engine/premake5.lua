@@ -25,9 +25,9 @@ project "Engine"
 	includedirs
 	{
 		"src",
-		"vendor/spdlog/include",
-		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.GLAD}",
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.glfw}",
+		"%{IncludeDir.glad}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
@@ -39,8 +39,8 @@ project "Engine"
 
 	links
 	{
-		"GLFW",
-		"GLAD",
+		"glfw",
+		"glad",
 		"yaml-cpp",
 		"Box2D",
 		"OpenAL-Soft",
@@ -55,11 +55,6 @@ project "Engine"
 		"GLFW_INCLUDE_NONE",
 		"YAML_CPP_STATIC_DEFINE",
 		"AL_LIBTYPE_STATIC"
-	}
-	
-	postbuildcommands
-	{
-		("{COPY} %{wks.location}/vendor/lib/mono/mono-2.0-sgen.dll ../bin/%{outputdir}")
 	}
 	
 	filter "system:windows"

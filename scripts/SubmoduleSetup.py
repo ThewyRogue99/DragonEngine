@@ -5,7 +5,6 @@ import shutil
 
 __engine_submodules = [
     "Box2D",
-    "glad",
     "glfw",
     "OpenAL-Soft",
     "yaml-cpp"
@@ -28,24 +27,22 @@ def UpdateSubmodules(stdscr):
 
     process = subprocess.run(["git", "submodule", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    result_str = process.stderr.decode('utf-8') + '\n'
-    result_str += process.stdout.decode('utf-8')
+    result_str = process.stderr.decode('utf-8')
+    if result_str != "":
+        raise Exception(result_str)
+    
+    result_str = process.stdout.decode('utf-8') + '\n'
 
-    out_str_list = result_str.splitlines()
+    stdscr.addstr(result_str)
 
-    parsed_out_str_list = []
+    stdscr.refresh()
 
-    for out_str in out_str_list:
-        if out_str != "":
-            parsed_out_str_list.append(out_str)
-
-    for i in range(0, len(parsed_out_str_list)):
-        stdscr.addstr(i + 1, 0, parsed_out_str_list[i])
+    stdscr.addstr("Copying build scripts...\n")
 
     __SetBuildScripts()
 
-    stdscr.addstr(len(parsed_out_str_list) + 1, 0, "Finished")
-    stdscr.addstr(len(parsed_out_str_list) + 3, 0, "Press any key to continue...")
+    stdscr.addstr("Finished\n\n")
+    stdscr.addstr("Press any key to continue...")
 
     stdscr.refresh()
 
@@ -57,8 +54,8 @@ def UpdateSubmodules(stdscr):
 def __SetBuildScripts():
     # Engine Scripts
     for sub in __engine_submodules:
-        shutil.copy(f'Engine/build/{sub}/premake5.lua', f'Engine/vendor/{sub}/premake5.lua')
+        shutil.copy(f'Engine/vendor/build/scripts/{sub}.lua', f'Engine/vendor/modules/{sub}/premake5.lua')
     
     # Editor Scripts
     for sub in __editor_submodules:
-        shutil.copy(f'Editor/build/{sub}/premake5.lua', f'Editor/vendor/{sub}/premake5.lua')
+        shutil.copy(f'Editor/vendor/build/scripts/{sub}.lua', f'Editor/vendor/modules/{sub}/premake5.lua')

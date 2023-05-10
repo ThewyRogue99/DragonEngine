@@ -1,4 +1,4 @@
-project "GLAD"
+project "glad"
 	kind "StaticLib"
 	language "C"
 	staticruntime "off"

@@ -12,17 +12,15 @@ project "Editor"
 	files
 	{
 		"src/**.h",
-		"src/**.cpp",
-		"vendor/ImGuizmo/ImGuizmo.h",
-		"vendor/ImGuizmo/ImGuizmo.cpp"
+		"src/**.cpp"
 	}
 
 	includedirs
 	{
 		"src",
-		"%{wks.location}/Engine/vendor/spdlog/include",
 		"%{wks.location}/Engine/src",
-		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.glfw}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.stb_image}",
@@ -39,7 +37,7 @@ project "Editor"
 		"ImGui",
 		"nfd",
 		"AudioToWav",
-		"GLFW",
+		"glfw",
 		"Engine"
 	}
 

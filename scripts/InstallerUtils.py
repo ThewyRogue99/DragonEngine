@@ -8,30 +8,43 @@ import urllib
 
 from zipfile import ZipFile
 
-def GetLatestGitHubRelease(user, repo):
+def GetAllGitHubReleases(user, repo):
     responseStr = urllib.request.urlopen(f'https://api.github.com/repos/{user}/{repo}/releases').read().decode()
-    return json.loads(responseStr)[0]
+    return json.loads(responseStr)
 
-def DownloadFile(url, filepath):
+def GetLatestGitHubRelease(user, repo):
+    return GetAllGitHubReleases(user, repo)[0]
+
+def GetLatestGitHubReleaseByName(user, repo, release_name):
+    releases = GetAllGitHubReleases(user, repo)
+
+    for release in releases:
+        if release["name"] == release_name:
+            return release
+    
+    raise Exception("Failed to find the latest GitHub release by name")
+
+def DownloadFile(stdscr, url, filepath):
     filepath = os.path.abspath(filepath)
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
             
     if (type(url) is list):
         for url_option in url:
-            print("Downloading", url_option)
+            stdscr.addstr("Downloading\n")
+            stdscr.refresh()
             try:
-                DownloadFile(url_option, filepath)
+                DownloadFile(stdscr, url_option, filepath)
                 return
             except urllib.error.URLError as e:
-                print(f"URL Error encountered: {e.reason}. Proceeding with backup...\n\n")
+                stdscr.addstr(f"URL Error encountered: {e.reason}. Proceeding with backup...\n\n")
                 os.remove(filepath)
                 pass
             except urllib.error.HTTPError as e:
-                print(f"HTTP Error  encountered: {e.code}. Proceeding with backup...\n\n")
+                stdscr.addstr(f"HTTP Error  encountered: {e.code}. Proceeding with backup...\n\n")
                 os.remove(filepath)
                 pass
             except:
-                print(f"Something went wrong. Proceeding with backup...\n\n")
+                stdscr.addstr(f"Something went wrong. Proceeding with backup...\n\n")
                 os.remove(filepath)
                 pass
         raise ValueError(f"Failed to download {filepath}")
@@ -68,11 +81,13 @@ def DownloadFile(url, filepath):
                 if (avgKBPerSecond > 1024):
                     avgMBPerSecond = avgKBPerSecond / 1024
                     avgSpeedString = '{:.2f} MB/s'.format(avgMBPerSecond)
-                sys.stdout.write('\r[{}{}] {:.2f}% ({})     '.format('█' * done, '.' * (50-done), percentage, avgSpeedString))
-                sys.stdout.flush()
-    sys.stdout.write('\n')
+                stdscr.addstr('\r[{}{}] {:.2f}% ({})     '.format('█' * done, '.' * (50-done), percentage, avgSpeedString))
+                stdscr.refresh()
 
-def UnzipFile(filepath, deleteZipFile=True):
+    stdscr.addstr('\n')
+    stdscr.refresh()
+
+def UnzipFile(stdscr, filepath, deleteZipFile=True):
     zipFilePath = os.path.abspath(filepath) # get full path of files
     zipFileLocation = os.path.dirname(zipFilePath)
 
@@ -107,9 +122,11 @@ def UnzipFile(filepath, deleteZipFile=True):
             if (avgKBPerSecond > 1024):
                 avgMBPerSecond = avgKBPerSecond / 1024
                 avgSpeedString = '{:.2f} MB/s'.format(avgMBPerSecond)
-            sys.stdout.write('\r[{}{}] {:.2f}% ({})     '.format('█' * done, '.' * (50-done), percentage, avgSpeedString))
-            sys.stdout.flush()
-    sys.stdout.write('\n')
+            stdscr.addstr('\r[{}{}] {:.2f}% ({})     '.format('█' * done, '.' * (50-done), percentage, avgSpeedString))
+            stdscr.refresh()
+
+    stdscr.addstr('\n')
+    stdscr.refresh()
 
     if deleteZipFile:
         os.remove(zipFilePath) # delete zip file
