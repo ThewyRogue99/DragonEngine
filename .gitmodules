@@ -25,3 +25,6 @@
 [submodule "Engine/vendor/modules/yaml-cpp"]
 	path = Engine/vendor/modules/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "Engine/vendor/modules/OpenAL-Soft"]
+	path = Engine/vendor/modules/OpenAL-Soft
+	url = https://github.com/ThewyRogue99/openal-soft

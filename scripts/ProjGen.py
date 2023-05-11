@@ -1,11 +1,23 @@
 import curses
 import platform
 import subprocess
+import shutil
 
 from LibSetup import InstallLibraries
 from PremakeSetup import InstallPremake
 
 import os
+
+__engine_submodules = [
+    "Box2D",
+    "glfw",
+    "yaml-cpp"
+]
+
+__editor_submodules = [
+    "ImGui",
+    "nfd"
+]
 
 __vs_versions = [
     "vs2017",
@@ -22,6 +34,12 @@ def GenerateProjects(stdscr):
     stdscr.refresh()
 
     InstallPremake(stdscr)
+
+    stdscr.refresh()
+
+    stdscr.addstr("Copying build scripts...\n")
+
+    __SetBuildScripts()
 
     p = platform.system()
 
@@ -93,3 +111,12 @@ def GenerateProjects(stdscr):
     stdscr.getch()
 
     os.chdir(cwd)
+
+def __SetBuildScripts():
+    # Engine Scripts
+    for sub in __engine_submodules:
+        shutil.copy(f'Engine/vendor/build/scripts/{sub}.lua', f'Engine/vendor/modules/{sub}/premake5.lua')
+    
+    # Editor Scripts
+    for sub in __editor_submodules:
+        shutil.copy(f'Editor/vendor/build/scripts/{sub}.lua', f'Editor/vendor/modules/{sub}/premake5.lua')
