@@ -22,9 +22,6 @@
 [submodule "Engine/vendor/modules/glfw"]
 	path = Engine/vendor/modules/glfw
 	url = https://github.com/glfw/glfw
-[submodule "Engine/vendor/modules/OpenAL-Soft"]
-	path = Engine/vendor/modules/OpenAL-Soft
-	url = https://github.com/kcat/openal-soft
 [submodule "Engine/vendor/modules/yaml-cpp"]
 	path = Engine/vendor/modules/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
