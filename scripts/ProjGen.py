@@ -8,18 +8,18 @@ from PremakeSetup import InstallPremake
 
 import os
 
-__engine_submodules = [
+_engine_submodules = [
     "Box2D",
     "glfw",
     "yaml-cpp"
 ]
 
-__editor_submodules = [
+_editor_submodules = [
     "ImGui",
     "nfd"
 ]
 
-__vs_versions = [
+_vs_versions = [
     "vs2017",
     "vs2019",
     "vs2022"
@@ -35,12 +35,6 @@ def GenerateProjects(stdscr):
 
     InstallPremake(stdscr)
 
-    stdscr.refresh()
-
-    stdscr.addstr("Copying build scripts...\n")
-
-    __SetBuildScripts()
-
     p = platform.system()
 
     selected_index = 2
@@ -50,7 +44,7 @@ def GenerateProjects(stdscr):
         if(p == "Windows"):
             stdscr.addstr("Please select a Visual Studio version:\n\n")
 
-            for idx, version in enumerate(__vs_versions):
+            for idx, version in enumerate(_vs_versions):
                 if idx == selected_index:
                     stdscr.attron(curses.color_pair(1))
                     stdscr.addstr(f'{idx + 1}) {version} \n')
@@ -64,7 +58,7 @@ def GenerateProjects(stdscr):
 
             if key == curses.KEY_UP and selected_index > 0:
                 selected_index -= 1
-            elif key == curses.KEY_DOWN and selected_index < len(__vs_versions) - 1:
+            elif key == curses.KEY_DOWN and selected_index < len(_vs_versions) - 1:
                 selected_index += 1
             elif key == curses.KEY_ENTER or key in [10, 13]:
                 should_exit = True
@@ -75,12 +69,17 @@ def GenerateProjects(stdscr):
             raise Exception("Undefined OS detected!")
 
     stdscr.clear()
+
+    stdscr.addstr("Copying build scripts...\n")
+
+    SetBuildScripts()
+
     stdscr.refresh()
     
     command = []
 
     if selected_index >= 0:
-        command = ["vendor\\premake\\bin\\premake5.exe", __vs_versions[selected_index]]
+        command = ["vendor\\premake\\bin\\premake5.exe", _vs_versions[selected_index]]
     else:
         command = ["vendor/premake/bin/premake5", "xcode4"]
 
@@ -112,11 +111,11 @@ def GenerateProjects(stdscr):
 
     os.chdir(cwd)
 
-def __SetBuildScripts():
+def SetBuildScripts():
     # Engine Scripts
-    for sub in __engine_submodules:
+    for sub in _engine_submodules:
         shutil.copy(f'Engine/vendor/build/scripts/{sub}.lua', f'Engine/vendor/modules/{sub}/premake5.lua')
     
     # Editor Scripts
-    for sub in __editor_submodules:
+    for sub in _editor_submodules:
         shutil.copy(f'Editor/vendor/build/scripts/{sub}.lua', f'Editor/vendor/modules/{sub}/premake5.lua')

@@ -52,13 +52,27 @@ project "Engine"
 	{
 		"__ENGINE__",
 		"ENGINE_BUILD_DLL",
+		"GLFW_DLL",
 		"GLFW_INCLUDE_NONE",
 		"YAML_CPP_STATIC_DEFINE",
 		"AL_LIBTYPE_STATIC"
 	}
+
+	postbuildcommands
+	{
+		("{COPY} vendor/modules/glfw/bin/%{outputdir}/glfw/glfw.dll ../bin/%{outputdir}")
+	}
 	
 	filter "system:windows"
 		systemversion "latest"
+
+		-- These libraries are used by mono
+		links
+		{
+			"ws2_32.lib",
+			"Version.lib",
+			"Bcrypt.lib"
+		}
 
 	filter "configurations:Debug"
 		defines "ENGINE_BUILD_DEBUG"

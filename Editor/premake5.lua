@@ -5,6 +5,7 @@ project "Editor"
 	staticruntime "off"
 
 	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+	modules_dir = "vendor/modules"
 
 	targetdir ("%{wks.location}/bin/" .. outputdir)
 	objdir ("%{wks.location}/bin-int/" .. outputdir)
@@ -12,7 +13,13 @@ project "Editor"
 	files
 	{
 		"src/**.h",
-		"src/**.cpp"
+		"src/**.cpp",
+		"%{modules_dir}/ImGui/backends/imgui_impl_glfw.cpp",
+		"%{modules_dir}/ImGuizmo/ImGuizmo.cpp",
+
+        -- If using OpenGL
+		"%{modules_dir}/ImGui/backends/imgui_impl_opengl3.cpp"
+
 	}
 
 	includedirs
@@ -44,7 +51,9 @@ project "Editor"
 	defines
 	{
 		"__EDITOR__",
-		"ENGINE_LINK_DLL"
+		"GLFW_DLL",
+		"ENGINE_LINK_DLL",
+		"IMGUI_DEFINE_MATH_OPERATORS"
 	}
 
 	filter "files:vendor/ImGuizmo/**.cpp"

@@ -1,5 +1,5 @@
 project "glfw"
-	kind "StaticLib"
+	kind "SharedLib"
 	language "C"
 	staticruntime "off"
 
@@ -26,6 +26,11 @@ project "glfw"
 		"src/platform.c",
 		"src/vulkan.c",
 		"src/window.c",
+	}
+
+	defines
+	{
+		"_GLFW_BUILD_DLL"
 	}
 
 	filter "system:linux"
