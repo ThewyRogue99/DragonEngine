@@ -2,19 +2,18 @@
 #include "RendererAPI.h"
 
 #include "Platform/OpenGL/OpenGLRendererAPI.h"
+#include "Platform/Vulkan/VulkanRendererAPI.h"
 
 namespace Engine
 {
-	RendererAPI::API RendererAPI::m_API = RendererAPI::API::None;
-
-	RendererAPI* RendererAPI::Create(API api)
+	Ref<RendererAPI> RendererAPI::Create(API api)
 	{
-		m_API = api;
-
-		switch (m_API)
+		switch (api)
 		{
 		case RendererAPI::API::OpenGL:
-			return new OpenGLRendererAPI();
+			return CreateRef<OpenGLRendererAPI>();
+		case RendererAPI::API::Vulkan:
+			return CreateRef<VulkanRendererAPI>();
 		default:
 			return nullptr;
 		}

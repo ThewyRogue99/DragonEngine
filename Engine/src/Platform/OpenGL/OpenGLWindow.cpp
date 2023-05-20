@@ -170,10 +170,7 @@ namespace Engine
 
 	void OpenGLWindow::SetVSync(bool Enabled)
 	{
-		if (Enabled)
-			glfwSwapInterval(1);
-		else
-			glfwSwapInterval(0);
+		glfwSwapInterval(1 & (int)Enabled);
 
 		Data.VSync = Enabled;
 	}

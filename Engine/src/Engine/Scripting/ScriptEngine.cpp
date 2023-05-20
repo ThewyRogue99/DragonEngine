@@ -13,8 +13,9 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/attrdefs.h>
 
+// TODO: Change these paths from Editor
 #if defined(ENGINE_BUILD_DEBUG) | defined(ENGINE_BUILD_RELEASE)
-	#define MONO_PATH "../vendor/lib"
+	#define MONO_PATH "../Engine/vendor/modules/mono/bin"
 #else
 	#define MONO_PATH "lib"
 #endif

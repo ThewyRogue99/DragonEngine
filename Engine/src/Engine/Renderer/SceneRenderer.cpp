@@ -25,7 +25,7 @@ namespace Engine
 		}
 		CameraUniformBuffer->SetData(&ViewProjection, sizeof(ViewProjection));
 
-		RendererAPI* API = Renderer::GetRendererAPI();
+		Ref<RendererAPI> API = Renderer::GetRendererAPI();
 
 		API->SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1));
 		API->Clear(FramebufferRef);

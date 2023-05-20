@@ -2,13 +2,13 @@
 #include "Platform/OpenGL/OpenGLVertexArray.h"
 
 #include "Engine/Debug/Assert.h"
-#include "RendererAPI.h"
+#include "Renderer.h"
 
 namespace Engine
 {
 	Ref<VertexArray> VertexArray::Create()
 	{
-		switch (RendererAPI::GetAPI())
+		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::OpenGL: return CreateRef<OpenGLVertexArray>();
 			default:

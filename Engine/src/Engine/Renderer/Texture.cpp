@@ -2,7 +2,7 @@
 #include "Texture.h"
 
 #include "Engine/Debug/Assert.h"
-#include "RendererAPI.h"
+#include "Renderer.h"
 
 #include "Platform/OpenGL/OpenGLTexture.h"
 
@@ -10,7 +10,7 @@ namespace Engine
 {
 	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height, uint32_t channels)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::OpenGL: return CreateRef<OpenGLTexture2D>(width, height, channels);
 		default:

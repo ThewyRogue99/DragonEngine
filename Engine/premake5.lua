@@ -34,7 +34,8 @@ project "Engine"
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.mono}",
 		"%{IncludeDir.uuid_v4}",
-		"%{IncludeDir.OpenAL_Soft}"
+		"%{IncludeDir.OpenAL_Soft}",
+		"%{IncludeDir.vulkan}"
 	}
 
 	links
@@ -45,7 +46,8 @@ project "Engine"
 		"Box2D",
 		"OpenAL-Soft",
 		"opengl32.lib",
-		"%{Library.mono}"
+		"%{Library.mono}",
+		"%{Library.vulkan}"
 	}
 
 	defines

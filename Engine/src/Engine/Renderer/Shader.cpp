@@ -3,7 +3,7 @@
 
 #include "Engine/Debug/Assert.h"
 
-#include "RendererAPI.h"
+#include "Renderer.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -13,7 +13,7 @@ namespace Engine
 {
 	Ref<Shader> Shader::Create(const WString& ShaderName, const CString& VertexSource, const CString& FragmentSource, bool isFilePath)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::OpenGL:
 			{

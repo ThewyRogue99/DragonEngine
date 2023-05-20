@@ -18,24 +18,25 @@ namespace Engine
 		DE_ERROR(OpenGLRendererAPI, "GLFW Error ({0}): {1}", error, description);
 	}
 
-	void OpenGLRendererAPI::Init()
+	OpenGLRendererAPI::OpenGLRendererAPI() : RendererAPI(API::OpenGL)
 	{
-		{
-			DE_PROFILE_SCOPE("GLFW Init");
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		DE_ASSERT(status, "Could not initialize GLAD!");
 
-			int success = glfwInit();
-			DE_ASSERT(success, "Could not initialize GLFW!");
-			if (!success) return;
+		DE_INFO(OpenGLContext, "OpenGL Renderer: {0} {1}", (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
+		DE_INFO(OpenGLContext, "Vendor: {0}", (char*)glGetString(GL_VENDOR));
+		DE_INFO(OpenGLContext, "Renderer: {0}", (char*)glGetString(GL_RENDERER));
+		DE_INFO(OpenGLContext, "Version: {0}", (char*)glGetString(GL_VERSION));
 
-			glfwSetErrorCallback(GLFWErrorCallback);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			DE_INFO(OpenGLRendererAPI, "Successfully initialized OpenGLRendererAPI");
-		}
+		glEnable(GL_DEPTH_TEST);
 	}
 
-	void OpenGLRendererAPI::Shutdown()
+	OpenGLRendererAPI::~OpenGLRendererAPI()
 	{
-		glfwTerminate();
+		
 	}
 
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)

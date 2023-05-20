@@ -3,35 +3,35 @@
 
 namespace Engine
 {
-	static bool bIsInit = false;
-
-	static RendererAPI* API_Instance = nullptr;
+	static Ref<RendererAPI> API_Instance = nullptr;
 	static Ref<Framebuffer> ActiveFramebufferRef = nullptr;
+	static RendererAPI::API m_API = RendererAPI::API::None;
+
+	void Renderer::SetAPI(RendererAPI::API API)
+	{
+		m_API = API;
+	}
+
+	RendererAPI::API Renderer::GetAPI()
+	{
+		return m_API;
+	}
 
 	void Renderer::Init()
 	{
-		if (!bIsInit)
+		if (!API_Instance)
 		{
-			API_Instance = RendererAPI::Create(RendererAPI::API::OpenGL);
-
-			API_Instance->Init();
-
-			bIsInit = true;
+			API_Instance = RendererAPI::Create(m_API);
 		}
 	}
 
 	void Renderer::Shutdown()
 	{
-		if (bIsInit)
+		if (API_Instance)
 		{
 			EndFrame();
 
-			API_Instance->Shutdown();
-
-			delete API_Instance;
 			API_Instance = nullptr;
-
-			bIsInit = false;
 		}
 	}
 
@@ -47,7 +47,7 @@ namespace Engine
 
 	void Renderer::SetLineWidth(float Width)
 	{
-		if (bIsInit)
+		if (API_Instance)
 		{
 			API_Instance->SetLineWidth(Width);
 		}
@@ -55,7 +55,7 @@ namespace Engine
 
 	void Renderer::DrawIndexed(Ref<Shader> ShaderRef, Ref<VertexArray> VertexArrayRef, uint32_t IndexCount)
 	{
-		if (bIsInit)
+		if (API_Instance)
 		{
 			IndexedDrawProperties Props;
 			Props.ShaderRef = ShaderRef;
@@ -69,7 +69,7 @@ namespace Engine
 
 	void Renderer::DrawLine(Ref<Shader> ShaderRef, Ref<VertexArray> VertexArrayRef, uint32_t VertexCount)
 	{
-		if (bIsInit)
+		if (API_Instance)
 		{
 			LineDrawProperties Props;
 			Props.ShaderRef = ShaderRef;
@@ -81,7 +81,7 @@ namespace Engine
 		}
 	}
 
-	RendererAPI* Renderer::GetRendererAPI()
+	const Ref<RendererAPI>& Renderer::GetRendererAPI()
 	{
 		return API_Instance;
 	}

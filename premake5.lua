@@ -35,6 +35,7 @@ IncludeDir["Box2D"] = "%{wks.location}/Engine/vendor/modules/Box2D/include"
 IncludeDir["mono"] = "%{wks.location}/Engine/vendor/modules/mono/include"
 IncludeDir["uuid_v4"] = "%{wks.location}/Engine/vendor/modules/uuid_v4"
 IncludeDir["OpenAL_Soft"] = "%{wks.location}/Engine/vendor/modules/OpenAL-Soft/include"
+IncludeDir["vulkan"] = "%{wks.location}/Engine/vendor/modules/vulkan/include"
 
 -- Editor Includes
 IncludeDir["stb_image"] = "%{wks.location}/Editor/vendor/modules/stb_image"
@@ -45,10 +46,12 @@ IncludeDir["AudioToWav"] = "%{wks.location}/Editor/vendor/modules/AudioToWav/inc
 IncludeDir["IconFontCppHeaders"] = "%{wks.location}/Editor/vendor/modules/IconFontCppHeaders"
 
 LibraryDir = { }
-LibraryDir["mono"] = "%{wks.location}/vendor/lib/mono"
+LibraryDir["mono"] = "%{wks.location}/Engine/vendor/modules/mono/bin"
+LibraryDir["vulkan"] = "%{wks.location}/Engine/vendor/modules/vulkan/bin"
 
 Library = { }
 Library["mono"] = "%{LibraryDir.mono}/libmono-static-sgen.lib"
+Library["vulkan"] = "%{LibraryDir.vulkan}/vulkan.lib"
 
 group "Dependencies"
 	include "Engine/vendor/modules/glfw"

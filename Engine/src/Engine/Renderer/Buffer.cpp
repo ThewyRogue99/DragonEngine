@@ -2,7 +2,7 @@
 #include "Buffer.h"
 
 #include "Engine/Debug/Assert.h"
-#include "RendererAPI.h"
+#include "Renderer.h"
 
 #include "Platform/OpenGL/OpenGLBuffer.h"
 
@@ -44,13 +44,8 @@ namespace Engine
 
 	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None:
-			{
-				DE_ASSERT(false, "No renderer API is used for renderer!");
-				return nullptr;
-			}
 			case RendererAPI::API::OpenGL:
 			{
 				return CreateRef<OpenGLVertexBuffer>(size);
@@ -65,16 +60,11 @@ namespace Engine
 
 	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None:
-			{
-				DE_ASSERT(false, "No renderer API is used for renderer!");
-				return nullptr;
-			}
 			case RendererAPI::API::OpenGL:
 			{
-				return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+				return CreateRef<OpenGLVertexBuffer>(vertices, size);
 			}
 			default:
 			{
@@ -86,16 +76,11 @@ namespace Engine
 
 	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::None:
-			{
-				DE_ASSERT(false, "No renderer API is used for renderer!");
-				return nullptr;
-			}
 			case RendererAPI::API::OpenGL:
 			{
-				return std::make_shared<OpenGLIndexBuffer>(indices, count);
+				return CreateRef<OpenGLIndexBuffer>(indices, count);
 			}
 			default:
 			{

@@ -9,11 +9,17 @@
 #include "Engine/Audio/AudioEngine.h"
 #include "Engine/Scripting/ScriptEngine.h"
 
+#include <GLFW/glfw3.h>
 #include <filesystem>
 
 namespace Engine
 {
 	Application* Application::Instance = nullptr;
+
+	static void GLFWErrorCallback(int error, const char* description)
+	{
+		DE_ERROR(GLFW, "GLFW Error ({0}): {1}", error, description);
+	}
 
 	Application::Application(const ApplicationSpecification& Specs) : AppSpecification(Specs)
 	{
@@ -24,15 +30,29 @@ namespace Engine
 
 		bIsRunning = true;
 
+		{
+			DE_PROFILE_SCOPE("GLFW Init");
+
+			int success = glfwInit();
+			DE_ASSERT(success, "Could not initialize GLFW!");
+
+			glfwSetErrorCallback(GLFWErrorCallback);
+
+			DE_INFO(OpenGLRendererAPI, "Successfully initialized OpenGLRendererAPI");
+		}
+
 		CString NameUTF8 = TypeUtils::FromUTF16(AppSpecification.Name.c_str());
 
 		if (!AppSpecification.WorkingDirectory.empty())
 			std::filesystem::current_path(AppSpecification.WorkingDirectory);
 
-		Renderer::Init();
+		// TODO: This should be changed with some settings
+		Renderer::SetAPI(RendererAPI::API::OpenGL);
 
 		AppWindow = Window::Create(WindowProps(NameUTF8.c_str()));
 		AppWindow->OnEvent().AddCallback(BIND_CLASS_FN(Application::OnEvent));
+
+		Renderer::Init();
 
 		Renderer2D::Init();
 
@@ -44,7 +64,7 @@ namespace Engine
 
 	Application::~Application()
 	{
-		
+		glfwTerminate();
 	}
 
 	void Application::PushLayer(Layer* layer)

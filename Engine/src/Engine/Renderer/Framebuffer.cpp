@@ -3,7 +3,7 @@
 
 #include "Engine/Debug/Assert.h"
 
-#include "RendererAPI.h"
+#include "Renderer.h"
 
 #include "Platform/OpenGL/OpenGLFramebuffer.h"
 
@@ -11,9 +11,12 @@ namespace Engine
 {
 	Ref<Framebuffer> Framebuffer::Create(const FramebufferSpecification& props)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::API::OpenGL: return CreateRef<OpenGLFramebuffer>(props);
+			case RendererAPI::API::OpenGL:
+			{
+				return CreateRef<OpenGLFramebuffer>(props);
+			}
 			default:
 			{
 				DE_ASSERT(false, "Unknown Renderer API");

@@ -7,8 +7,8 @@ namespace Engine
 	class OpenGLRendererAPI : public RendererAPI
 	{
 	public:
-		ENGINE_API virtual void Init() override;
-		ENGINE_API virtual void Shutdown() override;
+		ENGINE_API OpenGLRendererAPI();
+		ENGINE_API ~OpenGLRendererAPI();
 
 		ENGINE_API virtual void SetClearColor(const glm::vec4& color) override;
 		ENGINE_API virtual void Clear(Ref<Framebuffer> FramebufferRef) override;

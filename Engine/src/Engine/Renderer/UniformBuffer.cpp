@@ -3,13 +3,13 @@
 
 #include "Engine/Debug/Assert.h"
 
-#include "RendererAPI.h"
+#include "Renderer.h"
 
 namespace Engine
 {
 	Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::OpenGL:
 			{

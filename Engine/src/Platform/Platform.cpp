@@ -11,12 +11,7 @@ namespace Engine
 	{
 		float GetTime()
 		{
-			switch (RendererAPI::GetAPI())
-			{
-				case RendererAPI::API::OpenGL: return (float)glfwGetTime();
-				default:
-					return 0.f;
-			}
+			return (float)glfwGetTime();
 		}
 	}
 }
