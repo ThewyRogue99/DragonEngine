@@ -245,7 +245,7 @@ namespace Engine
 
 					if (m_TextFilter.PassFilter(cName.c_str()))
 					{
-						content.Draw(idx);
+						content.Draw((unsigned int)idx);
 						ImGui::ItemSize(ImVec2(0.f, 20.f));
 
 						ImGui::NextColumn();
@@ -253,7 +253,7 @@ namespace Engine
 				}
 				else
 				{
-					content.Draw(idx);
+					content.Draw((unsigned int)idx);
 					ImGui::ItemSize(ImVec2(0.f, 20.f));
 
 					ImGui::NextColumn();
@@ -465,7 +465,7 @@ namespace Engine
 		ImGui::EndChild();
 	}
 
-	void ContentBrowserPanel::BrowserContent::Draw(int ContentIndex)
+	void ContentBrowserPanel::BrowserContent::Draw(unsigned int ContentIndex)
 	{
 		if (!ContentIcon)
 		{

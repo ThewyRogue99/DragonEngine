@@ -20,6 +20,16 @@ namespace Engine
 
 	OpenGLRendererAPI::OpenGLRendererAPI() : RendererAPI(API::OpenGL)
 	{
+		
+	}
+
+	OpenGLRendererAPI::~OpenGLRendererAPI()
+	{
+		
+	}
+
+	void OpenGLRendererAPI::Init()
+	{
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		DE_ASSERT(status, "Could not initialize GLAD!");
 
@@ -32,11 +42,6 @@ namespace Engine
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glEnable(GL_DEPTH_TEST);
-	}
-
-	OpenGLRendererAPI::~OpenGLRendererAPI()
-	{
-		
 	}
 
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)

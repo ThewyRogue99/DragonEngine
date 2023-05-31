@@ -2,7 +2,8 @@
 #include "Engine/Core/Core.h"
 
 typedef struct VkInstance_T* VkInstance;
-typedef struct VkSurfaceKHR_T* VkSurfaceKHR;
+
+#include <vector>
 
 namespace Engine
 {
@@ -19,11 +20,9 @@ namespace Engine
 
 		ENGINE_API ~VulkanApplication();
 
-		// Returns the best GPU for rendering
-		ENGINE_API VulkanPhysicalDevice GetMainPhysicalDevice() const;
-		ENGINE_API VkSurfaceKHR CreateWindowSurface() const;
-
-		ENGINE_API void DestroyWindowSurface(VkSurfaceKHR Surface) const;
+		inline VkInstance GetInstance() const { return AppInstance; }
+		ENGINE_API std::vector<VulkanPhysicalDevice> GetAvailableDevices() const;
+		ENGINE_API std::vector<VulkanPhysicalDevice> GetSuitableDevices() const;
 
 		ENGINE_API static Ref<VulkanApplication> Create();
 

@@ -5,6 +5,8 @@
 
 #include "Engine/Core/CallbackDispatcher.h"
 
+#include <glm/vec2.hpp>
+
 namespace Engine
 {
 	struct WindowProps
@@ -27,8 +29,11 @@ namespace Engine
 
 		virtual void OnUpdate() = 0;
 
-		virtual unsigned int GetWidth() const = 0;
-		virtual unsigned int GetHeight() const = 0;
+		// Returns the size of the window in screen coordinates
+		virtual glm::vec2 GetSize() const = 0;
+
+		// Returns the size of the window frame in pixels
+		virtual glm::vec2 GetFrameSize() const = 0;
 
 		inline CallbackDispatcher<void, Event&>::CallbackHandle OnEvent()
 			{ return OnEventDispatch.GetHandle(); }

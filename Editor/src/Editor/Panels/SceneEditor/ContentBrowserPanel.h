@@ -48,7 +48,7 @@ namespace Engine
 			BrowserContent(const DirectoryEntry& entry)
 				: Entry(entry), Type(entry.GetType()) { }
 
-			void Draw(int ContentIndex);
+			void Draw(unsigned int ContentIndex);
 
 			void StartRename();
 			void StopRename();

@@ -67,6 +67,8 @@ namespace Engine
             return "Project";
         case SettingsCategory::Appearance:
             return "Appearance";
+        default:
+            return nullptr;
         }
     }
 }

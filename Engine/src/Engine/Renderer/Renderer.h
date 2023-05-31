@@ -25,6 +25,6 @@ namespace Engine
 		ENGINE_API static void DrawIndexed(Ref<Shader> ShaderRef, Ref<VertexArray> VertexArrayRef, uint32_t IndexCount = 0);
 		ENGINE_API static void DrawLine(Ref<Shader> ShaderRef, Ref<VertexArray> VertexArrayRef, uint32_t VertexCount = 0);
 
-		ENGINE_API static const Ref<RendererAPI>& GetRendererAPI();
+		ENGINE_API static const Ref<RendererAPI> GetRendererAPI();
 	};
 }

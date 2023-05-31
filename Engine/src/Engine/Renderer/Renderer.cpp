@@ -1,6 +1,8 @@
 #include "depch.h"
 #include "Renderer.h"
 
+#include "Engine/Debug/Assert.h"
+
 namespace Engine
 {
 	static Ref<RendererAPI> API_Instance = nullptr;
@@ -19,10 +21,11 @@ namespace Engine
 
 	void Renderer::Init()
 	{
-		if (!API_Instance)
-		{
-			API_Instance = RendererAPI::Create(m_API);
-		}
+		DE_ASSERT(m_API != RendererAPI::API::None, "API is not set.");
+		DE_ASSERT(!API_Instance, "A RendererAPI is already running");
+
+		API_Instance = RendererAPI::Create(m_API);
+		API_Instance->Init();
 	}
 
 	void Renderer::Shutdown()
@@ -81,7 +84,7 @@ namespace Engine
 		}
 	}
 
-	const Ref<RendererAPI>& Renderer::GetRendererAPI()
+	const Ref<RendererAPI> Renderer::GetRendererAPI()
 	{
 		return API_Instance;
 	}

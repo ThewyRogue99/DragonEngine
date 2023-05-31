@@ -1,47 +1,65 @@
 #pragma once
 #include "Engine/Core/Core.h"
+#include "Engine/Types/Types.h"
 
 #include "VulkanQueue.h"
-
-typedef struct VkPhysicalDevice_T* VkPhysicalDevice;
-typedef struct VkDevice_T* VkDevice;
-
-struct VkPhysicalDeviceFeatures;
 
 #include <optional>
 #include <initializer_list>
 
+typedef struct VkPhysicalDevice_T* VkPhysicalDevice;
+typedef struct VkDevice_T* VkDevice;
+
+typedef struct VkPhysicalDeviceProperties VkPhysicalDeviceProperties;
+typedef struct VkPhysicalDeviceFeatures VkPhysicalDeviceFeatures;
+typedef struct VkSurfaceCapabilitiesKHR VkSurfaceCapabilitiesKHR;
+typedef struct VkSurfaceFormatKHR VkSurfaceFormatKHR;
+
+typedef enum VkPresentModeKHR VkPresentModeKHR;
+
 namespace Engine
 {
-	struct QueueCreateInfo
+	class VulkanQueue;
+	class VulkanSwapChain;
+	class VulkanLogicalDevice;
+	class VulkanWindowSurface;
+
+	typedef struct VulkanQueueFamily VulkanQueueFamily;
+	typedef struct PhysicalDeviceSurfaceProperties PhysicalDeviceSurfaceProperties;
+
+	typedef struct QueueCreateInfo
 	{
-		uint32_t FamilyIndex;
+		VulkanQueueFamily QueueFamily;
 		float Priority = 1.f;
-	};
+	} QueueCreateInfo;
 
 	class VulkanPhysicalDevice
 	{
 	public:
-		VulkanPhysicalDevice(VkPhysicalDevice Instance) : DeviceInstance(Instance) { }
+		VulkanPhysicalDevice() = default;
+		VulkanPhysicalDevice(const VulkanPhysicalDevice&) = default;
 
-		struct QueueFamilyIndices;
+		ENGINE_API std::vector<VulkanQueueFamily> GetQueueFamilies() const;
 
-		ENGINE_API QueueFamilyIndices FindQueueFamilies() const;
+		ENGINE_API bool IsDeviceSuitable() const;
+		ENGINE_API bool IsWindowSurfaceSupported(Ref<VulkanWindowSurface> WindowSurface) const;
+		inline bool IsVaild() const { return DeviceInstance; }
+
+		VkPhysicalDevice GetInstance() const { return DeviceInstance; }
+		ENGINE_API CString GetDeviceName() const;
+		ENGINE_API VkPhysicalDeviceProperties GetDeviceProperties() const;
+		ENGINE_API VkPhysicalDeviceFeatures GetDeviceFeatures() const;
+		ENGINE_API PhysicalDeviceSurfaceProperties GetPhysicalDeviceSurfaceProperties(Ref<VulkanWindowSurface> WindowSurface) const;
 
 		ENGINE_API Ref<VulkanLogicalDevice> CreateLogicalDevice(std::initializer_list<QueueCreateInfo> QueueCreateInfos);
 
-		ENGINE_API const char* GetDeviceName() const;
+		friend class VulkanApplication;
 
-	public:
-		struct QueueFamilyIndices
-		{
-			std::optional<uint32_t> GraphicsFamily;
+	private:
+		VulkanPhysicalDevice(VkPhysicalDevice Instance) : DeviceInstance(Instance) { }
 
-			bool IsComplete()
-			{
-				return GraphicsFamily.has_value();
-			}
-		};
+		ENGINE_API const std::vector<const char*> GetRequiredDeviceExtensions() const;
+		ENGINE_API bool CheckDeviceExtensionSupport() const;
 
 	private:
 		VkPhysicalDevice DeviceInstance = nullptr;
@@ -53,17 +71,20 @@ namespace Engine
 		struct phold;
 
 	public:
-		explicit VulkanLogicalDevice(const phold&, VkDevice Instance)
-			: VulkanLogicalDevice(Instance) { }
+		explicit VulkanLogicalDevice(const phold&, const VulkanPhysicalDevice& PhysicalDevice, VkDevice Instance)
+			: VulkanLogicalDevice(PhysicalDevice, Instance) { }
 
 		ENGINE_API ~VulkanLogicalDevice();
 
+		VkDevice GetInstance() const { return DeviceInstance; }
+		VulkanPhysicalDevice GetPhysicalDevice() const { return _PhysicalDevice; }
 		ENGINE_API VulkanQueue GetQueue(uint32_t QueueFamilyIndex);
 
 		friend class VulkanPhysicalDevice;
 
 	private:
-		VulkanLogicalDevice(VkDevice Instance) : DeviceInstance(Instance) { }
+		VulkanLogicalDevice(const VulkanPhysicalDevice& PhysicalDevice, VkDevice Instance)
+			: _PhysicalDevice(PhysicalDevice), DeviceInstance(Instance) { }
 
 		struct phold {
 			explicit phold(int) {}
@@ -71,5 +92,6 @@ namespace Engine
 
 	private:
 		VkDevice DeviceInstance = nullptr;
+		VulkanPhysicalDevice _PhysicalDevice;
 	};
 }

@@ -16,9 +16,9 @@ namespace Engine
 
 		ENGINE_API void OnUpdate() override;
 
-		inline unsigned int GetWidth() const override { return Data.Width; }
+		inline glm::vec2 GetSize() const override { return { Data.Width, Data.Height }; }
 
-		inline unsigned int GetHeight() const override { return Data.Height; }
+		ENGINE_API glm::vec2 GetFrameSize() const override;
 
 		ENGINE_API void SetVSync(bool Enabled) override;
 

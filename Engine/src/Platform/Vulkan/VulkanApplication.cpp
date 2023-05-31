@@ -2,7 +2,6 @@
 #include "VulkanApplication.h"
 
 #include "Engine/Debug/Assert.h"
-#include "Engine/Core/Application.h"
 
 #include "VulkanDevice.h"
 
@@ -99,81 +98,47 @@ namespace Engine
 		vkDestroyInstance(AppInstance, nullptr);
 	}
 
-	static VkPhysicalDevice PickPhysicalDevice(const std::vector<VkPhysicalDevice>& CompatibleDevices)
-	{
-		DE_ASSERT(CompatibleDevices.size() > 0, "No compatible GPU found");
-
-		for (auto device : CompatibleDevices)
-		{
-			// Get device properties
-			VkPhysicalDeviceProperties deviceProperties;
-			vkGetPhysicalDeviceProperties(device, &deviceProperties);
-
-			if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-				return device;
-		}
-
-		return CompatibleDevices[0];
-	}
-
-	VulkanPhysicalDevice VulkanApplication::GetMainPhysicalDevice() const
+	std::vector<VulkanPhysicalDevice> VulkanApplication::GetAvailableDevices() const
 	{
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(AppInstance, &deviceCount, nullptr);
 
-		DE_ASSERT(deviceCount > 0, "Failed to find a GPU with Vulkan support");
+		std::vector<VkPhysicalDevice> DeviceHandles(deviceCount);
 
-		if (deviceCount == 1)
+		vkEnumeratePhysicalDevices(AppInstance, &deviceCount, DeviceHandles.data());
+
+		std::vector<VulkanPhysicalDevice> Devices;
+
+		for (auto& Handle : DeviceHandles)
 		{
-			VkPhysicalDevice device;
-			vkEnumeratePhysicalDevices(AppInstance, &deviceCount, &device);
+			VulkanPhysicalDevice Device(Handle);
 
-			return VulkanPhysicalDevice(device);
+			Devices.push_back(Device);
 		}
 
-		std::vector<VkPhysicalDevice> Devices(deviceCount);
-		std::vector<VkPhysicalDevice> CompatibleDevices;
+		if (Devices.size() <= 0)
+			DE_WARN(VulkanApplication, "No GPU with Vulkan support found");
 
-		vkEnumeratePhysicalDevices(AppInstance, &deviceCount, Devices.data());
-
-		// Set compatible devices
-		for (uint32_t i = 0; i < deviceCount; i++)
-		{
-			VkPhysicalDevice device = Devices[i];
-
-			// Get device features
-			VkPhysicalDeviceFeatures deviceFeatures;
-			vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
-
-			VulkanPhysicalDevice DeviceHandle(device);
-
-			if (deviceFeatures.geometryShader && DeviceHandle.FindQueueFamilies().IsComplete())
-				CompatibleDevices.push_back(device);
-		}
-
-		return VulkanPhysicalDevice(PickPhysicalDevice(CompatibleDevices));
-	}
-
-	VkSurfaceKHR VulkanApplication::CreateWindowSurface() const
-	{
-		Application& app = Application::Get();
-		Ref<Window> appWindow = app.GetWindow();
-
-		VkSurfaceKHR surface;
-		if (glfwCreateWindowSurface(AppInstance, (GLFWwindow*)appWindow->GetNativeWindow(), nullptr, &surface) != VK_SUCCESS) {
-			return nullptr;
-		}
-
-		return surface;
-	}
-
-	void VulkanApplication::DestroyWindowSurface(VkSurfaceKHR Surface) const
-	{
-		vkDestroySurfaceKHR(AppInstance, Surface, nullptr);
+		return Devices;
 	}
 
 	Ref<VulkanApplication> VulkanApplication::Create()
 	{
 		return CreateRef<VulkanApplication>(phold{ 0 });
+	}
+
+	std::vector<VulkanPhysicalDevice> VulkanApplication::GetSuitableDevices() const
+	{
+		std::vector<VulkanPhysicalDevice> AvailableDevices = GetAvailableDevices();
+
+		std::vector<VulkanPhysicalDevice> SuitableDevices;
+
+		for (auto& Device : AvailableDevices)
+		{
+			if (Device.IsDeviceSuitable())
+				SuitableDevices.emplace_back(Device);
+		}
+
+		return SuitableDevices;
 	}
 }

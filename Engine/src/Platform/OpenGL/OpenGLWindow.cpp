@@ -168,6 +168,14 @@ namespace Engine
 		}
 	}
 
+	glm::vec2 OpenGLWindow::GetFrameSize() const
+	{
+		int width, height;
+		glfwGetFramebufferSize(NativeWindow, &width, &height);
+
+		return { width, height };
+	}
+
 	void OpenGLWindow::SetVSync(bool Enabled)
 	{
 		glfwSwapInterval(1 & (int)Enabled);

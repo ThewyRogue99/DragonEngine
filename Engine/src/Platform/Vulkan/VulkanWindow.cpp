@@ -33,6 +33,14 @@ namespace Engine
 		
 	}
 
+	glm::vec2 VulkanWindow::GetFrameSize() const
+	{
+		int width, height;
+		glfwGetFramebufferSize(NativeWindow, &width, &height);
+
+		return { width, height };
+	}
+
 	void VulkanWindow::SetVSync(bool Enabled)
 	{
 		glfwSwapInterval(1 & (int)Enabled);
@@ -73,6 +81,15 @@ namespace Engine
 				nullptr
 			);
 		}
+
+		int widthScreen, heightScreen;
+		int widthPixels, heightPixels;
+
+		// Retrieve the framebuffer size
+		glfwGetFramebufferSize(NativeWindow, &widthPixels, &heightPixels);
+
+		// Retrieve the screen size
+		glfwGetWindowSize(NativeWindow, &widthScreen, &heightScreen);
 
 		glfwSetWindowUserPointer(NativeWindow, this);
 		SetVSync(true);
