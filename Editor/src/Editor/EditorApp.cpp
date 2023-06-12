@@ -1,6 +1,5 @@
 #include <Engine/Core/ApplicationCore.h>
-
-#include "Debug/EditorConsole.h"
+#include <Engine/Debug/Console.h>
 
 #include "Editor/Tools/EditorTool.h"
 #include "EditorLayer.h"
@@ -49,7 +48,7 @@ namespace Engine
 		Specs.Name = TEXT("Dragon Engine");
 		Specs.CommandLineArgs = args;
 
-		Ref<EditorConsole> console = CreateRef<EditorConsole>();
+		Ref<Console> console = CreateRef<Console>();
 		Log::SetConsole(console);
 
 		return new EditorApp(Specs);

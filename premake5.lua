@@ -25,7 +25,7 @@ workspace "DragonEngine"
 IncludeDir = { }
 
 -- Engine Includes
-IncludeDir["spdlog"] = "%{wks.location}/Engine/vendor/modules/spdlog/include"
+IncludeDir["fmt"] = "%{wks.location}/Engine/vendor/modules/fmt/include"
 IncludeDir["glfw"] = "%{wks.location}/Engine/vendor/modules/glfw/include"
 IncludeDir["glad"] = "%{wks.location}/Engine/vendor/modules/glad/include"
 IncludeDir["glm"] = "%{wks.location}/Engine/vendor/modules/glm"

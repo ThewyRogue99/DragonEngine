@@ -52,18 +52,12 @@ namespace Engine
     void ConsolePanel::OnCreate()
     {
         SetPanelStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.f, 5.f));
+
+        AttachedConsole = Log::GetConsole();
     }
 
 	void ConsolePanel::OnRender(float DeltaTime)
 	{
-        if (!LogList)
-        {
-            Ref<EditorConsole> AttachedConsole = std::dynamic_pointer_cast<EditorConsole>(Log::GetConsole());
-
-            if (AttachedConsole)
-                LogList = &(AttachedConsole->GetLogs());
-        }
-
         DrawFilterBar();
 
         DrawConsole();
@@ -113,8 +107,9 @@ namespace Engine
 
     void ConsolePanel::DrawConsole()
     {
-        if (LogList)
+        if (AttachedConsole)
         {
+            auto& LogBuffer = AttachedConsole->GetStream().GetLogBuffer();
             const float footerHeightToReserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
 
             ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.1f, 0.1f, 0.1f, 1.f));
@@ -127,17 +122,17 @@ namespace Engine
                 ImGui::PushTextWrapPos();
 
                 // Display items.
-                for (const auto& item : *LogList)
+                for (const auto& item : LogBuffer)
                 {
                     // Exit if word is filtered.
-                    if (!m_TextFilter.PassFilter(item.LogString.c_str()))
+                    if (!m_TextFilter.PassFilter(item->LogString.c_str()))
                         continue;
 
                     std::stringstream ss;
-                    ss << "[" << GetLogLevelName(item.Level) << "]" <<
-                        "[" << item.LoggerName << "]" << item.Timestamp << ": " << item.LogString;
+                    ss << "[" << GetLogLevelName(item->Level) << "]" <<
+                        "[" << item->LoggerName << "]" << item->Timestamp << ": " << item->LogString;
 
-                    ImGui::TextColored(ColorPalette[GetLogLevelColor(item.Level)], ss.str().c_str());
+                    ImGui::TextColored(ColorPalette[GetLogLevelColor(item->Level)], ss.str().c_str());
                 }
 
                 ImGui::PopTextWrapPos();
@@ -159,7 +154,6 @@ namespace Engine
 
             ImGui::EndChild();
         }
-
     }
 
     void ConsolePanel::DrawFilterBar()
@@ -187,7 +181,7 @@ namespace Engine
             ImGui::PushItemWidth(-ImGui::GetStyle().ItemSpacing.x * 5.f);
             if (ImGui::InputText("Input", &Buffer, inputTextFlags))
             {
-                CommandSystem::RunCommand(Buffer);
+                CommandSystem::RunCommandAsync(Buffer);
 
                 reclaimFocus = true;
                 ScrollToBottom();

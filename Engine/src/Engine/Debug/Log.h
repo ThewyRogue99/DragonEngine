@@ -3,8 +3,12 @@
 
 #include "Engine/Debug/Console.h"
 
+#include <vector>
+
 namespace Engine
 {
+	using LogLevel = ConsoleStream::LogLevel;
+
 	class Log
 	{
 	public:
@@ -27,8 +31,8 @@ namespace Engine
 }
 
 // Log Macros
-#define DE_LOG(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, LogLevel::Log, __VA_ARGS__)
-#define DE_INFO(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, LogLevel::Info, __VA_ARGS__)
-#define DE_WARN(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, LogLevel::Warning, __VA_ARGS__)
-#define DE_ERROR(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, LogLevel::Error, __VA_ARGS__)
-#define DE_LOG_COMMAND(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, LogLevel::Command, __VA_ARGS__)
+#define DE_LOG(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, Engine::LogLevel::Log, __VA_ARGS__)
+#define DE_INFO(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, Engine::LogLevel::Info, __VA_ARGS__)
+#define DE_WARN(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, Engine::LogLevel::Warning, __VA_ARGS__)
+#define DE_ERROR(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, Engine::LogLevel::Error, __VA_ARGS__)
+#define DE_LOG_COMMAND(LoggerName, ...) Engine::Log::ConsoleLog(#LoggerName, Engine::LogLevel::Command, __VA_ARGS__)

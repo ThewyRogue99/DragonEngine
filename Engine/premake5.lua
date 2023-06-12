@@ -25,7 +25,7 @@ project "Engine"
 	includedirs
 	{
 		"src",
-		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.fmt}",
 		"%{IncludeDir.glfw}",
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.glm}",
@@ -54,6 +54,7 @@ project "Engine"
 	{
 		"__ENGINE__",
 		"ENGINE_BUILD_DLL",
+		"FMT_HEADER_ONLY",
 		"GLFW_DLL",
 		"GLFW_INCLUDE_NONE",
 		"YAML_CPP_STATIC_DEFINE",

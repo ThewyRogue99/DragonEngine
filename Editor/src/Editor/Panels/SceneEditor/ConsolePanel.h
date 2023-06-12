@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Editor/Panels/EditorPanel.h"
+#include "Engine/Debug/Console.h"
 
-#include "Editor/Debug/EditorConsole.h"
 #include <array>
 
 namespace Engine
@@ -26,13 +26,13 @@ namespace Engine
         void ScrollToBottom() { bShouldScroll = true; }
 
     private:
+        Ref<Console> AttachedConsole = nullptr;
+
         CString Buffer;
 
         bool bShouldScroll = true;
 
         ImGuiTextFilter m_TextFilter;
-
-        const std::vector<Logger::LogData>* LogList = nullptr;
 
         enum COLOR_PALETTE
         {

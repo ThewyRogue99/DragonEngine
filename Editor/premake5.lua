@@ -26,7 +26,7 @@ project "Editor"
 	{
 		"src",
 		"%{wks.location}/Engine/src",
-		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.fmt}",
 		"%{IncludeDir.glfw}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
@@ -53,6 +53,7 @@ project "Editor"
 		"__EDITOR__",
 		"GLFW_DLL",
 		"ENGINE_LINK_DLL",
+		"FMT_HEADER_ONLY",
 		"IMGUI_DEFINE_MATH_OPERATORS"
 	}
 

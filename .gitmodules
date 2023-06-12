@@ -1,6 +1,3 @@
-[submodule "Engine/vendor/modules/spdlog"]
-	path = Engine/vendor/modules/spdlog
-	url = https://github.com/gabime/spdlog
 [submodule "Engine/vendor/modules/glm"]
 	path = Engine/vendor/modules/glm
 	url = https://github.com/g-truc/glm
@@ -28,3 +25,6 @@
 [submodule "Engine/vendor/modules/OpenAL-Soft"]
 	path = Engine/vendor/modules/OpenAL-Soft
 	url = https://github.com/ThewyRogue99/openal-soft
+[submodule "Engine/vendor/modules/fmt"]
+	path = Engine/vendor/modules/fmt
+	url = https://github.com/fmtlib/fmt

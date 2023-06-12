@@ -6,6 +6,8 @@
 
 #ifdef ENGINE_PLATFORM_WINDOWS
 
+#include <Windows.h>
+
 extern Engine::Application* Engine::CreateApplication(ApplicationCommandLineArgs args);
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)

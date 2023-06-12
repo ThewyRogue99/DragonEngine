@@ -9,5 +9,9 @@ namespace Engine
 	{
 	public:
 		static void RunCommand(const CString& Command);
+		static void RunCommandAsync(const CString& Command);
+
+		static void RunSystemCommand(const CString& Command);
+		static void RunSystemCommandAsync(const CString& Command);
 	};
 }

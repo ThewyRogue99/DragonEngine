@@ -8,10 +8,9 @@
 #include <ostream>
 #include <istream>
 
-#pragma warning(push, 0)
-#include <spdlog/spdlog.h>
-#include <spdlog/fmt/bundled/format.h>
-#pragma warning(pop)
+#include <unordered_map>
+
+#include <fmt/format.h>
 
 namespace Engine
 {
@@ -30,7 +29,7 @@ namespace Engine
 		template<typename... Args>
 		CString FormatUTF8(const char* fmt, Args&&... args)
 		{
-			return fmt::vformat(fmt, fmt::make_format_args(std::forward<Args>(args)...));
+			return fmt::format(fmt, std::forward<Args>(args)...);
 		}
 	}
 

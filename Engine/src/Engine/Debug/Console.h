@@ -1,26 +1,91 @@
 #pragma once
-#pragma warning(disable : 4996)
 
 #include "Engine/Core/Core.h"
 #include "Engine/Types/Types.h"
 
 #include "Engine/Core/CallbackDispatcher.h"
 
-#include <ctime>
-#include <string_view>
+#include <vector>
+#include <deque>
+#include <mutex>
 
 namespace Engine
 {
-	enum class LogLevel
+	class ConsoleStream
 	{
-		Command = 0,
-		Log,
-		Warning,
-		Error,
-		Info,
-	};
+	public:
+		ConsoleStream(const ConsoleStream&) = delete;
 
-	class Logger;
+		ENGINE_API ~ConsoleStream();
+
+		friend class Console;
+
+	public:
+		enum class LogLevel
+		{
+			Command = 0,
+			Log,
+			Warning,
+			Error,
+			Info
+		};
+
+		typedef struct LogEntry
+		{
+			LogLevel Level = LogLevel::Log;
+
+			CString Timestamp;
+			CString LoggerName;
+
+			CString LogString;
+
+			uint64_t ThreadID = std::numeric_limits<uint64_t>::max();
+			bool IsActive = false;
+		} LogEntry;
+
+	private:
+		typedef struct LogBeginStruct
+		{
+			CString Timestamp;
+			CString LoggerName;
+		} LogBeginStruct;
+
+	public:
+		ENGINE_API static LogBeginStruct BeginLog(const CString& LoggerName);
+
+		ENGINE_API static std::nullptr_t EndLog();
+
+		ENGINE_API ConsoleStream& operator<<(const CString& str);
+
+		ENGINE_API ConsoleStream& operator<<(std::nullptr_t ptr);
+
+		ENGINE_API ConsoleStream& operator<<(const LogLevel& level);
+
+		ENGINE_API ConsoleStream& operator<<(const LogBeginStruct& data);
+
+		const std::vector<LogEntry*>& GetLogBuffer() const { return LogBuffer; }
+
+	private:
+		ENGINE_API ConsoleStream();
+
+		ENGINE_API bool Thread_IsLogging(uint64_t ThreadID);
+
+		ENGINE_API LogEntry* Thread_GetActiveLogEntry(uint64_t ThreadID);
+		ENGINE_API bool Thread_SetActiveLogEntry(uint64_t ThreadID, LogEntry* NewEntry);
+
+		ENGINE_API uint64_t Thread_GetID();
+
+		ENGINE_API void EndCurrentEntry();
+
+	private:
+		LogEntry* CurrentEntry = nullptr;
+
+		std::vector<LogEntry*> LogBuffer;
+
+		std::deque<LogEntry*> LogEntryQueue;
+
+		std::mutex LogMutex;
+	};
 
 	class Console
 	{
@@ -29,64 +94,22 @@ namespace Engine
 		Console(const WString& AppName)
 			: AppName(AppName) { }
 
-		virtual void OnAttach() = 0;
-
-		virtual void OnDetach() = 0;
-
 		template<typename... Args>
-		void Log(const CString& LoggerName, LogLevel Level, const char* fmt, Args&&... args)
+		void Log(const CString& LoggerName, ConsoleStream::LogLevel Level, const char* fmt, Args&&... args)
 		{
-			if (ConsoleLogger)
-			{
-				ConsoleLogger->Log(LoggerName, Level, fmt, std::forward<Args>(args)...);
-			}
+			CString LogString = TypeUtils::FormatUTF8(fmt, std::forward<Args>(args)...);
+
+			_Log(LoggerName, Level, LogString);
 		}
 
-	protected:
+		ConsoleStream& GetStream() { return CStream; }
+
+	private:
+		ENGINE_API void _Log(const CString& LoggerName, ConsoleStream::LogLevel Level, const CString& LogString);
+
+	private:
 		WString AppName;
 
-		Ref<Logger> ConsoleLogger = nullptr;
-	};
-
-	class Logger
-	{
-	public:
-		Logger(CString Name)
-			: Name(Name) { }
-
-		struct LogData
-		{
-			LogLevel Level;
-
-			CString Timestamp;
-			CString LoggerName;
-
-			CString LogString;
-		};
-
-		CallbackDispatcher<void, LogData>::CallbackHandle OnLog()
-		{
-			return OnLogDispatch.GetHandle();
-		}
-
-		template<typename... Args>
-		void Log(const CString& LoggerName, LogLevel level, std::string_view fmt, Args&&... args)
-		{
-			std::time_t result = std::time(nullptr);
-
-			char tbuff[128];
-			std::strftime(tbuff, 128, "[%T]", std::localtime(&result));
-
-			CString Timestamp = tbuff;
-
-			CString LogString = TypeUtils::FormatUTF8(fmt.data(), std::forward<Args>(args)...);
-
-			OnLogDispatch.Run({ level, Timestamp, LoggerName, LogString });
-		}
-
-	protected:
-		CString Name;
-
-		CallbackDispatcher<void, LogData> OnLogDispatch;
+		ConsoleStream CStream;
 	};
 }

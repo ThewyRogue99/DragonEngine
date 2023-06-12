@@ -7,13 +7,6 @@ namespace Engine
 
 	void Log::SetConsole(Ref<Console> NewConsole)
 	{
-		if (DebugConsole)
-			DebugConsole->OnDetach();
-
-		if (NewConsole)
-		{
-			DebugConsole = NewConsole;
-			DebugConsole->OnAttach();
-		}
+		DebugConsole = NewConsole;
 	}
 }
